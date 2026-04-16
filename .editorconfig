@@ -1,0 +1,19 @@
+﻿[*.cs]
+
+# IDE0090: Utiliser 'new(...)'
+csharp_style_implicit_object_creation_when_type_is_apparent = false
+
+# IDE1006: Styles d'affectation de noms
+dotnet_diagnostic.IDE1006.severity = none
+
+# IDE0034: Simplifier l'expression 'default'
+dotnet_diagnostic.IDE0034.severity = none
+
+# IDE0020: Utiliser les critères spéciaux
+dotnet_diagnostic.IDE0020.severity = warning
+
+# IDE0150: Prefer 'null' check over type check
+dotnet_diagnostic.IDE0150.severity = warning
+
+# CS1591: Commentaire XML manquant pour le type ou le membre visible publiquement
+dotnet_diagnostic.CS1591.severity = silent
