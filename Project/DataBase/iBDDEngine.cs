@@ -24,6 +24,8 @@ using Microvision.Types;
 // 
 // - et devient ADO.Net en 2002. Sont inclus des "providers" pour OLE DB, ODBC, SQL Server et (c'est 
 // nouveau) pour des sources xml. 
+// On décide en 2026 de supprimer ADO, parce que c'est obsolete depuis bien longtemps et qu'on a les
+// bases SQLite pour faire le job.
 // ***************************************************************************************************
 
 namespace Microvision.DataBase
