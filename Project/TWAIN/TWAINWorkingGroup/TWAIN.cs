@@ -42,15 +42,11 @@
 //  DEALINGS IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
-using System.Threading;
 
 namespace TWAINWorkingGroup
 {
@@ -15007,7 +15003,7 @@ namespace TWAINWorkingGroup
         {
             WriteEntry("A", a_szMessage, true);
 #if DEBUG
-                throw new Exception(a_szMessage);
+            throw new Exception(a_szMessage);
 #endif
         }
 

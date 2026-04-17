@@ -1,4 +1,4 @@
-﻿using Microvision.Types;
+﻿using Microvision.Graphic;
 
 namespace Microvision.Graphics3D
 {

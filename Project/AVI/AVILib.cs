@@ -1,7 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
+﻿using System.Runtime.InteropServices;
 
 using Microvision.Types;
 
@@ -587,11 +584,11 @@ namespace Microvision.Avi
             return AVIStreamGetFrameOpen(hStream, (IntPtr)0);
         }
 
-        public IntPtr OpenFrame(IntPtr hStream, BasicDibApi.BITMAPINFOHEADER bmih)
+        public IntPtr OpenFrame(IntPtr hStream, NativeMethods.Gdi32.BITMAPINFOHEADER bmih)
         {
             IntPtr hbmih = MarshShop.LockStruct(bmih);
             IntPtr hfrm = AVIStreamGetFrameOpen(hStream, hbmih);
-            MarshShop.UnlockStruct<BasicDibApi.BITMAPINFOHEADER>(hbmih);
+            MarshShop.UnlockStruct<NativeMethods.Gdi32.BITMAPINFOHEADER>(hbmih);
 
             return hfrm;
         }
@@ -630,7 +627,7 @@ namespace Microvision.Avi
             return erc;
         }
 
-        public AVIError ReadVideoFormat(IntPtr hStream, ref BasicDibApi.BITMAPINFO bmi)
+        public AVIError ReadVideoFormat(IntPtr hStream, ref NativeMethods.Gdi32.BITMAPINFO bmi)
         {
             int lng = 0;
             bmi.bmiColors = new int[256];
@@ -640,7 +637,7 @@ namespace Microvision.Avi
             {
                 IntPtr hbmi = MarshShop.LockStruct(bmi);
                 erc = (AVIError)AVIStreamReadFormat(hStream, 0, hbmi, ref lng);
-                bmi = MarshShop.UnlockStruct<BasicDibApi.BITMAPINFO>(hbmi);
+                bmi = MarshShop.UnlockStruct<NativeMethods.Gdi32.BITMAPINFO>(hbmi);
             }
 
             return erc;
@@ -688,11 +685,11 @@ namespace Microvision.Avi
             return erc;
         }
 
-        public AVIError SetVideoFormat(IntPtr hStream, ref BasicDibApi.BITMAPINFO bmi)
+        public AVIError SetVideoFormat(IntPtr hStream, ref NativeMethods.Gdi32.BITMAPINFO bmi)
         {
             IntPtr hbmi = MarshShop.LockStruct(bmi);
             AVIError erc = (AVIError)AVIStreamSetFormat(hStream, 0, hbmi, bmi.InfoLength());
-            bmi = MarshShop.UnlockStruct<BasicDibApi.BITMAPINFO>(hbmi);
+            bmi = MarshShop.UnlockStruct<NativeMethods.Gdi32.BITMAPINFO>(hbmi);
 
             return erc;
         }

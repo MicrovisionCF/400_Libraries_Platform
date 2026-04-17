@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 using Microvision.Types;
 
@@ -65,29 +63,29 @@ namespace Microvision.Avi
         // Méthodes
         // ----------------------------------------
 
-        public bool BeginDraw(Graphics gf, ref BasicDibApi.BITMAPINFO bmi)
+        public bool BeginDraw(Graphics gf, ref NativeMethods.Gdi32.BITMAPINFO bmi)
         {
             _hDC = gf.GetHdc();
 
             IntPtr hbmi = MarshShop.LockStruct(bmi);
             bool ok = DrawDibBegin(_handle, _hDC, -1, -1, hbmi, -1, -1, 0);
-            bmi = MarshShop.UnlockStruct<BasicDibApi.BITMAPINFO>(hbmi);
+            bmi = MarshShop.UnlockStruct<NativeMethods.Gdi32.BITMAPINFO>(hbmi);
 
             return ok;
         }
 
-        public bool BeginDraw(Graphics gf, ref BasicDibApi.BITMAPINFO bmi, Size siz)
+        public bool BeginDraw(Graphics gf, ref NativeMethods.Gdi32.BITMAPINFO bmi, Size siz)
         {
             _hDC = gf.GetHdc();
 
             IntPtr hbmi = MarshShop.LockStruct(bmi);
             bool ok = DrawDibBegin(_handle, _hDC, siz.Width, siz.Height, hbmi, -1, -1, 0);
-            bmi = MarshShop.UnlockStruct<BasicDibApi.BITMAPINFO>(hbmi);
+            bmi = MarshShop.UnlockStruct<NativeMethods.Gdi32.BITMAPINFO>(hbmi);
 
             return ok;
         }
 
-        public bool Draw(ref BasicDibApi.BITMAPINFO bmi, Bytes bts, Point p)
+        public bool Draw(ref NativeMethods.Gdi32.BITMAPINFO bmi, Bytes bts, Point p)
         {
             bool ok = false;
 
@@ -98,13 +96,13 @@ namespace Microvision.Avi
                 LockTable<byte> hbf = new LockTable<byte>(bts.Array, bts.Length);
                 ok = DrawDibDraw(_handle, _hDC, p.X, p.Y, -1, -1, hbmi, hbf.Address(0), 0, 0, -1, -1, DDF_SAME_HDC);
                 hbf.Free();
-                bmi = MarshShop.UnlockStruct<BasicDibApi.BITMAPINFO>(hbmi);
+                bmi = MarshShop.UnlockStruct<NativeMethods.Gdi32.BITMAPINFO>(hbmi);
             }
 
             return ok;
         }
 
-        public bool Draw(ref BasicDibApi.BITMAPINFO bmi, Bytes bts, Rectangle rct)
+        public bool Draw(ref NativeMethods.Gdi32.BITMAPINFO bmi, Bytes bts, Rectangle rct)
         {
             bool ok = false;
 
@@ -115,7 +113,7 @@ namespace Microvision.Avi
                 LockTable<byte> hbf = new LockTable<byte>(bts.Array, bts.Length);
                 ok = DrawDibDraw(_handle, _hDC, rct.X, rct.Y, rct.Width, rct.Height, hbmi, hbf.Address(0), 0, 0, -1, -1, DDF_SAME_HDC);
                 hbf.Free();
-                bmi = MarshShop.UnlockStruct<BasicDibApi.BITMAPINFO>(hbmi);
+                bmi = MarshShop.UnlockStruct<NativeMethods.Gdi32.BITMAPINFO>(hbmi);
             }
 
             return ok;

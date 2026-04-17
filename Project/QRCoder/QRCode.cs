@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-using Microvision.Types;
+﻿using Microvision.Types;
 
 namespace Microvision.QRCoder
 {

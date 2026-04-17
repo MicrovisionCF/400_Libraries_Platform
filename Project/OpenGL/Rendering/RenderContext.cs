@@ -1,5 +1,4 @@
-﻿using System;
-using Microvision.Types;
+﻿using Microvision.Types;
 
 namespace Microvision.OpenGL
 {

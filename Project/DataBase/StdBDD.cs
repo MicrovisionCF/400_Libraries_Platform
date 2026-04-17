@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using Microvision.Types;
+﻿using Microvision.Types;
 
 namespace Microvision.DataBase
 {

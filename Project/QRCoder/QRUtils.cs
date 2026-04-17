@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-
-namespace Microvision.QRCoder
+﻿namespace Microvision.QRCoder
 {
     internal struct xQRCodewordBlock
     {

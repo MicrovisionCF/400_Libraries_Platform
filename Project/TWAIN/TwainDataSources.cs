@@ -1,4 +1,4 @@
-﻿using Microvision.Types;
+﻿using Microvision.Collections;
 
 using TWAINWorkingGroup;
 

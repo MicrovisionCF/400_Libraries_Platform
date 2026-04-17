@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Microvision.OpenGL
+﻿namespace Microvision.OpenGL
 {
     internal enum OpenGLVersion
     {

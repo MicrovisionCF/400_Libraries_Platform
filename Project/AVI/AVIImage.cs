@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Drawing;
 
 using Microvision.Types;
 
@@ -31,7 +30,7 @@ namespace Microvision.Avi
         {
         }
 
-        public AVIImage(ref BITMAPINFO bmi) : base(bmi)
+        public AVIImage(ref NativeMethods.Gdi32.BITMAPINFO bmi) : base(bmi)
         {
         }
 
@@ -53,7 +52,7 @@ namespace Microvision.Avi
             }
         }
 
-        public BITMAPINFO Header => _infos;
+        public NativeMethods.Gdi32.BITMAPINFO Header => _infos;
 
 
         // ----------------------------------------

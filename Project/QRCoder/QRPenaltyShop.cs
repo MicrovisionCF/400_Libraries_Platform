@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Microvision.QRCoder
+﻿namespace Microvision.QRCoder
 {
     internal static class QRPenaltyShop
     {

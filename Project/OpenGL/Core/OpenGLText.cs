@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Microvision.OpenGL
+﻿namespace Microvision.OpenGL
 {
     public partial class OpenGLContext
     {

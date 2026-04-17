@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading;
-using System.Windows.Forms;
+﻿using System.ComponentModel;
 
 using Microvision.Types;
 

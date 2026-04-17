@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Microvision.Graphic;
+﻿using Microvision.Graphic;
 using Microvision.OpenGL;
-using Microvision.Types;
 
 namespace Microvision.Graphics3D
 {

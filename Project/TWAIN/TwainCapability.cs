@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-
-using Microvision.Types;
+﻿using Microvision.Types;
 
 using TWAINWorkingGroup;
 

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
+﻿using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 using Microvision.Types;
 
@@ -43,10 +39,10 @@ namespace Microvision.Scanners
         private const TWAIN.TWLG KLanguage = TWAIN.TWLG.ENGLISH_USA;
 
 
-        private TwainDataSources _dataSources;
-        private TwainThread _thread;
+        private TwainDataSources? _dataSources;
+        private TwainThread? _thread;
         private IntPtr _hWnd;
-        private TWAIN _dsm;
+        private TWAIN? _dsm;
 
 
         // ----------------------------------------
@@ -231,7 +227,7 @@ namespace Microvision.Scanners
             return ok;
         }
 
-        private static bool zMakeBitmap(in TWAIN.TW_IMAGEINFO info, out Bitmap bmp)
+        private static bool zMakeBitmap(in TWAIN.TW_IMAGEINFO info, out Bitmap? bmp)
         {
             bmp = null;
 
@@ -274,7 +270,7 @@ namespace Microvision.Scanners
         {
             bool ok = true;
             bool userCancel = false;
-            Bitmap bmp = null;
+            Bitmap? bmp = null;
             TWAIN.TW_IMAGEINFO info = default;
             TWAIN.TW_IMAGELAYOUT layout = default;
             TWAIN.TW_SETUPMEMXFER setup = default;

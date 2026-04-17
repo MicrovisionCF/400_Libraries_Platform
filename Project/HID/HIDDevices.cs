@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Microvision.Types;
+﻿using Microvision.Collections;
 
 namespace Microvision.HID
 {

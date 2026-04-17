@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Microvision.Scanners
+﻿namespace Microvision.Scanners
 {
     internal static class WIAExtensions
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
-
-using Microvision.Types;
+﻿using Microvision.Types;
 
 namespace Microvision.Avi
 {
@@ -115,7 +110,7 @@ namespace Microvision.Avi
         public AVIImage GetFormat()
         {
             AVIImage img = null;
-            BasicDibApi.BITMAPINFO bmi = default;
+            NativeMethods.Gdi32.BITMAPINFO bmi = default;
 
             switch (_info.FCCTypeString.ToLower())
             {
@@ -198,7 +193,7 @@ namespace Microvision.Avi
 
         public bool SetFormat(AVIImage img)
         {
-            BasicDibApi.BITMAPINFO info = img.Header;
+            NativeMethods.Gdi32.BITMAPINFO info = img.Header;
             _lastError = _lib.SetVideoFormat(_handle, ref info);
 
             return _lastError == AVILib.AVIError.AVIERR_OK;
