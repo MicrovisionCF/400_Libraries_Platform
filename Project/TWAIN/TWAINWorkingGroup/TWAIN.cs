@@ -263,10 +263,10 @@ namespace TWAINWorkingGroup
                         // we find an old DSM...
                         foreach (string szDsm in aszDsm)
                         {
-                            if (    szDsm.EndsWith("so.2.0") || szDsm.Contains(".so.2.0.")
-                                ||  szDsm.EndsWith("so.2.1") || szDsm.Contains(".so.2.1.")
-                                ||  szDsm.EndsWith("so.2.2") || szDsm.Contains(".so.2.2.")
-                                ||  szDsm.EndsWith("so.2.3") || szDsm.Contains(".so.2.3."))
+                            if (szDsm.EndsWith("so.2.0") || szDsm.Contains(".so.2.0.")
+                                || szDsm.EndsWith("so.2.1") || szDsm.Contains(".so.2.1.")
+                                || szDsm.EndsWith("so.2.2") || szDsm.Contains(".so.2.2.")
+                                || szDsm.EndsWith("so.2.3") || szDsm.Contains(".so.2.3."))
                             {
                                 // If we get a match, see if the symbolic link is
                                 // pointing to old junk...
@@ -280,11 +280,11 @@ namespace TWAINWorkingGroup
                                 p.WaitForExit();
                                 p.Dispose();
                                 // We never did any 1.x stuff...
-                                if (    (szOutput != null)
-                                    &&  (szOutput.EndsWith(".so.2.0") || szOutput.Contains(".so.2.0.")
-                                    ||   szOutput.EndsWith(".so.2.1") || szOutput.Contains(".so.2.1.")
-                                    ||   szOutput.EndsWith(".so.2.2") || szOutput.Contains(".so.2.2.")
-                                    ||   szOutput.EndsWith(".so.2.3") || szOutput.Contains(".so.2.3.")))
+                                if ((szOutput != null)
+                                    && (szOutput.EndsWith(".so.2.0") || szOutput.Contains(".so.2.0.")
+                                    || szOutput.EndsWith(".so.2.1") || szOutput.Contains(".so.2.1.")
+                                    || szOutput.EndsWith(".so.2.2") || szOutput.Contains(".so.2.2.")
+                                    || szOutput.EndsWith(".so.2.3") || szOutput.Contains(".so.2.3.")))
                                 {
                                     // libtwaindsm.so is pointing to an old DSM...
                                     blCheckForNewDsm = false;
@@ -300,19 +300,19 @@ namespace TWAINWorkingGroup
                         foreach (string szDsm in aszDsm)
                         {
                             // I guess this is reasonably future-proof...
-                            if (    szDsm.Contains("so.2.4")
-                                ||  szDsm.Contains("so.2.5")
-                                ||  szDsm.Contains("so.2.6")
-                                ||  szDsm.Contains("so.2.7")
-                                ||  szDsm.Contains("so.2.8")
-                                ||  szDsm.Contains("so.2.9")
-                                ||  szDsm.Contains("so.2.10")
-                                ||  szDsm.Contains("so.2.11")
-                                ||  szDsm.Contains("so.2.12")
-                                ||  szDsm.Contains("so.2.13")
-                                ||  szDsm.Contains("so.2.14")
-                                ||  szDsm.Contains("so.3")
-                                ||  szDsm.Contains("so.4"))
+                            if (szDsm.Contains("so.2.4")
+                                || szDsm.Contains("so.2.5")
+                                || szDsm.Contains("so.2.6")
+                                || szDsm.Contains("so.2.7")
+                                || szDsm.Contains("so.2.8")
+                                || szDsm.Contains("so.2.9")
+                                || szDsm.Contains("so.2.10")
+                                || szDsm.Contains("so.2.11")
+                                || szDsm.Contains("so.2.12")
+                                || szDsm.Contains("so.2.13")
+                                || szDsm.Contains("so.2.14")
+                                || szDsm.Contains("so.3")
+                                || szDsm.Contains("so.4"))
                             {
                                 // libtwaindsm.so is pointing to a new DSM...
                                 if (szDsm.Contains("lib64"))
@@ -927,7 +927,7 @@ namespace TWAINWorkingGroup
                     m_blAcceptXferReady = false;
                     m_blIsMsgclosedsok = false;
                     m_blIsMsgclosedsreq = false;
-                    m_blIsMsgxferready = false; 
+                    m_blIsMsgxferready = false;
                 }
 
                 // State 4 --> State 3...
@@ -2110,7 +2110,7 @@ namespace TWAINWorkingGroup
                     else
                     {
                         a_twcapability.Cap = (CAP)Enum.Parse(typeof(CAP), asz[0], true);
-					}
+                    }
                 }
                 catch
                 {
@@ -2504,7 +2504,7 @@ namespace TWAINWorkingGroup
             {
                 CSV csv = new CSV();
                 csv.Add(a_twentrypoint.Size.ToString());
-                csv.Add("0x" + ((a_twentrypoint.DSM_Entry == null)?"0":a_twentrypoint.DSM_Entry.ToString("X")));
+                csv.Add("0x" + ((a_twentrypoint.DSM_Entry == null) ? "0" : a_twentrypoint.DSM_Entry.ToString("X")));
                 csv.Add("0x" + ((a_twentrypoint.DSM_MemAllocate == null) ? "0" : a_twentrypoint.DSM_MemAllocate.ToString("X")));
                 csv.Add("0x" + ((a_twentrypoint.DSM_MemFree == null) ? "0" : a_twentrypoint.DSM_MemFree.ToString("X")));
                 csv.Add("0x" + ((a_twentrypoint.DSM_MemLock == null) ? "0" : a_twentrypoint.DSM_MemLock.ToString("X")));
@@ -4099,7 +4099,7 @@ namespace TWAINWorkingGroup
                 case CAP.CAP_INDICATORS: return (CvtCapValueFromEnumHelper<bool>(a_szValue));
                 case CAP.CAP_INDICATORSMODE: { TWCI twci; return (Enum.TryParse(CvtCapValueFromEnumHelper<TWCI>(a_szValue), out twci) ? ((int)twci).ToString() : a_szValue); };
                 case CAP.CAP_JOBCONTROL: { TWJC twjc; return (Enum.TryParse(CvtCapValueFromEnumHelper<TWJC>(a_szValue), out twjc) ? ((int)twjc).ToString() : a_szValue); };
-                case CAP.CAP_LANGUAGE: return(CvtCapValueFromTwlg(a_szValue));
+                case CAP.CAP_LANGUAGE: return (CvtCapValueFromTwlg(a_szValue));
                 case CAP.CAP_MAXBATCHBUFFERS: return (a_szValue);
                 case CAP.CAP_MICRENABLED: return (CvtCapValueFromEnumHelper<bool>(a_szValue));
                 case CAP.CAP_PAPERDETECTABLE: return (CvtCapValueFromEnumHelper<bool>(a_szValue));
@@ -5550,7 +5550,7 @@ namespace TWAINWorkingGroup
                             ThreadToCallerWaitOne();
 
                             // Hmmm...
-                            if (   (a_msg == MSG.GETCURRENT)
+                            if ((a_msg == MSG.GETCURRENT)
                                 && (m_twaincommand.Get(lIndex).sts == STS.SUCCESS)
                                 && (m_twaincommand.Get(lIndex).twcapability.ConType == (TWON)0)
                                 && (m_twaincommand.Get(lIndex).twcapability.hContainer == IntPtr.Zero))
@@ -5770,7 +5770,7 @@ namespace TWAINWorkingGroup
                     int result;
                     if (int.TryParse(astr[astr.Length - 1], out result))
                     {
-                       twlg = (TWLG)result;
+                        twlg = (TWLG)result;
                     }
                 }
                 catch
@@ -6383,7 +6383,7 @@ namespace TWAINWorkingGroup
                 m_twentrypointdelegates.DSM_Entry = a_twentrypoint.DSM_Entry;
                 if (a_twentrypoint.DSM_MemAllocate != null)
                 {
-                    m_twentrypointdelegates.DSM_MemAllocate = (TWAIN.DSM_MEMALLOC)Marshal.GetDelegateForFunctionPointer(a_twentrypoint.DSM_MemAllocate,typeof(TWAIN.DSM_MEMALLOC));
+                    m_twentrypointdelegates.DSM_MemAllocate = (TWAIN.DSM_MEMALLOC)Marshal.GetDelegateForFunctionPointer(a_twentrypoint.DSM_MemAllocate, typeof(TWAIN.DSM_MEMALLOC));
                 }
                 if (a_twentrypoint.DSM_MemFree != null)
                 {
@@ -14659,7 +14659,7 @@ namespace TWAINWorkingGroup
                 a_threaddata = default(ThreadData);
 
                 // Cycle once through the commands to see if we have any...
-                for (;;)
+                for (; ; )
                 {
                     // We found something, copy it out, point to the next
                     // item (so we know we're looking at the whole list)
@@ -14700,7 +14700,7 @@ namespace TWAINWorkingGroup
                 long ll;
 
                 // We won't leave until we've submitted the beastie...
-                for (;;)
+                for (; ; )
                 {
                     // Look for a free slot...
                     for (ll = 0; ll < m_athreaddata.Length; ll++)
@@ -14958,7 +14958,7 @@ namespace TWAINWorkingGroup
         static Log()
         {
             Close = CloseLocal;
-            GetLevel =  GetLevelLocal;
+            GetLevel = GetLevelLocal;
             Open = OpenLocal;
             RegisterTwain = RegisterTwainLocal;
             SetFlush = SetFlushLocal;
@@ -15006,9 +15006,9 @@ namespace TWAINWorkingGroup
         public static void Assert(string a_szMessage)
         {
             WriteEntry("A", a_szMessage, true);
-            #if DEBUG
+#if DEBUG
                 throw new Exception(a_szMessage);
-            #endif
+#endif
         }
 
         /// <summary>

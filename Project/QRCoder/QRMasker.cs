@@ -108,7 +108,7 @@ namespace Microvision.QRCoder
         private static QRData zCreateQrMask(MaskDelegate mask, xQRConfigInfos info)
         {
             QRData qrMask = new QRData(info);
-            
+
             for (int x = 0; x < qrMask.Width; x++)
                 for (int y = 0; y < qrMask.Width; y++)
                     qrMask.SetPixel(x, y, mask(x, y));

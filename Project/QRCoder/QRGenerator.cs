@@ -444,7 +444,7 @@ namespace Microvision.QRCoder
         {
             byte[] bytes = Encoding.GetEncoding("ISO-8859-1").GetBytes(input);
             string result = Encoding.GetEncoding("ISO-8859-1").GetString(bytes, 0, bytes.Length);
-            
+
             return string.Equals(input, result);
         }
 
@@ -475,7 +475,7 @@ namespace Microvision.QRCoder
 
             if (plainText.Length > 0)
                 codeText += zzDecToBin(alphaNumEnc[plainText[0]], 6);
-            
+
             return codeText;
         }
 

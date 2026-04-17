@@ -266,7 +266,7 @@ namespace Microvision.OpenGL
         {
             uint[] textures = new uint[n];
             glGenTextures(n, textures);
-            
+
             return textures;
         }
 

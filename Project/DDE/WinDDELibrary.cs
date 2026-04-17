@@ -251,7 +251,7 @@ namespace Microvision.DDE
                     int lg = DdeQueryStringAnsi(_identifier, hsz, IntPtr.Zero, 0, KCodePage);
                     StringBuilder sb = new StringBuilder(lg);
                     lg = WinDDELibrary.DdeQueryStringAnsi(_identifier, hsz, sb, lg, KCodePage);
-                    output= sb.ToString();
+                    output = sb.ToString();
                 }
                 else
                 {

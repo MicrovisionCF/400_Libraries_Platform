@@ -28,7 +28,7 @@ namespace Microvision.Scanners
             ErrorCodePropertyType = WIA.WiaPropertyType.ErrorCodePropertyType,
             LargeIntegerPropertyType = WIA.WiaPropertyType.LargeIntegerPropertyType,
             UnsignedLargeIntegerPropertyType = WIA.WiaPropertyType.UnsignedLargeIntegerPropertyType,
-            
+
             SinglePropertyType = WIA.WiaPropertyType.SinglePropertyType,
             DoublePropertyType = WIA.WiaPropertyType.DoublePropertyType,
             CurrencyPropertyType = WIA.WiaPropertyType.CurrencyPropertyType,
@@ -39,7 +39,7 @@ namespace Microvision.Scanners
             ObjectPropertyType = WIA.WiaPropertyType.ObjectPropertyType,
             HandlePropertyType = WIA.WiaPropertyType.HandlePropertyType,
             VariantPropertyType = WIA.WiaPropertyType.VariantPropertyType,
-            
+
             VectorOfBooleansPropertyType = WIA.WiaPropertyType.VectorOfBooleansPropertyType,
             VectorOfBytesPropertyType = WIA.WiaPropertyType.VectorOfBytesPropertyType,
             VectorOfIntegersPropertyType = WIA.WiaPropertyType.VectorOfIntegersPropertyType,
@@ -49,7 +49,7 @@ namespace Microvision.Scanners
             VectorOfErrorCodesPropertyType = WIA.WiaPropertyType.VectorOfErrorCodesPropertyType,
             VectorOfLargeIntegersPropertyType = WIA.WiaPropertyType.VectorOfLargeIntegersPropertyType,
             VectorOfUnsignedLargeIntegersPropertyType = WIA.WiaPropertyType.VectorOfUnsignedLargeIntegersPropertyType,
-            
+
             VectorOfSinglesPropertyType = WIA.WiaPropertyType.VectorOfSinglesPropertyType,
             VectorOfDoublesPropertyType = WIA.WiaPropertyType.VectorOfDoublesPropertyType,
             VectorOfCurrenciesPropertyType = WIA.WiaPropertyType.VectorOfCurrenciesPropertyType,
@@ -95,7 +95,7 @@ namespace Microvision.Scanners
             get
             {
                 object output = null;
-                
+
                 if (_property.SubType != WIA.WiaSubType.UnspecifiedSubType)
                     output = _property.SubTypeDefault;
 

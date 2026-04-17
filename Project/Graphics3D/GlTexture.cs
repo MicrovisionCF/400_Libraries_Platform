@@ -95,7 +95,7 @@ namespace Microvision.Graphics3D
                 _gl.BindTexture(BindTextureTarget.Texture2D, _glTextureID);
                 _gl.TexImage2D(TextureImageTarget.Texture2D, 0, (uint)OpenGL.PixelFormat.Rgba, bmpData.Width, bmpData.Height, 0, (uint)OpenGL.PixelFormat.Bgra, (uint)DataType.UnsignedByte, bmpData.Scan0);
                 img.UnlockBits(bmpData);
-                
+
                 _gl.TexParameter(TextureTarget.Texture2D, TextureParameter.TextureMinFilter, OpenGLConst.GL_LINEAR);
                 _gl.TexParameter(TextureTarget.Texture2D, TextureParameter.TextureMagFilter, OpenGLConst.GL_LINEAR);
             }

@@ -114,7 +114,7 @@ namespace Microvision.DDE
             float? value = this.GetValue(no);
 
             if (value.HasValue) v = value.Value;
-            
+
             return value.HasValue;
         }
 

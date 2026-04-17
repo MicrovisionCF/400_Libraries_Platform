@@ -268,7 +268,7 @@ namespace Microvision.DDE
             {
                 _lib.ClientTransaction(_hConv, _items[itemNo].hitem, WinDDELibrary.XType.XTYP_ADVSTOP); // -- 13.09.13 : faut-il libérer h ?
                 _items[itemNo] = _items[itemNo].SetLinkEtablished(false);
-                
+
                 WinDDELibrary.DMLERR erc = _lib.GetLastError();
                 if (erc != 0)
                     Debug.Print(_lib.QueryString(_items[itemNo].hitem) + SpecialChars.Tab + erc.ToNameString());

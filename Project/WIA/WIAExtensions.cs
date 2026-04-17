@@ -61,7 +61,7 @@ namespace Microvision.Scanners
 
             for (int i = 0; i < fmts.Count; i++)
                 lst.Add(fmts[1 + i]);
-            
+
             return lst;
         }
 
@@ -78,7 +78,7 @@ namespace Microvision.Scanners
         public static List<WIA.Property> ToList(this WIA.Properties prps)
         {
             List<WIA.Property> lst = new List<WIA.Property>();
-            
+
             for (int i = 0; i < prps.Count; i++)
                 lst.Add(prps[1 + i]);
 
@@ -88,10 +88,10 @@ namespace Microvision.Scanners
         public static List<T> ToList<T>(this WIA.Vector vct)
         {
             List<T> lst = new List<T>();
-            
+
             for (int i = 0; i < vct.Count; i++)
                 lst.Add((T)vct.get_Item(1 + i));
-            
+
             return lst;
         }
 

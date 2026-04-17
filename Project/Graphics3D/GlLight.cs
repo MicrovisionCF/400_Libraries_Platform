@@ -238,11 +238,11 @@ namespace Microvision.Graphics3D
             {
                 gl.Enable((EnableTarget)_lightNo);
                 gl.Light(_lightNo, LightParameter.Position, new[] { _position.x, _position.y, _position.z, _ponctual ? 1 : 0 });
-               
+
                 float r = _color.red / 255f;
                 float g = _color.green / 255f;
                 float b = _color.blue / 255f;
-              
+
                 gl.Light(_lightNo, LightParameter.Ambient, new[] { _ambientCompo * r, _ambientCompo * g, _ambientCompo * b, 1 });
                 gl.Light(_lightNo, LightParameter.Diffuse, new[] { _diffuseCompo * r, _diffuseCompo * g, _diffuseCompo * b, 1 });
                 gl.Light(_lightNo, LightParameter.Specular, new[] { _specularCompo * r, _specularCompo * g, _specularCompo * b, 1 });

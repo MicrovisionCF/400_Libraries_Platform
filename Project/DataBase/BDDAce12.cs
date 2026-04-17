@@ -4,10 +4,8 @@ using System.Data;
 using System.Data.OleDb;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-
-using Microvision.Types;
-
 using ADOX;
+using Microvision.Types;
 
 namespace Microvision.DataBase
 {
@@ -78,7 +76,7 @@ namespace Microvision.DataBase
             AlreadyOpen = 3704,              // &H80004005 You attempted to open a database that is already opened by user 'Admin' on machine 'CHB64'. Try again when the database is available.
                                              // sqlstate = "3704"
                                              // nativeerror = &hDD6EFC00
-            
+
             ProviderNotInstalled = int.MinValue + 0x00131509,       // -- System.InvalidOperationException à l'ouverture
             ClassNotRegistered = int.MinValue + 0x00040154         // -- HResult de Interop.COMException
         }
@@ -680,7 +678,7 @@ namespace Microvision.DataBase
             int nb = ConvertShop.ReadInt(command.ExecuteScalar());
 
             command.Dispose();
-            
+
             return nb;
         }
 

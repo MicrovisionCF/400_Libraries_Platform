@@ -120,10 +120,10 @@ namespace Microvision.Scanners
             // -- fonction pompée sur BasicDibMng
 
             Bitmap bmp = new Bitmap(sz.Width, sz.Height, fmt);
-            
+
             if (fmt.HasFlag(PixelFormat.Indexed) && pal is not null)
                 bmp.Palette = pal;
-            
+
             return bmp;
         }
 

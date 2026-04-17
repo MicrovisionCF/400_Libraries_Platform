@@ -162,9 +162,9 @@ namespace TWAINWorkingGroup
             {
                 // convert what we have into a byte array
                 byte[] abyItem = new byte[34];
-                abyItem[0]  = byItem000; abyItem[1]  = byItem001; abyItem[2]  = byItem002; abyItem[3]  = byItem003;
-                abyItem[4]  = byItem004; abyItem[5]  = byItem005; abyItem[6]  = byItem006; abyItem[7]  = byItem007;
-                abyItem[8]  = byItem008; abyItem[9]  = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
+                abyItem[0] = byItem000; abyItem[1] = byItem001; abyItem[2] = byItem002; abyItem[3] = byItem003;
+                abyItem[4] = byItem004; abyItem[5] = byItem005; abyItem[6] = byItem006; abyItem[7] = byItem007;
+                abyItem[8] = byItem008; abyItem[9] = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
                 abyItem[12] = byItem012; abyItem[13] = byItem013; abyItem[14] = byItem014; abyItem[15] = byItem015;
                 abyItem[16] = byItem016; abyItem[17] = byItem017; abyItem[18] = byItem018; abyItem[19] = byItem019;
                 abyItem[20] = byItem020; abyItem[21] = byItem021; abyItem[22] = byItem022; abyItem[23] = byItem023;
@@ -266,9 +266,9 @@ namespace TWAINWorkingGroup
                 // convert byte array to bytes
                 if (abyItem.Length > 0)
                 {
-                    byItem000 = abyItem[0];  byItem001 = abyItem[1];  byItem002 = abyItem[2];  byItem003 = abyItem[3];
-                    byItem004 = abyItem[4];  byItem005 = abyItem[5];  byItem006 = abyItem[6];  byItem007 = abyItem[7];
-                    byItem008 = abyItem[8];  byItem009 = abyItem[9];  byItem010 = abyItem[10]; byItem011 = abyItem[11];
+                    byItem000 = abyItem[0]; byItem001 = abyItem[1]; byItem002 = abyItem[2]; byItem003 = abyItem[3];
+                    byItem004 = abyItem[4]; byItem005 = abyItem[5]; byItem006 = abyItem[6]; byItem007 = abyItem[7];
+                    byItem008 = abyItem[8]; byItem009 = abyItem[9]; byItem010 = abyItem[10]; byItem011 = abyItem[11];
                     byItem012 = abyItem[12]; byItem013 = abyItem[13]; byItem014 = abyItem[14]; byItem015 = abyItem[15];
                     byItem016 = abyItem[16]; byItem017 = abyItem[17]; byItem018 = abyItem[18]; byItem019 = abyItem[19];
                     byItem020 = abyItem[20]; byItem021 = abyItem[21]; byItem022 = abyItem[22]; byItem023 = abyItem[23];
@@ -334,9 +334,9 @@ namespace TWAINWorkingGroup
             {
                 // convert what we have into a byte array
                 byte[] abyItem = new byte[66];
-                abyItem[0]  = byItem000; abyItem[1]  = byItem001; abyItem[2]  = byItem002; abyItem[3]  = byItem003;
-                abyItem[4]  = byItem004; abyItem[5]  = byItem005; abyItem[6]  = byItem006; abyItem[7]  = byItem007;
-                abyItem[8]  = byItem008; abyItem[9]  = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
+                abyItem[0] = byItem000; abyItem[1] = byItem001; abyItem[2] = byItem002; abyItem[3] = byItem003;
+                abyItem[4] = byItem004; abyItem[5] = byItem005; abyItem[6] = byItem006; abyItem[7] = byItem007;
+                abyItem[8] = byItem008; abyItem[9] = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
                 abyItem[12] = byItem012; abyItem[13] = byItem013; abyItem[14] = byItem014; abyItem[15] = byItem015;
                 abyItem[16] = byItem016; abyItem[17] = byItem017; abyItem[18] = byItem018; abyItem[19] = byItem019;
                 abyItem[20] = byItem020; abyItem[21] = byItem021; abyItem[22] = byItem022; abyItem[23] = byItem023;
@@ -440,9 +440,9 @@ namespace TWAINWorkingGroup
                 byte[] abyItem = Encoding.Convert(Encoding.Unicode, Language.GetEncoding(), Encoding.Unicode.GetBytes(sz));
 
                 // concert byte array to bytes
-                byItem000 = abyItem[0];  byItem001 = abyItem[1];  byItem002 = abyItem[2];  byItem003 = abyItem[3];
-                byItem004 = abyItem[4];  byItem005 = abyItem[5];  byItem006 = abyItem[6];  byItem007 = abyItem[7];
-                byItem008 = abyItem[8];  byItem009 = abyItem[9];  byItem010 = abyItem[10]; byItem011 = abyItem[11];
+                byItem000 = abyItem[0]; byItem001 = abyItem[1]; byItem002 = abyItem[2]; byItem003 = abyItem[3];
+                byItem004 = abyItem[4]; byItem005 = abyItem[5]; byItem006 = abyItem[6]; byItem007 = abyItem[7];
+                byItem008 = abyItem[8]; byItem009 = abyItem[9]; byItem010 = abyItem[10]; byItem011 = abyItem[11];
                 byItem012 = abyItem[12]; byItem013 = abyItem[13]; byItem014 = abyItem[14]; byItem015 = abyItem[15];
                 byItem016 = abyItem[16]; byItem017 = abyItem[17]; byItem018 = abyItem[18]; byItem019 = abyItem[19];
                 byItem020 = abyItem[20]; byItem021 = abyItem[21]; byItem022 = abyItem[22]; byItem023 = abyItem[23];
@@ -531,9 +531,9 @@ namespace TWAINWorkingGroup
             {
                 // convert what we have into a byte array
                 byte[] abyItem = new byte[130];
-                abyItem[0]  = byItem000; abyItem[1]  = byItem001; abyItem[2]  = byItem002; abyItem[3]  = byItem003;
-                abyItem[4]  = byItem004; abyItem[5]  = byItem005; abyItem[6]  = byItem006; abyItem[7]  = byItem007;
-                abyItem[8]  = byItem008; abyItem[9]  = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
+                abyItem[0] = byItem000; abyItem[1] = byItem001; abyItem[2] = byItem002; abyItem[3] = byItem003;
+                abyItem[4] = byItem004; abyItem[5] = byItem005; abyItem[6] = byItem006; abyItem[7] = byItem007;
+                abyItem[8] = byItem008; abyItem[9] = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
                 abyItem[12] = byItem012; abyItem[13] = byItem013; abyItem[14] = byItem014; abyItem[15] = byItem015;
                 abyItem[16] = byItem016; abyItem[17] = byItem017; abyItem[18] = byItem018; abyItem[19] = byItem019;
                 abyItem[20] = byItem020; abyItem[21] = byItem021; abyItem[22] = byItem022; abyItem[23] = byItem023;
@@ -655,9 +655,9 @@ namespace TWAINWorkingGroup
                 byte[] abyItem = Encoding.Convert(Encoding.Unicode, Language.GetEncoding(), Encoding.Unicode.GetBytes(sz));
 
                 // concert byte array to bytes
-                byItem000 = abyItem[0];  byItem001 = abyItem[1];  byItem002 = abyItem[2];  byItem003 = abyItem[3];
-                byItem004 = abyItem[4];  byItem005 = abyItem[5];  byItem006 = abyItem[6];  byItem007 = abyItem[7];
-                byItem008 = abyItem[8];  byItem009 = abyItem[9];  byItem010 = abyItem[10]; byItem011 = abyItem[11];
+                byItem000 = abyItem[0]; byItem001 = abyItem[1]; byItem002 = abyItem[2]; byItem003 = abyItem[3];
+                byItem004 = abyItem[4]; byItem005 = abyItem[5]; byItem006 = abyItem[6]; byItem007 = abyItem[7];
+                byItem008 = abyItem[8]; byItem009 = abyItem[9]; byItem010 = abyItem[10]; byItem011 = abyItem[11];
                 byItem012 = abyItem[12]; byItem013 = abyItem[13]; byItem014 = abyItem[14]; byItem015 = abyItem[15];
                 byItem016 = abyItem[16]; byItem017 = abyItem[17]; byItem018 = abyItem[18]; byItem019 = abyItem[19];
                 byItem020 = abyItem[20]; byItem021 = abyItem[21]; byItem022 = abyItem[22]; byItem023 = abyItem[23];
@@ -793,9 +793,9 @@ namespace TWAINWorkingGroup
             {
                 // convert what we have into a byte array
                 byte[] abyItem = new byte[256];
-                abyItem[0]  = byItem000; abyItem[1]  = byItem001; abyItem[2]  = byItem002; abyItem[3]  = byItem003;
-                abyItem[4]  = byItem004; abyItem[5]  = byItem005; abyItem[6]  = byItem006; abyItem[7]  = byItem007;
-                abyItem[8]  = byItem008; abyItem[9]  = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
+                abyItem[0] = byItem000; abyItem[1] = byItem001; abyItem[2] = byItem002; abyItem[3] = byItem003;
+                abyItem[4] = byItem004; abyItem[5] = byItem005; abyItem[6] = byItem006; abyItem[7] = byItem007;
+                abyItem[8] = byItem008; abyItem[9] = byItem009; abyItem[10] = byItem010; abyItem[11] = byItem011;
                 abyItem[12] = byItem012; abyItem[13] = byItem013; abyItem[14] = byItem014; abyItem[15] = byItem015;
                 abyItem[16] = byItem016; abyItem[17] = byItem017; abyItem[18] = byItem018; abyItem[19] = byItem019;
                 abyItem[20] = byItem020; abyItem[21] = byItem021; abyItem[22] = byItem022; abyItem[23] = byItem023;
@@ -951,9 +951,9 @@ namespace TWAINWorkingGroup
                 byte[] abyItem = Encoding.Convert(Encoding.Unicode, Language.GetEncoding(), Encoding.Unicode.GetBytes(sz));
 
                 // concert byte array to bytes
-                byItem000 = abyItem[0];  byItem001 = abyItem[1];  byItem002 = abyItem[2];  byItem003 = abyItem[3];
-                byItem004 = abyItem[4];  byItem005 = abyItem[5];  byItem006 = abyItem[6];  byItem007 = abyItem[7];
-                byItem008 = abyItem[8];  byItem009 = abyItem[9];  byItem010 = abyItem[10]; byItem011 = abyItem[11];
+                byItem000 = abyItem[0]; byItem001 = abyItem[1]; byItem002 = abyItem[2]; byItem003 = abyItem[3];
+                byItem004 = abyItem[4]; byItem005 = abyItem[5]; byItem006 = abyItem[6]; byItem007 = abyItem[7];
+                byItem008 = abyItem[8]; byItem009 = abyItem[9]; byItem010 = abyItem[10]; byItem011 = abyItem[11];
                 byItem012 = abyItem[12]; byItem013 = abyItem[13]; byItem014 = abyItem[14]; byItem015 = abyItem[15];
                 byItem016 = abyItem[16]; byItem017 = abyItem[17]; byItem018 = abyItem[18]; byItem019 = abyItem[19];
                 byItem020 = abyItem[20]; byItem021 = abyItem[21]; byItem022 = abyItem[22]; byItem023 = abyItem[23];

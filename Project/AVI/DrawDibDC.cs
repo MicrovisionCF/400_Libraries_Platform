@@ -90,7 +90,7 @@ namespace Microvision.Avi
         public bool Draw(ref BasicDibApi.BITMAPINFO bmi, Bytes bts, Point p)
         {
             bool ok = false;
-            
+
             if (_handle != IntPtr.Zero)
             {
                 // DDF_SAME_DRAW incompatible avec zoom
@@ -107,7 +107,7 @@ namespace Microvision.Avi
         public bool Draw(ref BasicDibApi.BITMAPINFO bmi, Bytes bts, Rectangle rct)
         {
             bool ok = false;
-            
+
             if (_handle != IntPtr.Zero)
             {
                 // DDF_SAME_DRAW incompatible avec zoom

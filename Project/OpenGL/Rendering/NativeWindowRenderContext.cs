@@ -104,7 +104,7 @@ namespace Microvision.OpenGL
         {
             IntPtr renderHdc = IntPtr.Zero;
             int iPixelFormat = Win32.ChoosePixelFormat(hdc, pfd);
-            
+
             if (iPixelFormat != 0 && Win32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
                 renderHdc = Win32.wglCreateContext(hdc);
 

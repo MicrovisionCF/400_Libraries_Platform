@@ -1,8 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-
-using Microvision.Types;
-
 using ADOX;
+using Microvision.Types;
 
 namespace Microvision.DataBase
 {

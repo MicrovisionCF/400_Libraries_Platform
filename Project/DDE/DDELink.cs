@@ -80,7 +80,7 @@ namespace Microvision.DDE
         // Méthodes
         // ----------------------------------------
 
-        [Obsolete ("17.10.23 Utiliser la version avec retour nullable")]
+        [Obsolete("17.10.23 Utiliser la version avec retour nullable")]
         public bool GetValue(ref float value)
         {
             if (!_linked)

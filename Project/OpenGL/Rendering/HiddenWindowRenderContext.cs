@@ -89,10 +89,10 @@ namespace Microvision.OpenGL
         {
             base.oSetDimensions(width, height);
 
-            Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, width, height, 
-                Win32.SetWindowPosFlags.SWP_NOACTIVATE | 
+            Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, width, height,
+                Win32.SetWindowPosFlags.SWP_NOACTIVATE |
                 Win32.SetWindowPosFlags.SWP_NOCOPYBITS |
-                Win32.SetWindowPosFlags.SWP_NOMOVE | 
+                Win32.SetWindowPosFlags.SWP_NOMOVE |
                 Win32.SetWindowPosFlags.SWP_NOOWNERZORDER);
         }
 
@@ -120,7 +120,7 @@ namespace Microvision.OpenGL
         {
             IntPtr renderHdc = IntPtr.Zero;
             int iPixelFormat = Win32.ChoosePixelFormat(hdc, pfd);
-            
+
             if (iPixelFormat != 0 && Win32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
                 renderHdc = Win32.wglCreateContext(hdc);
 

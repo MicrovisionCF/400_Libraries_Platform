@@ -151,7 +151,7 @@ namespace Microvision.Graphics3D
             IntPtr obj = gl.NewQuadric();
 
             gl.QuadricDrawStyle(obj, QuadricDrawStyle.Line);
-            
+
             if (_partialAngle < 360)
                 gl.PartialDisk(obj, _innerDiameter / 2, _outerDiameter / 2, ((float)_resolution / 360 * _partialAngle).ToRoundInt(), 1, _partialAngleStart, _partialAngle);
             else

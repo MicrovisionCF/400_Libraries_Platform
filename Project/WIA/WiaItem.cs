@@ -302,10 +302,10 @@ namespace Microvision.Scanners
             ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Resolution : " + itm.Resolution.ToString();
             ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Extend (mm) : " + itm.Extend.ToString();
             ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Bpp    : " + itm.BitsPerPixel;
-         
+
             for (int i = 0; i < itm.FormatsCount; i++)
                 ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Format = " + itm.GetFormatID(i);
-          
+
             for (int i = 0; i < itm.PropertiesCount; i++)
             {
                 WiaProperty prp = itm.GetProperty(i);
@@ -339,7 +339,7 @@ namespace Microvision.Scanners
         {
             return new RectangleF(ConvertShop.ReadFloat(prps[KPropExtendX].get_Value()),
                                   ConvertShop.ReadFloat(prps[KPropExtendY].get_Value()),
-                                  ConvertShop.ReadFloat(prps[KPropExtendW].get_Value()), 
+                                  ConvertShop.ReadFloat(prps[KPropExtendW].get_Value()),
                                   ConvertShop.ReadFloat(prps[KPropExtendH].get_Value()));
         }
 
@@ -352,9 +352,9 @@ namespace Microvision.Scanners
         {
             rct = Rectangle.Truncate(rct);       // -- 31.07.14
 
-            prps[KPropExtendX].set_Value( rct.X);
-            prps[KPropExtendY].set_Value( rct.Y);
-            prps[KPropExtendW].set_Value( rct.Width);
+            prps[KPropExtendX].set_Value(rct.X);
+            prps[KPropExtendY].set_Value(rct.Y);
+            prps[KPropExtendW].set_Value(rct.Width);
             prps[KPropExtendH].set_Value(rct.Height);
         }
 

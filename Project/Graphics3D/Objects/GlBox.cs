@@ -54,7 +54,7 @@ namespace Microvision.Graphics3D
             Point3D ptLowTopRight = new Point3D(_rect.x + _rect.w, _rect.y + _rect.h, _rect.z);
             Point3D ptLowBottomRight = new Point3D(_rect.x + _rect.w, _rect.y, _rect.z);
             Point3D ptLowBottomLeft = new Point3D(_rect.x, _rect.y, _rect.z);
-            
+
             Point3D ptHighTopleft = new Point3D(_rect.x, _rect.y + _rect.h, _rect.z + _rect.d);
             Point3D ptHighTopRight = new Point3D(_rect.x + _rect.w, _rect.y + _rect.h, _rect.z + _rect.d);
             Point3D ptHighBottomRight = new Point3D(_rect.x + _rect.w, _rect.y, _rect.z + _rect.d);

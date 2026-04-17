@@ -89,7 +89,7 @@ namespace Microvision.OpenGL
         {
             uint[] framebuffers = new uint[n];
             oGetDelegateFor<glGenFramebuffersEXT>()(n, framebuffers);
-            
+
             return framebuffers;
         }
 
@@ -102,7 +102,7 @@ namespace Microvision.OpenGL
         {
             uint[] framebuffers = new uint[n];
             oGetDelegateFor<glGenRenderbuffersEXT>()(n, framebuffers);
-            
+
             return framebuffers;
         }
 

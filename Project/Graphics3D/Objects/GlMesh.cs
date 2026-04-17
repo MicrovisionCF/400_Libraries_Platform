@@ -556,7 +556,7 @@ namespace Microvision.Graphics3D
             int w = mat.colsnb;
             int h = mat.rowsnb;
             float max = float.MinValue;
-            
+
             for (int x = 0; x < w; x++)
                 for (int y = 0; y < h; y++)
                     max = Math.Max(max, mat[x, y]);
@@ -594,14 +594,14 @@ namespace Microvision.Graphics3D
             float colorRange = (max - min) / (colors.Count - 1);
             float normalized = val - min;
             float inRangeFactor = normalized % colorRange / colorRange;
-            
+
             if (colorRange > 0)
             {
                 Color c1 = colors[(normalized / colorRange).ToFloorInt()];
                 Color c2 = colors[(normalized / colorRange).ToCeilingInt()];
 
-                output = Color.FromArgb((c1.R * (1 - inRangeFactor) + c2.R * inRangeFactor).ToRoundInt(), 
-                                        (c1.G * (1 - inRangeFactor) + c2.G * inRangeFactor).ToRoundInt(), 
+                output = Color.FromArgb((c1.R * (1 - inRangeFactor) + c2.R * inRangeFactor).ToRoundInt(),
+                                        (c1.G * (1 - inRangeFactor) + c2.G * inRangeFactor).ToRoundInt(),
                                         (c1.B * (1 - inRangeFactor) + c2.B * inRangeFactor).ToRoundInt());
             }
 

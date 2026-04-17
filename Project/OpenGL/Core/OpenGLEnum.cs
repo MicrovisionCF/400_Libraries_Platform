@@ -202,7 +202,7 @@ namespace Microvision.OpenGL
         Left = OpenGLConst.GL_LEFT,
         Right = OpenGLConst.GL_RIGHT
         // ColorAttachmentX = GlConst.GL_COLOR_ATTACHMENT0
-        
+
     }
 
     internal enum ErrorCode : uint
@@ -681,9 +681,9 @@ namespace Microvision.OpenGL
 
     internal enum EnableTarget : uint
     {
-        
+
         // Les capacitées commentées dépendent de ARB_imaging (cf doc glEnable)
-        
+
         AlphaTest = OpenGLConst.GL_ALPHA_TEST,
         AutoNormal = OpenGLConst.GL_AUTO_NORMAL,
         Blend = OpenGLConst.GL_BLEND,
@@ -755,7 +755,7 @@ namespace Microvision.OpenGL
         TextureGenT = OpenGLConst.GL_TEXTURE_GEN_T,
         VertexProgramPointSize = OpenGLConst.GL_VERTEX_PROGRAM_POINT_SIZE
         // VertexProgramTwoSide = GlConst.GL_VERTEX_PROGRAM_TWO_SIDE
-        
+
     }
 
     internal enum EnableClientTarget : uint

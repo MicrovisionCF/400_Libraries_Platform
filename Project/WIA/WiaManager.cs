@@ -76,7 +76,7 @@ namespace Microvision.Scanners
         private static string zDebugManager(WiaManager dmng, string pfx)
         {
             string s = "";
-            
+
             for (int i = 0; i < dmng.DevicesCount; i++)
             {
                 WiaDeviceInfo dinf = dmng.GetDeviceInfo(i);
