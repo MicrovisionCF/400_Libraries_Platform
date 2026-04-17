@@ -7,6 +7,14 @@
     <Platforms>x64</Platforms>
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <UseWindowsForms>true</UseWindowsForms>
+    <Title>$(AssemblyName)</Title>
+    <AssemblyTitle>$(MSBuildProjectName)</AssemblyTitle>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+    <Authors>Microvision Instruments</Authors>
+    <Company>Microvision Instruments</Company>
+    <Product>Microvision Libraries 4.0</Product>
+    <Description>Microvision OS Components</Description>
+    <Copyright>© 1998-2026 by Microvision Instruments</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -38,6 +46,10 @@
       <HintPath>lib\System.Data.SQLite.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>
