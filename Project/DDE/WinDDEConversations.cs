@@ -175,12 +175,12 @@ namespace Microvision.DDE
         // Privées
         // ----------------------------------------
 
-        private static int zFindHandle(IntPtr hconv, List<WinDDEConversation> lst)
+        private static int zFindHandle(IntPtr hconv, IReadOnlyList<WinDDEConversation> lst)
         {
             return lst.FindIndex(o => hconv == o.HConv);
         }
 
-        private static int zFindName(string srvnam, string topic, List<WinDDEConversation> lst)
+        private static int zFindName(string srvnam, string topic, IReadOnlyList<WinDDEConversation> lst)
         {
             return lst.FindIndex(o => srvnam == o.ServerName && topic == o.Topic);
         }

@@ -24,7 +24,7 @@ namespace Microvision.Graphics3D
         protected int _animInterval;
         protected float _animThetaX;
         protected float _animThetaY;
-        private Timer _timer;
+        private System.Timers.Timer _timer;
 
 
         // ----------------------------------------
@@ -122,7 +122,7 @@ namespace Microvision.Graphics3D
         {
             if (_timer is null)
             {
-                _timer = new Timer(_animInterval);
+                _timer = new System.Timers.Timer(_animInterval);
                 _timer_Attach(true);
                 _timer.Start();
             }

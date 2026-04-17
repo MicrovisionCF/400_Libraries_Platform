@@ -73,7 +73,7 @@
         // Statiques
         // ----------------------------------------
 
-        public static VersionAttribute GetVersionAttribute(Enum enumeration)
+        public static VersionAttribute GetVersionAttribute<TEnum>(TEnum enumeration) where TEnum : struct, Enum
         {
             return enumeration.GetType().GetMember(enumeration.ToNameString()).Single().GetCustomAttributes(typeof(VersionAttribute), false).OfType<VersionAttribute>().FirstOrDefault();
         }
