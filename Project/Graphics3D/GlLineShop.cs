@@ -32,12 +32,12 @@ namespace Microvision.Graphics3D
         public static void DrawLine(OpenGLContext gl, Point3D startPoint, Point3D endPoint, HColor color, float width)
         {
             gl.LineWidth(width);
-            gl.Color(color.red / 255f, color.green / 255f, color.blue / 255f);
+            gl.Color(color.Red / 255f, color.Green / 255f, color.Blue / 255f);
 
             gl.Begin(BeginMode.Lines);
 
-            gl.Vertex(startPoint.x, startPoint.y, startPoint.z);
-            gl.Vertex(endPoint.x, endPoint.y, endPoint.z);
+            gl.Vertex(startPoint.X, startPoint.Y, startPoint.Z);
+            gl.Vertex(endPoint.X, endPoint.Y, endPoint.Z);
 
             gl.End();
 
@@ -48,14 +48,14 @@ namespace Microvision.Graphics3D
         public static void DrawLines(OpenGLContext gl, IEnumerable<Tuple<Point3D, Point3D>> lines, HColor color, float width)
         {
             gl.LineWidth(width);
-            gl.Color(color.red / 255f, color.green / 255f, color.blue / 255f);
+            gl.Color(color.Red / 255f, color.Green / 255f, color.Blue / 255f);
 
             gl.Begin(BeginMode.Lines);
 
             foreach (Tuple<Point3D, Point3D> line in lines)
             {
-                gl.Vertex(line.Item1.x, line.Item1.y, line.Item1.z);
-                gl.Vertex(line.Item2.x, line.Item2.y, line.Item2.z);
+                gl.Vertex(line.Item1.X, line.Item1.Y, line.Item1.Z);
+                gl.Vertex(line.Item2.X, line.Item2.Y, line.Item2.Z);
             }
 
             gl.End();
@@ -67,7 +67,7 @@ namespace Microvision.Graphics3D
         public static void DrawPolyline(OpenGLContext gl, IEnumerable<Point3D> points, HColor color, float width, bool closed)
         {
             gl.LineWidth(width);
-            gl.Color(color.red / 255f, color.green / 255f, color.blue / 255f);
+            gl.Color(color.Red / 255f, color.Green / 255f, color.Blue / 255f);
 
             if (closed)
                 gl.Begin(BeginMode.LineLoop);
@@ -75,7 +75,7 @@ namespace Microvision.Graphics3D
                 gl.Begin(BeginMode.LineStrip);
 
             foreach (Point3D p in points)
-                gl.Vertex(p.x, p.y, p.z);
+                gl.Vertex(p.X, p.Y, p.Z);
 
             gl.End();
 

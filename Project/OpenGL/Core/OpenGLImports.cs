@@ -360,10 +360,10 @@ namespace Microvision.OpenGL
 
         internal void MaterialGlobal(HColor col, float ambient, float diffuse, float emission, float specular, float specularIntensity)
         {
-            float r = col.red / 255.0f;
-            float g = col.green / 255.0f;
-            float b = col.blue / 255.0f;
-            float a = col.alpha / 255.0f;
+            float r = col.Red / 255.0f;
+            float g = col.Green / 255.0f;
+            float b = col.Blue / 255.0f;
+            float a = col.Alpha / 255.0f;
 
             glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Ambient, new[] { r * ambient, g * ambient, b * ambient, a });
             glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Diffuse, new[] { r * diffuse, g * diffuse, b * diffuse, a });
@@ -389,7 +389,7 @@ namespace Microvision.OpenGL
 
         internal void Normal(Vect3D v)
         {
-            glNormal3f(v.x, v.y, v.z);
+            glNormal3f(v.X, v.Y, v.Z);
         }
 
         internal void NormalPointer(NormalType type, int stride, float[] pointer)
@@ -536,7 +536,7 @@ namespace Microvision.OpenGL
 
         internal void Translate(Vect3D v)
         {
-            glTranslatef(v.x, v.y, v.z);
+            glTranslatef(v.X, v.Y, v.Z);
         }
 
         internal double[] UnProject(double winx, double winy, double winz)
@@ -562,7 +562,7 @@ namespace Microvision.OpenGL
 
         internal void Vertex(Point3D pt)
         {
-            glVertex3f(pt.x, pt.y, pt.z);
+            glVertex3f(pt.X, pt.Y, pt.Z);
         }
 
         internal void VertexPointer(int size, int stride, float[] pointer)
@@ -572,12 +572,12 @@ namespace Microvision.OpenGL
 
         internal void Vertices(params Point3D[] pts)
         {
-            pts.ToList().ForEach(o => glVertex3f(o.x, o.y, o.z));
+            pts.ToList().ForEach(o => glVertex3f(o.X, o.Y, o.Z));
         }
 
         internal void Vertices(IEnumerable<Point3D> pts)
         {
-            pts.ToList().ForEach(o => glVertex3f(o.x, o.y, o.z));
+            pts.ToList().ForEach(o => glVertex3f(o.X, o.Y, o.Z));
         }
 
         internal void Viewport(int x, int y, int width, int height)

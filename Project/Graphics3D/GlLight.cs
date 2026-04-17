@@ -185,7 +185,7 @@ namespace Microvision.Graphics3D
                 gl.MatrixMode(MatrixMode.Modelview);
 
                 gl.PushMatrix();
-                gl.Translate(_position.x, _position.y, _position.z);
+                gl.Translate(_position.X, _position.Y, _position.Z);
                 gl.MaterialGlobal(col, 0, 0, 1, 0, 0);
 
                 IntPtr obj = gl.NewQuadric();
@@ -233,11 +233,11 @@ namespace Microvision.Graphics3D
             if (gl is not null)
             {
                 gl.Enable((EnableTarget)_lightNo);
-                gl.Light(_lightNo, LightParameter.Position, new[] { _position.x, _position.y, _position.z, _ponctual ? 1 : 0 });
+                gl.Light(_lightNo, LightParameter.Position, new[] { _position.X, _position.Y, _position.Z, _ponctual ? 1 : 0 });
 
-                float r = _color.red / 255f;
-                float g = _color.green / 255f;
-                float b = _color.blue / 255f;
+                float r = _color.Red / 255f;
+                float g = _color.Green / 255f;
+                float b = _color.Blue / 255f;
 
                 gl.Light(_lightNo, LightParameter.Ambient, new[] { _ambientCompo * r, _ambientCompo * g, _ambientCompo * b, 1 });
                 gl.Light(_lightNo, LightParameter.Diffuse, new[] { _diffuseCompo * r, _diffuseCompo * g, _diffuseCompo * b, 1 });

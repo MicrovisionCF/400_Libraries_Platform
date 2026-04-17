@@ -64,9 +64,9 @@ namespace Microvision.Graphics3D
 
         public void Apply(OpenGLContext gl)
         {
-            gl?.LookAt(_position.x, _position.y, _position.z,
-                _observation.x, _observation.y, _observation.z,
-                _upDirection.x, _upDirection.y, _upDirection.z);
+            gl?.LookAt(_position.X, _position.Y, _position.Z,
+                _observation.X, _observation.Y, _observation.Z,
+                _upDirection.X, _upDirection.Y, _upDirection.Z);
         }
 
 

@@ -128,9 +128,9 @@ namespace Microvision.Graphics3D
 
             _rotations.ForEach(o =>
             {
-                gl.Translate(o.center.x, o.center.y, o.center.z);
-                gl.Rotate(o.theta / MathF.PI * 180, o.axis.x, o.axis.y, o.axis.z);
-                gl.Translate(-o.center.x, -o.center.y, -o.center.z);
+                gl.Translate(o.center.X, o.center.Y, o.center.Z);
+                gl.Rotate(o.theta / MathF.PI * 180, o.axis.X, o.axis.Y, o.axis.Z);
+                gl.Translate(-o.center.X, -o.center.Y, -o.center.Z);
             });
         }
 

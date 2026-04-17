@@ -47,15 +47,15 @@ namespace Microvision.Graphics3D
 
         protected override void oRender(OpenGLContext gl)
         {
-            Point3D ptLowTopleft = new Point3D(_rect.x, _rect.y + _rect.h, _rect.z);
-            Point3D ptLowTopRight = new Point3D(_rect.x + _rect.w, _rect.y + _rect.h, _rect.z);
-            Point3D ptLowBottomRight = new Point3D(_rect.x + _rect.w, _rect.y, _rect.z);
-            Point3D ptLowBottomLeft = new Point3D(_rect.x, _rect.y, _rect.z);
+            Point3D ptLowTopleft = new Point3D(_rect.X, _rect.Y + _rect.Height, _rect.Z);
+            Point3D ptLowTopRight = new Point3D(_rect.X + _rect.Width, _rect.Y + _rect.Height, _rect.Z);
+            Point3D ptLowBottomRight = new Point3D(_rect.X + _rect.Width, _rect.Y, _rect.Z);
+            Point3D ptLowBottomLeft = new Point3D(_rect.X, _rect.Y, _rect.Z);
 
-            Point3D ptHighTopleft = new Point3D(_rect.x, _rect.y + _rect.h, _rect.z + _rect.d);
-            Point3D ptHighTopRight = new Point3D(_rect.x + _rect.w, _rect.y + _rect.h, _rect.z + _rect.d);
-            Point3D ptHighBottomRight = new Point3D(_rect.x + _rect.w, _rect.y, _rect.z + _rect.d);
-            Point3D ptHighBottomLeft = new Point3D(_rect.x, _rect.y, _rect.z + _rect.d);
+            Point3D ptHighTopleft = new Point3D(_rect.X, _rect.Y + _rect.Height, _rect.Z + _rect.Depth);
+            Point3D ptHighTopRight = new Point3D(_rect.X + _rect.Width, _rect.Y + _rect.Height, _rect.Z + _rect.Depth);
+            Point3D ptHighBottomRight = new Point3D(_rect.X + _rect.Width, _rect.Y, _rect.Z + _rect.Depth);
+            Point3D ptHighBottomLeft = new Point3D(_rect.X, _rect.Y, _rect.Z + _rect.Depth);
 
             gl.LineWidth(1);
             gl.MaterialGlobal(_color, 0, 0, 0, 0, 0);

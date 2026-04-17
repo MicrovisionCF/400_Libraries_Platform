@@ -128,7 +128,7 @@ namespace Microvision.Graphics3D
         {
             Bitmap bmp;
             Graphics g;
-            bmp = new Bitmap(_size.w, _size.h);
+            bmp = new Bitmap(_size.Width, _size.Height);
             g = Graphics.FromImage(bmp);
             oRenderGraphics(g);
             g.Dispose();
@@ -289,19 +289,19 @@ namespace Microvision.Graphics3D
         protected void oSetBackColor(HColor color)
         {
             _backColor = color;
-            _gl?.ClearColor(_backColor.red / 255f, _backColor.green / 255f, _backColor.blue / 255f, 0);
+            _gl?.ClearColor(_backColor.Red / 255f, _backColor.Green / 255f, _backColor.Blue / 255f, 0);
         }
 
         protected void oSetRenderDimensions(SizeI sz, float fovx)
         {
             if (_gl is not null)
             {
-                _gl.SetDimensions(sz.w, sz.h);
-                _gl.Viewport(0, 0, sz.w, sz.h);
+                _gl.SetDimensions(sz.Width, sz.Height);
+                _gl.Viewport(0, 0, sz.Width, sz.Height);
                 _gl.MatrixMode(MatrixMode.Projection);
                 _gl.LoadIdentity();
                 // OpenGL veut un fov en Y, c'est pas très pratique je trouve alors on le garde en X et on lui donne en Y
-                _gl.Perspective(zFovXToFovY(fovx, sz) * MathF.RadToDeg, sz.w / (double)sz.h, _nearestDistance, _farestDistance);
+                _gl.Perspective(float.RadiansToDegrees(zFovXToFovY(fovx, sz)), sz.Width / (double)sz.Height, _nearestDistance, _farestDistance);
                 _gl.MatrixMode(MatrixMode.Modelview);
                 _gl.LoadIdentity();
             }
@@ -314,8 +314,8 @@ namespace Microvision.Graphics3D
 
         private static float zFovXToFovY(float fovX, SizeI viewportSize)
         {
-            float dist = viewportSize.w / MathF.Tan(fovX / 2) / 2;
-            float alpha = MathF.Atan(viewportSize.h / dist / 2) * 2;
+            float dist = viewportSize.Width / MathF.Tan(fovX / 2) / 2;
+            float alpha = MathF.Atan(viewportSize.Height / dist / 2) * 2;
 
             return alpha;
         }

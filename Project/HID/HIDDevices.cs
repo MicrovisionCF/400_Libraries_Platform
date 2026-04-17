@@ -76,7 +76,7 @@ namespace Microvision.HID
         // Privées
         // ----------------------------------------
 
-        private static int zFind(IntPtr hdev, List<HIDDevice> lst)
+        private static int zFind(IntPtr hdev, IReadOnlyList<HIDDevice> lst)
         {
             return lst.FindIndex(d => hdev == d.Handle);
         }

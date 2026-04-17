@@ -240,17 +240,17 @@ namespace Microvision.Graphics3D
                 {
                     gl.Begin(BeginMode.Lines);
 
-                    float normalSize = (_size.w + _size.h) / 50;
-                    for (int j = 0; j < _depth.rowsnb; j++)
+                    float normalSize = (_size.Width + _size.Height) / 50;
+                    for (int j = 0; j < _depth.RowsCount; j++)
                     {
-                        for (int i = 0; i < _depth.colsnb; i++)
+                        for (int i = 0; i < _depth.ColumnsCount; i++)
                         {
-                            gl.Vertex(_vertices[j * 3 * _depth.colsnb + i * 3 + 0],
-                                        _vertices[j * 3 * _depth.colsnb + i * 3 + 1],
-                                        _vertices[j * 3 * _depth.colsnb + i * 3 + 2]);
-                            gl.Vertex(_vertices[j * 3 * _depth.colsnb + i * 3 + 0] + _normal[j * 3 * _depth.colsnb + i * 3 + 0] * normalSize,
-                                        _vertices[j * 3 * _depth.colsnb + i * 3 + 1] + _normal[j * 3 * _depth.colsnb + i * 3 + 1] * normalSize,
-                                        _vertices[j * 3 * _depth.colsnb + i * 3 + 2] + _normal[j * 3 * _depth.colsnb + i * 3 + 2] * normalSize);
+                            gl.Vertex(_vertices[j * 3 * _depth.ColumnsCount + i * 3 + 0],
+                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 1],
+                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 2]);
+                            gl.Vertex(_vertices[j * 3 * _depth.ColumnsCount + i * 3 + 0] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 0] * normalSize,
+                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 1] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 1] * normalSize,
+                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 2] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 2] * normalSize);
                         }
                     }
 
@@ -286,8 +286,8 @@ namespace Microvision.Graphics3D
                 _maxZ = zMax(_depth);
                 _minZ = zMin(_depth);
 
-                int w = _depth.colsnb;
-                int h = _depth.rowsnb;
+                int w = _depth.ColumnsCount;
+                int h = _depth.RowsCount;
 
                 if (_xPositions is not null)
                 {
@@ -296,7 +296,7 @@ namespace Microvision.Graphics3D
                 }
                 else
                 {
-                    _vertices = zCalcVertices(_origin, _depth, _size.w / (w - 1), _size.h / (h - 1), _zFactor);
+                    _vertices = zCalcVertices(_origin, _depth, _size.Width / (w - 1), _size.Height / (h - 1), _zFactor);
                     _textCoords = zCalcTextureCoordinates(w, h);
                 }
 
@@ -305,7 +305,7 @@ namespace Microvision.Graphics3D
                 _normal = zCalcNormal(_vertices, w, h);
                 _colors = zChangeOpacity(zCalcColors(_depth, _colorInverted, _colorFade), _colorOpacity);
 
-                _center = new PointG(_size.w / 2, _size.h / 2);
+                _center = new PointG(_size.Width / 2, _size.Height / 2);
             }
             else
             {
@@ -323,7 +323,7 @@ namespace Microvision.Graphics3D
         protected void oSetZFactor(float value)
         {
             _zFactor = value;
-            _vertices = zCalcVertices(_origin, _depth, _size.w / _depth.colsnb, _size.h / _depth.rowsnb, _zFactor);
+            _vertices = zCalcVertices(_origin, _depth, _size.Width / _depth.ColumnsCount, _size.Height / _depth.RowsCount, _zFactor);
         }
 
 
@@ -340,17 +340,17 @@ namespace Microvision.Graphics3D
             if (fade > 0) listColors = listColors.Select(o => (Color)HColor.Lighter(o, fade)).ToList();
             if (inverted) listColors.Reverse();
 
-            float[] colors = new float[depth.colsnb * depth.rowsnb * 4];
+            float[] colors = new float[depth.ColumnsCount * depth.RowsCount * 4];
 
-            for (int j = 0; j < depth.rowsnb; j++)
+            for (int j = 0; j < depth.RowsCount; j++)
             {
-                for (int i = 0; i < depth.colsnb; i++)
+                for (int i = 0; i < depth.ColumnsCount; i++)
                 {
                     HColor col = zzColorFromScale(min, max, depth[i, j], listColors);
-                    colors[(i + j * depth.colsnb) * 4 + 0] = (col.red / 255f / 2f);
-                    colors[(i + j * depth.colsnb) * 4 + 1] = (col.green / 255f / 2f);
-                    colors[(i + j * depth.colsnb) * 4 + 2] = (col.blue / 255f / 2f);
-                    colors[(i + j * depth.colsnb) * 4 + 3] = 1;
+                    colors[(i + j * depth.ColumnsCount) * 4 + 0] = (col.Red / 255f / 2f);
+                    colors[(i + j * depth.ColumnsCount) * 4 + 1] = (col.Green / 255f / 2f);
+                    colors[(i + j * depth.ColumnsCount) * 4 + 2] = (col.Blue / 255f / 2f);
+                    colors[(i + j * depth.ColumnsCount) * 4 + 3] = 1;
                 }
             }
 
@@ -432,9 +432,9 @@ namespace Microvision.Graphics3D
                         Vect3D n3 = zCalcNormal(p4, p0, p3);
                         Vect3D n4 = zCalcNormal(p1, p0, p4);
 
-                        normalsV[(x + w * y) * 3 + 0] = (n1.x + n2.x + n3.x + n4.x) / 4;
-                        normalsV[(x + w * y) * 3 + 1] = (n1.y + n2.y + n3.y + n4.y) / 4;
-                        normalsV[(x + w * y) * 3 + 2] = (n1.z + n2.z + n3.z + n4.z) / 4;
+                        normalsV[(x + w * y) * 3 + 0] = (n1.X + n2.X + n3.X + n4.X) / 4;
+                        normalsV[(x + w * y) * 3 + 1] = (n1.Y + n2.Y + n3.Y + n4.Y) / 4;
+                        normalsV[(x + w * y) * 3 + 2] = (n1.Z + n2.Z + n3.Z + n4.Z) / 4;
                     }
                     else
                     {
@@ -493,8 +493,8 @@ namespace Microvision.Graphics3D
 
         private static float[] zCalcVertices(Point3D origin, Array2D<float> depth, float xf, float yf, float zf)
         {
-            int w = depth.colsnb;
-            int h = depth.rowsnb;
+            int w = depth.ColumnsCount;
+            int h = depth.RowsCount;
 
             float[] vertices = new float[w * h * 3];
 
@@ -502,9 +502,9 @@ namespace Microvision.Graphics3D
             {
                 for (int y = 0; y < h; y++)
                 {
-                    vertices[(x + w * y) * 3 + 0] = origin.x + x * xf;
-                    vertices[(x + w * y) * 3 + 1] = origin.y + y * yf;
-                    vertices[(x + w * y) * 3 + 2] = origin.z + depth[x, y] * zf;
+                    vertices[(x + w * y) * 3 + 0] = origin.X + x * xf;
+                    vertices[(x + w * y) * 3 + 1] = origin.Y + y * yf;
+                    vertices[(x + w * y) * 3 + 2] = origin.Z + depth[x, y] * zf;
                 }
             }
 
@@ -513,8 +513,8 @@ namespace Microvision.Graphics3D
 
         private static float[] zCalcVertices(Point3D origin, Array2D<float> depth, List<float> xPositions, List<float> yPositions, float zf)
         {
-            int w = depth.colsnb;
-            int h = depth.rowsnb;
+            int w = depth.ColumnsCount;
+            int h = depth.RowsCount;
 
             float[] vertices = new float[w * h * 3];
 
@@ -522,9 +522,9 @@ namespace Microvision.Graphics3D
             {
                 for (int y = 0; y < h; y++)
                 {
-                    vertices[(x + w * y) * 3 + 0] = origin.x + xPositions[x];
-                    vertices[(x + w * y) * 3 + 1] = origin.y + yPositions[y];
-                    vertices[(x + w * y) * 3 + 2] = origin.z + depth[x, y] * zf;
+                    vertices[(x + w * y) * 3 + 0] = origin.X + xPositions[x];
+                    vertices[(x + w * y) * 3 + 1] = origin.Y + yPositions[y];
+                    vertices[(x + w * y) * 3 + 2] = origin.Z + depth[x, y] * zf;
                 }
             }
 
@@ -548,8 +548,8 @@ namespace Microvision.Graphics3D
 
         private static float zMax(Array2D<float> mat)
         {
-            int w = mat.colsnb;
-            int h = mat.rowsnb;
+            int w = mat.ColumnsCount;
+            int h = mat.RowsCount;
             float max = float.MinValue;
 
             for (int x = 0; x < w; x++)
@@ -561,8 +561,8 @@ namespace Microvision.Graphics3D
 
         private static float zMin(Array2D<float> mat)
         {
-            int w = mat.colsnb;
-            int h = mat.rowsnb;
+            int w = mat.ColumnsCount;
+            int h = mat.RowsCount;
             float min = float.MaxValue;
 
             for (int x = 0; x < w; x++)

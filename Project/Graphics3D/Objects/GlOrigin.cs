@@ -63,7 +63,7 @@ namespace Microvision.Graphics3D
 
         protected override void oRender(OpenGLContext gl)
         {
-            float maxSize = new[] { _size.x, _size.y, _size.z }.Max();
+            float maxSize = new[] { _size.X, _size.Y, _size.Z }.Max();
 
             IntPtr obj = gl.NewQuadric();
 
@@ -71,13 +71,13 @@ namespace Microvision.Graphics3D
             gl.Sphere(obj, maxSize / 60, 30, 30);
 
             gl.Rotate(0, 90, 0);
-            zArrow(gl, maxSize, _size.x, Color.Red, "X");
+            zArrow(gl, maxSize, _size.X, Color.Red, "X");
             gl.Rotate(0, -90, 0);
             gl.Rotate(-90, 0, 0);
-            zArrow(gl, maxSize, _size.y, Color.Lime, "Y");
+            zArrow(gl, maxSize, _size.Y, Color.Lime, "Y");
             gl.Rotate(90, 0, 0);
             gl.Rotate(0, 0, -90);
-            zArrow(gl, maxSize, _size.z, Color.Blue, "Z");
+            zArrow(gl, maxSize, _size.Z, Color.Blue, "Z");
         }
 
 

@@ -93,14 +93,14 @@ namespace Microvision.Graphics3D
 
         private static List<Point3D> zCalcCorners(Rect3D r)
         {
-            return new List<Point3D> { new Point3D(r.x, r.y, r.z),
-                                       new Point3D(r.x + r.w, r.y, r.z),
-                                       new Point3D(r.x, r.y + r.h, r.z),
-                                       new Point3D(r.x + r.w, r.y + r.h, r.z),
-                                       new Point3D(r.x, r.y, r.z + r.d),
-                                       new Point3D(r.x + r.w, r.y, r.z + r.d),
-                                       new Point3D(r.x, r.y + r.h, r.z + r.d),
-                                       new Point3D(r.x + r.w, r.y + r.h, r.z + r.d) };
+            return new List<Point3D> { new Point3D(r.X, r.Y, r.Z),
+                                       new Point3D(r.X + r.Width, r.Y, r.Z),
+                                       new Point3D(r.X, r.Y + r.Height, r.Z),
+                                       new Point3D(r.X + r.Width, r.Y + r.Height, r.Z),
+                                       new Point3D(r.X, r.Y, r.Z + r.Depth),
+                                       new Point3D(r.X + r.Width, r.Y, r.Z + r.Depth),
+                                       new Point3D(r.X, r.Y + r.Height, r.Z + r.Depth),
+                                       new Point3D(r.X + r.Width, r.Y + r.Height, r.Z + r.Depth) };
         }
 
         private static Vect3D zCalcNormal(Point3D p1, Point3D p2, Point3D p3)
@@ -147,22 +147,22 @@ namespace Microvision.Graphics3D
 
         private static Rect3D zNormalizeBound(Rect3D bnds)
         {
-            if (bnds.w < 0)
+            if (bnds.Width < 0)
             {
-                bnds.w = Math.Abs(bnds.w);
-                bnds.x -= bnds.w;
+                bnds.Width = Math.Abs(bnds.Width);
+                bnds.X -= bnds.Width;
             }
 
-            if (bnds.h < 0)
+            if (bnds.Height < 0)
             {
-                bnds.h = Math.Abs(bnds.h);
-                bnds.y -= bnds.h;
+                bnds.Height = Math.Abs(bnds.Height);
+                bnds.Y -= bnds.Height;
             }
 
-            if (bnds.d < 0)
+            if (bnds.Depth < 0)
             {
-                bnds.d = Math.Abs(bnds.d);
-                bnds.z -= bnds.d;
+                bnds.Depth = Math.Abs(bnds.Depth);
+                bnds.Z -= bnds.Depth;
             }
 
             return bnds;

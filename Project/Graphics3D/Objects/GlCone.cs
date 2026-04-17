@@ -41,7 +41,7 @@ namespace Microvision.Graphics3D
         // Propriétés
         // ----------------------------------------
 
-        public Point3D Center => new Point3D(_spikePosition.x, _spikePosition.y, _spikePosition.z - _height / 2);
+        public Point3D Center => new Point3D(_spikePosition.X, _spikePosition.Y, _spikePosition.Z - _height / 2);
 
         public int Resolution
         {

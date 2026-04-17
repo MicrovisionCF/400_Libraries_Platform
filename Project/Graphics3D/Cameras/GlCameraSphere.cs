@@ -38,7 +38,7 @@ namespace Microvision.Graphics3D
 
             _distance = 10;
             _animInterval = 50;
-            _animThetaX = 5 * MathF.DegToRad;
+            _animThetaX = float.DegreesToRadians(5);
             _animThetaY = 0;
         }
 
@@ -188,9 +188,9 @@ namespace Microvision.Graphics3D
 
         private static Point3D zCalcPosition(Point3D center, float distance, float thetaX, float thetaY)
         {
-            return new Point3D(center.x + distance * MathF.Sin(thetaX) * MathF.Cos(thetaY),
-                                center.y + distance * MathF.Cos(thetaX) * MathF.Cos(thetaY),
-                                center.z + distance * MathF.Sin(thetaY));
+            return new Point3D(center.X + distance * MathF.Sin(thetaX) * MathF.Cos(thetaY),
+                                center.Y + distance * MathF.Cos(thetaX) * MathF.Cos(thetaY),
+                                center.Z + distance * MathF.Sin(thetaY));
         }
 
         private static Vect3D zCalcUpDirection(float thetaY)

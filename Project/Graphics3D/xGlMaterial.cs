@@ -43,7 +43,7 @@ namespace Microvision.Graphics3D
         // Propriétés
         // ----------------------------------------
 
-        public bool IsTransparent => color.alpha < 255;
+        public bool IsTransparent => color.Alpha < 255;
 
         public bool IsValid => valid;
 
