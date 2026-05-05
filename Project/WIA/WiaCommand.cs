@@ -13,16 +13,12 @@ namespace Microvision.Scanners
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private WIA.DeviceCommand _command;
+        private readonly WIA.DeviceCommand _command;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
-
-        internal WiaCommand() : base()
-        {
-        }
 
         internal WiaCommand(WIA.DeviceCommand cmd) : base()
         {
@@ -57,11 +53,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_command is not null)
-            {
-                Marshal.ReleaseComObject(_command);
-                _command = null;
-            }
+            Marshal.ReleaseComObject(_command);
 
             base.oDispose(isExplicit);
         }

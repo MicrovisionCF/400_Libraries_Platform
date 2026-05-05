@@ -90,18 +90,14 @@ namespace Microvision.Scanners
         // Firmware Version	String	1.00
         // Max Scan Time	Integer	1800000
 
-        private WIA.Device _device;
+        private readonly WIA.Device _device;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        internal WiaDevice() : base()
-        {
-        }
-
-        internal WiaDevice(WIA.Device dev) : this()
+        internal WiaDevice(WIA.Device dev) : base()
         {
             _device = dev;
         }
@@ -207,11 +203,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_device is not null)
-            {
-                Marshal.ReleaseComObject(_device);
-                _device = null;
-            }
+            Marshal.ReleaseComObject(_device);
 
             base.oDispose(isExplicit);
         }

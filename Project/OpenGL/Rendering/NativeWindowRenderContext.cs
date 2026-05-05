@@ -41,12 +41,13 @@
                 Win32.SwapBuffers(_deviceContextHandle);
         }
 
-        protected override bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object parameter)
+        protected override bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object? parameter)
         {
             base.oCreate(openGLVersion, gl, width, height, bitDepth, parameter);
 
             try
             {
+                ArgumentNullException.Check(parameter);
                 _windowHandle = (IntPtr)parameter;
             }
             catch

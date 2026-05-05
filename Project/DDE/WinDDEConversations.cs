@@ -22,9 +22,9 @@ namespace Microvision.DDE
         public delegate void ItemLinkStartEventHandler(WinDDEConversation conv, string itemName);
         public delegate void ItemLinkStopEventHandler(WinDDEConversation conv, string itemName);
 
-        public event ItemDataChangeEventHandler ItemDataChange;
-        public event ItemLinkStartEventHandler ItemLinkStart;
-        public event ItemLinkStopEventHandler ItemLinkStop;
+        public event ItemDataChangeEventHandler? ItemDataChange;
+        public event ItemLinkStartEventHandler? ItemLinkStart;
+        public event ItemLinkStopEventHandler? ItemLinkStop;
 
         // ***************************************************************************************************
 

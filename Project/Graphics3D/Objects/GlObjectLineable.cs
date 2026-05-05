@@ -23,6 +23,15 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
+        protected GlObjectLineable(xGlMaterial material) : base(material)
+        {
+            _isFill = true;
+            _linesVisible = false;
+
+            _linesMaterial = xGlMaterial.Flat(Color.Black);
+            _linesWidth = 1;
+        }
+
         protected GlObjectLineable() : this(Color.WhiteSmoke)
         {
         }

@@ -34,13 +34,14 @@ namespace Microvision.DDE
         public delegate void LinkChangeEventHandler(int linkNo, bool flnk);
         public delegate void ValueChangeEventHandler(int linkNo, bool isValid, float value);
 
-        public event LinkChangeEventHandler LinkChange;
-        public event ValueChangeEventHandler ValueChange;
+        public event LinkChangeEventHandler? LinkChange;
+        public event ValueChangeEventHandler? ValueChange;
 
         // ***************************************************************************************************
 
-        private WinDDEManager _dde;
-        private DDELinks _links;
+        private readonly DDELinks _links;
+
+        private WinDDEManager? _dde;
 
 
         // ----------------------------------------
@@ -78,6 +79,8 @@ namespace Microvision.DDE
 
         public bool Connect(int no)
         {
+            ArgumentNullException.Check(_dde);
+
             return _links.StartConnection(no, _dde);
         }
 
@@ -153,18 +156,21 @@ namespace Microvision.DDE
 
         public bool StartManager()
         {
-            WinDDEManager wmng = new WinDDEManager();
+            _dde = new WinDDEManager();
 
-            if (wmng.Initialize())
-                _dde = wmng;
-            else
-                wmng.Dispose();
+            if (!_dde.Initialize())
+            {
+                _dde.Dispose();
+                _dde = null;
+            }
 
             return (_dde is not null);
         }
 
         public void StopManager()
         {
+            ArgumentNullException.Check(_dde);
+
             for (int i = 0; i < _links.Count; i++)
                 if (_links.IsConnected(i))
                     _links.StopConnection(i);
@@ -183,12 +189,8 @@ namespace Microvision.DDE
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_links is not null)
-            {
-                _links_Attach(false);
-                if (isExplicit) _links.Dispose();
-                _links = null;
-            }
+            _links_Attach(false);
+            if (isExplicit) _links.Dispose();
 
             if (_dde is not null)
             {

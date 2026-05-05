@@ -1,4 +1,6 @@
-﻿using Microvision.Types;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Microvision.Types;
 
 namespace Microvision.DataBase
 {
@@ -16,13 +18,13 @@ namespace Microvision.DataBase
         // 22.05.23 : Correction renommage table
         // ***************************************************************************************************
 
-        private IBDDEngine _engine;
-        private string _fileName;
-        private string _password;
+        private readonly IBDDEngine _engine;
+        private string? _fileName;
+        private string? _password;
 
-        private string _provider;
-        private string _version;
-        private List<string> _tables;
+        private string? _provider;
+        private string? _version;
+        private List<string>? _tables;
 
 
         // ----------------------------------------
@@ -31,7 +33,6 @@ namespace Microvision.DataBase
 
         public StdBDD(IBDDEngine eng) : base()
         {
-            _tables = new List<string>();
             _engine = eng.AddLife();
         }
 
@@ -42,19 +43,19 @@ namespace Microvision.DataBase
 
         public bool CanManage => _engine is IBDDCreator;
 
-        public string DataSourceName => _fileName;
+        public string DataSourceName => ArgumentNullException.Check(_fileName);
 
         public IBDDEngine Engine => _engine;
 
         public int LastError => _engine.LastError();
 
-        public string Password => _password;
+        public string Password => ArgumentNullException.Check(_password);
 
-        public string Provider => _provider;
+        public string Provider => ArgumentNullException.Check(_provider);
 
-        public int TablesCount => _tables.Count;
+        public int TablesCount => ArgumentNullException.Check(_tables).Count;
 
-        public string Version => _version;
+        public string Version => ArgumentNullException.Check(_version);
 
 
         // ----------------------------------------
@@ -63,9 +64,12 @@ namespace Microvision.DataBase
 
         public void CloseBase()
         {
-            _tables.Clear();
-            _fileName = "";
-            _version = "";
+            _fileName = null;
+            _password = null;
+
+            _provider = null;
+            _tables = null;
+            _version = null;
         }
 
         public void CloseTable(StdBDDTable tb)
@@ -73,9 +77,11 @@ namespace Microvision.DataBase
             tb.Close();
         }
 
-        public List<int> GetRecordIds(string sql)
+        public List<int>? GetRecordIds(string sql)
         {
-            List<int> ids = null;
+            oThrowIfNotOpen();
+
+            List<int>? ids = null;
 
             if (_engine.OpenBase(_fileName, _password))
             {
@@ -88,16 +94,22 @@ namespace Microvision.DataBase
 
         public string GetTableName(int no)
         {
+            oThrowIfNotOpen();
+
             return _tables[no];
         }
 
         public List<string> GetTableNames()
         {
-            return new List<string>(_tables);
+            oThrowIfNotOpen();
+
+            return [.. _tables];
         }
 
         public void KillTable(string tableName)
         {
+            oThrowIfNotOpen();
+
             if (_engine is IBDDCreator eng && _engine.OpenBase(_fileName, _password))
             {
                 eng.KillTable(tableName);
@@ -127,6 +139,8 @@ namespace Microvision.DataBase
 
         public bool NewPassword(string newPassword)
         {
+            oThrowIfNotOpen();
+
             bool ok = false;
 
             if (_engine.OpenBase(_fileName, _password, true))
@@ -139,8 +153,10 @@ namespace Microvision.DataBase
             return ok;
         }
 
-        public StdBDDTable NewTable(string tableName, StdBDDTable dst)
+        public StdBDDTable? NewTable(string tableName, StdBDDTable dst)
         {
+            oThrowIfNotOpen();
+
             bool ok = false;
 
             if (_engine is IBDDCreator eng && _engine.OpenBase(_fileName, _password))
@@ -155,9 +171,7 @@ namespace Microvision.DataBase
                 }
             }
 
-            if (!ok) dst = null;
-
-            return dst;
+            return ok ? dst : null;
         }
 
         public bool OpenBase(string fileName, string password)
@@ -179,9 +193,11 @@ namespace Microvision.DataBase
             return ok;
         }
 
-        public StdBDDTable OpenTable(string tableName, StdBDDTable dst)
+        public StdBDDTable? OpenTable(string tableName, StdBDDTable dst)
         {
-            StdBDDTable output = null;
+            oThrowIfNotOpen();
+
+            StdBDDTable? output = null;
 
             if (_tables.IndexOf(tableName) >= 0)
             {
@@ -194,6 +210,8 @@ namespace Microvision.DataBase
 
         public int RecordsCount(string tableName)
         {
+            oThrowIfNotOpen();
+
             int nb = 0;
 
             if (_engine.OpenBase(_fileName, _password))
@@ -207,6 +225,8 @@ namespace Microvision.DataBase
 
         public void RenameTable(StdBDDTable tb, string newName)
         {
+            oThrowIfNotOpen();
+
             string oldnam = tb.Name;
 
             if (newName != oldnam)
@@ -228,13 +248,17 @@ namespace Microvision.DataBase
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_engine is not null)
-            {
-                if (isExplicit) _engine.Dispose();
-                _engine = null;
-            }
+            if (isExplicit) _engine.Dispose();
 
             base.oDispose(isExplicit);
+        }
+
+        [MemberNotNull (nameof(_fileName), nameof(_password), nameof(_tables))]
+        protected void oThrowIfNotOpen()
+        {
+            ArgumentNullException.Check(_fileName);
+            ArgumentNullException.Check(_password);
+            ArgumentNullException.Check(_tables);
         }
 
 

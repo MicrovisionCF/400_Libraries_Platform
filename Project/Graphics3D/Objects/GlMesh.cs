@@ -11,18 +11,22 @@ namespace Microvision.Graphics3D
         // 21.11.19 : (libs 2.2)
         // ***************************************************************************************************
 
-        private GlTexture _texture;
+        private GlTexture? _texture;
 
-        private float _maxZ, _minZ;
+        private float _minZ, _maxZ;
         private Array2D<float> _depth;
-        private float[] _vertices, _textCoords, _normal, _colors;
-        private uint[] _indices;
-        private uint[] _indicesLines;
+        private float[]? _vertices;
+        private float[]? _textCoords;
+        private float[]? _normal;
+        private float[]? _colors;
+        private uint[]? _indices;
+        private uint[]? _indicesLines;
 
         private Point3D _origin;
         private PointG _center;
         private SizeG _size;
-        private List<float> _xPositions, _yPositions;
+        private List<float>? _xPositions;
+        private List<float>? _yPositions;
         private float _zFactor;
         private bool _showNormals;
 
@@ -35,9 +39,8 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
-        public GlMesh()
+        public GlMesh() : base(new xGlMaterial(Color.White, 0.5f, 1, 0, 0.65f, 0.5f))
         {
-            oSetMaterial(new xGlMaterial(Color.White, 0.5f, 1, 0, 0.65f, 0.5f));
             _depth = new Array2D<float>(0, 0);
             _zFactor = 1;
             _origin = new Point3D();
@@ -175,7 +178,7 @@ namespace Microvision.Graphics3D
 
         protected override void oRender(OpenGLContext gl)
         {
-            if (_indices is not null)
+            if (_indices is not null && _vertices is not null && _textCoords is not null && _normal is not null && _colors is not null)
             {
                 if (_texture is not null && _colorOpacity < 1)
                 {
@@ -246,11 +249,11 @@ namespace Microvision.Graphics3D
                         for (int i = 0; i < _depth.ColumnsCount; i++)
                         {
                             gl.Vertex(_vertices[j * 3 * _depth.ColumnsCount + i * 3 + 0],
-                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 1],
-                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 2]);
+                                      _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 1],
+                                      _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 2]);
                             gl.Vertex(_vertices[j * 3 * _depth.ColumnsCount + i * 3 + 0] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 0] * normalSize,
-                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 1] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 1] * normalSize,
-                                        _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 2] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 2] * normalSize);
+                                      _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 1] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 1] * normalSize,
+                                      _vertices[j * 3 * _depth.ColumnsCount + i * 3 + 2] + _normal[j * 3 * _depth.ColumnsCount + i * 3 + 2] * normalSize);
                         }
                     }
 
@@ -261,7 +264,7 @@ namespace Microvision.Graphics3D
 
         protected override void oRenderLines(OpenGLContext gl)
         {
-            if (_indicesLines is not null)
+            if (_indicesLines is not null && _vertices is not null)
             {
                 gl.EnableClientState(EnableClientTarget.VertexArray);
 
@@ -289,7 +292,7 @@ namespace Microvision.Graphics3D
                 int w = _depth.ColumnsCount;
                 int h = _depth.RowsCount;
 
-                if (_xPositions is not null)
+                if (_xPositions is not null && _yPositions is not null)
                 {
                     _vertices = zCalcVertices(_origin, _depth, _xPositions, _yPositions, _zFactor);
                     _textCoords = zCalcTextureCoordinates(w, h, _xPositions, _yPositions);
@@ -309,7 +312,7 @@ namespace Microvision.Graphics3D
             }
             else
             {
-                _depth = default;
+                _depth = new Array2D<float>();
                 _indices = null;
                 _indicesLines = null;
                 _normal = null;
@@ -336,8 +339,8 @@ namespace Microvision.Graphics3D
             float min = zMin(depth);
             float max = zMax(depth);
 
-            List<Color> listColors = new[] { Color.Blue, Color.Cyan, Color.Lime, Color.Yellow, Color.Red }.ToList();
-            if (fade > 0) listColors = listColors.Select(o => (Color)HColor.Lighter(o, fade)).ToList();
+            List<Color> listColors = [Color.Blue, Color.Cyan, Color.Lime, Color.Yellow, Color.Red];
+            if (fade > 0) listColors = [.. listColors.Select(o => (Color)HColor.Lighter(o, fade))];
             if (inverted) listColors.Reverse();
 
             float[] colors = new float[depth.ColumnsCount * depth.RowsCount * 4];
@@ -474,8 +477,8 @@ namespace Microvision.Graphics3D
 
         private static float[] zCalcTextureCoordinates(int w, int h, List<float> xPositions, List<float> yPositions)
         {
-            float totalW = xPositions[xPositions.Count - 1] - xPositions[0];
-            float totalH = yPositions[yPositions.Count - 1] - yPositions[0];
+            float totalW = xPositions[^1] - xPositions[0];
+            float totalH = yPositions[^1] - yPositions[0];
 
             float[] tex = new float[w * h * 2];
 

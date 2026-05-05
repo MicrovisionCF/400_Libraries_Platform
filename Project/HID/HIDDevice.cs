@@ -13,15 +13,15 @@ namespace Microvision.HID
 
         public delegate void InputChangeEventHandler(HIDDevice sender, RawInputLib.RAWINPUT inpt);
 
-        public event InputChangeEventHandler InputChange;
+        public event InputChangeEventHandler? InputChange;
 
         // ***************************************************************************************************
 
-        protected RawInputLib.RIM _rim;
-        protected IntPtr _handle;
+        protected readonly RawInputLib.RIM _rim;
+        protected readonly IntPtr _handle;
 
-        protected string _name;
-        protected RawInputLib.RID_DEVICE_INFO _info;
+        protected readonly string _name;
+        protected readonly RawInputLib.RID_DEVICE_INFO _info;
 
         protected HIDLib.SomeUsagePage _usagePage;
         protected HIDLib.SomeUsage _usage;
@@ -169,16 +169,16 @@ namespace Microvision.HID
         public delegate void AxesValueChangeEventHandler(HIDJoystick js, List<int> v);
         public delegate void ButtonsPressedChangeEventHandler(HIDJoystick js, int which);
 
-        public event AxesValueChangeEventHandler AxesValueChange;
-        public event ButtonsPressedChangeEventHandler ButtonsPressedChange;
+        public event AxesValueChangeEventHandler? AxesValueChange;
+        public event ButtonsPressedChangeEventHandler? ButtonsPressedChange;
 
         // ***************************************************************************************************
 
-        private List<HIDLib.HIDP_BUTTON_CAPS> _buttonsCaps;
-        private List<HIDLib.HIDP_VALUE_CAPS> _valuesCaps;
+        private readonly List<HIDLib.HIDP_BUTTON_CAPS> _buttonsCaps;
+        private readonly List<HIDLib.HIDP_VALUE_CAPS> _valuesCaps;
+        private readonly List<int> _axValues;
 
         private int _buttonsPressed;
-        private List<int> _axValues;
 
         private bool _processAllButtonInputs;
 
@@ -252,10 +252,6 @@ namespace Microvision.HID
 
         protected override void oDispose(bool isExplicit)
         {
-            _buttonsCaps = null;
-            _valuesCaps = null;
-            _axValues = null;
-
             base.oDispose(isExplicit);
         }
 
@@ -340,10 +336,10 @@ namespace Microvision.HID
         public delegate void SysKeyDownEventHandler(HIDKeyboard sender, Keys k);
         public delegate void SysKeyUpEventHandler(HIDKeyboard sender, Keys k);
 
-        public event KeyDownEventHandler KeyDown;
-        public event KeyUpEventHandler KeyUp;
-        public event SysKeyDownEventHandler SysKeyDown;
-        public event SysKeyUpEventHandler SysKeyUp;
+        public event KeyDownEventHandler? KeyDown;
+        public event KeyUpEventHandler? KeyUp;
+        public event SysKeyDownEventHandler? SysKeyDown;
+        public event SysKeyUpEventHandler? SysKeyUp;
 
         // ***************************************************************************************************
 
@@ -459,8 +455,8 @@ namespace Microvision.HID
         public delegate void MouseChangeEventHandler(HIDMouse sender, RawInputLib.MouseButtonFlags btns, int x, int y, bool fabsolute);
         public delegate void MouseWheelEventHandler(HIDMouse sender, int dy);
 
-        public event MouseChangeEventHandler MouseChange;
-        public event MouseWheelEventHandler MouseWheel;
+        public event MouseChangeEventHandler? MouseChange;
+        public event MouseWheelEventHandler? MouseWheel;
 
         // ***************************************************************************************************
 

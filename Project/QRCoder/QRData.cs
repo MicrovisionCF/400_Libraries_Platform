@@ -13,9 +13,9 @@ namespace Microvision.QRCoder
         // 14.04.22 : (libs 3.0à
         // ***************************************************************************************************
 
-        private xQRConfigInfos _info;
-        private List<BitArray> _matrix;
-        private List<BitArray> _matrixLocked;
+        private readonly xQRConfigInfos _info;
+        private readonly List<BitArray> _matrix;
+        private readonly List<BitArray> _matrixLocked;
 
 
         // ----------------------------------------
@@ -88,7 +88,7 @@ namespace Microvision.QRCoder
 
             // On a plus rien à modifier après la quiet zone, comme ça ça petera
             _matrixLocked.Clear();
-            _matrixLocked = null;
+            _matrixLocked.TrimExcess();
         }
 
         public bool GetPixel(int x, int y)
@@ -152,7 +152,7 @@ namespace Microvision.QRCoder
 
         protected override void oDispose(bool isExplicit)
         {
-            _matrix = null;
+            base.oDispose(isExplicit);
         }
 
 

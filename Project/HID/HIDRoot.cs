@@ -17,15 +17,15 @@ namespace Microvision.HID
         public delegate void DeviceRemoveEventHandler(IntPtr hdev);
         public delegate void InputChangeEventHandler(int no, RawInputLib.RAWINPUT inpt);
 
-        public event DeviceAddEventHandler DeviceAdd;
-        public event DeviceRemoveEventHandler DeviceRemove;
-        public event InputChangeEventHandler InputChange;
+        public event DeviceAddEventHandler? DeviceAdd;
+        public event DeviceRemoveEventHandler? DeviceRemove;
+        public event InputChangeEventHandler? InputChange;
 
         // ***************************************************************************************************
 
-        private List<RawInputLib.RAWINPUTDEVICELIST> _devices;
-        private List<HIDLib.USAGE_AND_PAGE> _regUUPs;
-        private HIDDevices _regDevs;
+        private readonly List<RawInputLib.RAWINPUTDEVICELIST> _devices;
+        private readonly List<HIDLib.USAGE_AND_PAGE> _regUUPs;
+        private readonly HIDDevices _regDevs;
 
 
         // ----------------------------------------
@@ -35,7 +35,7 @@ namespace Microvision.HID
         public HIDRoot() : base()
         {
             _devices = RawInputLib.GetDevicesList();
-            _regUUPs = new List<HIDLib.USAGE_AND_PAGE>();
+            _regUUPs = [];
             _regDevs = new HIDDevices();
             _regDevs_Attach(true);
         }
@@ -67,9 +67,9 @@ namespace Microvision.HID
             return zFindVendorIdProductId(vendorId, productId, _devices);
         }
 
-        public HIDDevice GetDevice(int no)
+        public HIDDevice? GetDevice(int no)
         {
-            HIDDevice output = null;
+            HIDDevice? output = null;
 
             int rno = _regDevs.Find(_devices[no].hDevice);
             if (rno >= 0) output = _regDevs.GetItem(rno).AddLife();
@@ -97,7 +97,8 @@ namespace Microvision.HID
                     break;
 
                 case RawInputLib.RawInputMsg.WM_INPUT_DEVICE_CHANGE:
-                    _devices = RawInputLib.GetDevicesList();
+                    _devices.Clear();
+                    _devices.AddRange(RawInputLib.GetDevicesList());
                     IntPtr hdevice = m.LParam;
 
                     switch ((RawInputLib.DevChgParam)m.WParam)
@@ -159,8 +160,7 @@ namespace Microvision.HID
                     break;
 
                 default:
-                    dev = null;
-                    break;
+                    throw new NotImplementedException(rim.ToString());
             }
 
             return dev;
@@ -168,15 +168,8 @@ namespace Microvision.HID
 
         protected override void oDispose(bool isExplicit)
         {
-            _devices = null;
-            _regUUPs = null;
-
-            if (_regDevs is not null)
-            {
-                _regDevs_Attach(false);
-                if (isExplicit) _regDevs.Dispose();
-                _regDevs = null;
-            }
+            _regDevs_Attach(false);
+            if (isExplicit) _regDevs.Dispose();
 
             base.oDispose(isExplicit);
         }

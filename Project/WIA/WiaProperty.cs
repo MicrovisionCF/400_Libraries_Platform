@@ -68,18 +68,14 @@ namespace Microvision.Scanners
         }
 
 
-        private WIA.Property _property;
+        private readonly WIA.Property _property;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        internal WiaProperty() : base()
-        {
-        }
-
-        internal WiaProperty(WIA.Property prp) : this()
+        internal WiaProperty(WIA.Property prp) : base()
         {
             _property = prp;
         }
@@ -89,11 +85,11 @@ namespace Microvision.Scanners
         // Propriétés
         // ----------------------------------------
 
-        public object DefaultValue
+        public object? DefaultValue
         {
             get
             {
-                object output = null;
+                object? output = null;
 
                 if (_property.SubType != WIA.WiaSubType.UnspecifiedSubType)
                     output = _property.SubTypeDefault;
@@ -163,7 +159,8 @@ namespace Microvision.Scanners
 
         public List<T> GetTable<T>()
         {
-            List<T> lst = null;
+            List<T> lst = [];
+
             if (_property.SubType == WIA.WiaSubType.FlagSubType || _property.SubType == WIA.WiaSubType.ListSubType)
             {
                 WIA.Vector vct = _property.SubTypeValues;
@@ -180,11 +177,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_property is not null)
-            {
-                Marshal.ReleaseComObject(_property);
-                _property = null;
-            }
+            Marshal.ReleaseComObject(_property);
 
             base.oDispose(isExplicit);
         }
@@ -200,7 +193,7 @@ namespace Microvision.Scanners
 
             if (!prp.IsReadOnly && prp.SubType != PropertySubType.UnspecifiedSubType)
             {
-                ch = ch + SpecialChars.NewLine + pfx + SpecialChars.Tab + prp.SubType.ToNameString() + ", " + prp.DefaultValue.ToString();
+                ch = ch + SpecialChars.NewLine + pfx + SpecialChars.Tab + prp.SubType.ToNameString() + ", " + (prp.DefaultValue?.ToString() ?? "null");
 
                 if ((int)prp.SubType == (int)WIA.WiaSubType.RangeSubType)
                 {

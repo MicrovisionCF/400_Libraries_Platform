@@ -15,18 +15,14 @@ namespace Microvision.Scanners
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private WIA.ImageFile _imgFile;
+        private readonly WIA.ImageFile _imgFile;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        internal WiaImageFile() : base()
-        {
-        }
-
-        internal WiaImageFile(WIA.ImageFile imgf) : this()
+        internal WiaImageFile(WIA.ImageFile imgf) : base()
         {
             _imgFile = imgf;
         }
@@ -96,11 +92,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_imgFile is not null)
-            {
-                Marshal.ReleaseComObject(_imgFile);
-                _imgFile = null;
-            }
+            Marshal.ReleaseComObject(_imgFile);
 
             base.oDispose(isExplicit);
         }

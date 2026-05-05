@@ -26,7 +26,7 @@
         }
 
 
-        private List<xFontEntry> _fontEntries = new List<xFontEntry>();
+        private readonly List<xFontEntry> _fontEntries;
 
 
         // ----------------------------------------
@@ -45,13 +45,15 @@
 
         public void DrawText(string text, string fontName, float extrusion, bool fill)
         {
+            ArgumentNullException.Check(_renderContext);
+
             FontOutlineFormat outline = fill ? FontOutlineFormat.Polygons : FontOutlineFormat.Lines;
 
             int fontNo = _fontEntries.FindIndex(o => o.HDC == _renderContext.DeviceContextHandle &&
-                                                o.HRC == _renderContext.RenderContextHandle &&
-                                                o.faceName.EqualsWithoutCase(fontName) &&
-                                                o.extrusion == extrusion &&
-                                                o.fontOutlineFormat == outline);
+                                                     o.HRC == _renderContext.RenderContextHandle &&
+                                                     o.faceName.EqualsWithoutCase(fontName) &&
+                                                     o.extrusion == extrusion &&
+                                                     o.fontOutlineFormat == outline);
 
             if (fontNo == -1) fontNo = oAddFontOutlineEntry(fontName, extrusion, outline);
 
@@ -67,6 +69,8 @@
 
         protected int oAddFontOutlineEntry(string fontName, float extrusion, FontOutlineFormat fontOutlineFormat)
         {
+            ArgumentNullException.Check(_renderContext);
+
             this.MakeCurrent();
 
             IntPtr hFont = zCreateFont(fontName);

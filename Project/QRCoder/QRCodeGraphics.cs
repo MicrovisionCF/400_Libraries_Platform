@@ -15,7 +15,7 @@ namespace Microvision.QRCoder
 
         private HColor _frontColor, _backColor;
         private bool _roundedPixels;
-        private Bitmap _icon;
+        private Bitmap? _icon;
         private int _iconSizePercent;
         private int _iconBorderPercent;
         private bool _withGradient;
@@ -67,7 +67,7 @@ namespace Microvision.QRCoder
             }
         }
 
-        public Bitmap Icon
+        public Bitmap? Icon
         {
             get => _icon;
 

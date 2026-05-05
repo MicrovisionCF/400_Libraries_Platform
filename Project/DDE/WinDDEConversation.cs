@@ -26,9 +26,9 @@ namespace Microvision.DDE
         public delegate void ItemLinkStartEventHandler(WinDDEConversation sender, string itemName);
         public delegate void ItemLinkStopEventHandler(WinDDEConversation sender, string itemName);
 
-        public event ItemDataChangeEventHandler ItemDataChange;
-        public event ItemLinkStartEventHandler ItemLinkStart;
-        public event ItemLinkStopEventHandler ItemLinkStop;
+        public event ItemDataChangeEventHandler? ItemDataChange;
+        public event ItemLinkStartEventHandler? ItemLinkStart;
+        public event ItemLinkStopEventHandler? ItemLinkStop;
 
         // ***************************************************************************************************
 
@@ -59,14 +59,15 @@ namespace Microvision.DDE
         }
 
 
-        private WinDDELibrary _lib;
-        private IntPtr _hServer;
-        private IntPtr _hTopic;
+        private readonly WinDDELibrary _lib;
+        private readonly IntPtr _hServer;
+        private readonly IntPtr _hTopic;
+
+        private readonly List<xItem> _items;
 
         private bool _connectable;
         private IntPtr _hConv;
 
-        private List<xItem> _items;
 
 
         // ----------------------------------------
@@ -81,7 +82,7 @@ namespace Microvision.DDE
             _hTopic = _lib.CreateStringHandle(topic);
 
             _connectable = true;
-            _items = new List<xItem>();
+            _items = [];
         }
 
 
@@ -281,29 +282,12 @@ namespace Microvision.DDE
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_lib is not null)
-            {
-                if (_items is not null)
-                {
-                    _items.ForEach(it => _lib.FreeStringHandle(it.hitem));
-                    _items.Clear();
-                    _items = null;
-                }
+            _items.ForEach(o => _lib.FreeStringHandle(o.hitem));
+            _items.Clear();
+            _items.TrimExcess();
 
-                if (_hServer != IntPtr.Zero)
-                {
-                    _lib.FreeStringHandle(_hServer);
-                    _hServer = IntPtr.Zero;
-                }
-
-                if (_hTopic != IntPtr.Zero)
-                {
-                    _lib.FreeStringHandle(_hTopic);
-                    _hTopic = IntPtr.Zero;
-                }
-
-                _lib = null;
-            }
+            _lib.FreeStringHandle(_hServer);
+            _lib.FreeStringHandle(_hTopic);
 
             base.oDispose(isExplicit);
         }

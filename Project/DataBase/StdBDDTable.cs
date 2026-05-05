@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 
 using Microvision.Types;
 
@@ -56,16 +57,16 @@ namespace Microvision.DataBase
             }
         }
 
+        private readonly string _idFieldName;
+        private readonly string _indexName;
 
-        private string _fileName;
-        private string _password;
-        private IBDDEngine _engine;
+        private IBDDEngine? _engine;
+        private string? _fileName;
+        private string? _password;
 
-        private string _name;
-        private List<string> _fieldsName;
-        private List<DbType> _fieldsType;
-        private string _idFieldName;
-        private string _indexName;
+        private string? _name;
+        private List<string>? _fieldsName;
+        private List<DbType>? _fieldsType;
 
 
         // ----------------------------------------
@@ -78,12 +79,6 @@ namespace Microvision.DataBase
 
         public StdBDDTable(string idFieldName, string indexName) : base()
         {
-            _password = "";
-            _fileName = "";
-            _name = "";
-
-            _fieldsName = new List<string>();
-            _fieldsType = new List<DbType>();
             _idFieldName = idFieldName;
             _indexName = indexName;
         }
@@ -93,11 +88,11 @@ namespace Microvision.DataBase
         // Propriétés
         // ----------------------------------------
 
-        public string DataSourceName => _fileName;
+        public string DataSourceName => ArgumentNullException.Check(_fileName);
 
-        public IBDDEngine Engine => _engine;
+        public IBDDEngine Engine => ArgumentNullException.Check(_engine);
 
-        public int FieldsCount => _fieldsName.Count;
+        public int FieldsCount => ArgumentNullException.Check(_fieldsName).Count;
 
         public string IDFieldName => _idFieldName;
 
@@ -105,7 +100,7 @@ namespace Microvision.DataBase
 
         public string Name
         {
-            get => _name;
+            get => ArgumentNullException.Check(_name);
 
             internal set
             {
@@ -118,7 +113,7 @@ namespace Microvision.DataBase
 
         public string Password
         {
-            get => _password;
+            get => ArgumentNullException.Check(_password);
 
             set
             {
@@ -134,8 +129,23 @@ namespace Microvision.DataBase
         // Méthodes
         // ----------------------------------------
 
+
+        [MemberNotNull(nameof(_fileName), nameof(_password), nameof(_name), nameof(_fieldsName), nameof(_fieldsType), nameof(_engine))]
+        protected void oThrowIfNotOpen()
+        {
+            ArgumentNullException.Check(_engine);
+            ArgumentNullException.Check(_fileName);
+            ArgumentNullException.Check(_password);
+            ArgumentNullException.Check(_name);
+            ArgumentNullException.Check(_fieldsName);
+            ArgumentNullException.Check(_fieldsType);
+        }
+
+
         public bool AddField(string fieldName, DbType fieldType)
         {
+            oThrowIfNotOpen();
+
             bool ok = false;
 
             if (_engine is IBDDCreator mng && _engine.OpenBase(_fileName, _password))
@@ -155,6 +165,8 @@ namespace Microvision.DataBase
 
         public int AddRecord(IBDDRecord record)
         {
+            oThrowIfNotOpen();
+
             int id = -1;
 
             List<object> v = record.GetVals(_fieldsName);
@@ -170,27 +182,37 @@ namespace Microvision.DataBase
 
         internal void Close()
         {
+            oThrowIfNotOpen();
+
             _engine.Dispose();
             _engine = null;
-            _fileName = "";
-            _name = "";
-            _fieldsName.Clear();
-            _fieldsType.Clear();
+            _fileName = null;
+            _name = null;
+            _fieldsName = null;
+            _fieldsType = null;
         }
 
         public int FindField(string fieldName)
         {
+            oThrowIfNotOpen();
+
             return _fieldsName.IndexOf(fieldName);
         }
 
         public List<int> FindRecordsAll(string orderByField = "")
         {
-            List<int> ids = null;
+            oThrowIfNotOpen();
+
+            List<int> ids;
 
             if (_engine.OpenBase(_fileName, _password))
             {
                 ids = _engine.GetRecordIds(zSQLFindAll(_name, _idFieldName, orderByField), null);
                 _engine.CloseBase();
+            }
+            else
+            {
+                throw new InvalidOperationException($"Fail to open database {_fileName}");
             }
 
             return ids;
@@ -198,7 +220,9 @@ namespace Microvision.DataBase
 
         public List<int> FindRecordsByDate(string dateFielName, object fromDate, object toDate)
         {
-            List<int> ids = null;
+            oThrowIfNotOpen();
+
+            List<int> ids;
             List<object> vals = new List<object>();
 
             if (fromDate is not null) vals.Add(fromDate);
@@ -209,13 +233,19 @@ namespace Microvision.DataBase
                 ids = _engine.GetRecordIds(zSQLFindDate(_name, _idFieldName, dateFielName, fromDate is not null, toDate is not null), vals);
                 _engine.CloseBase();
             }
+            else
+            {
+                throw new InvalidOperationException($"Fail to open database {_fileName}");
+            }
 
             return ids;
         }
 
         public List<int> FindRecordsByWord(string field, string word, string orderByField = "")
         {
-            List<int> ids = null;
+            oThrowIfNotOpen();
+
+            List<int> ids;
 
             if (_engine.OpenBase(_fileName, _password))
             {
@@ -223,13 +253,19 @@ namespace Microvision.DataBase
                 ids = _engine.GetRecordIds(zSQLFindWord(_name, _idFieldName, field, orderByField), new List<object> { word });
                 _engine.CloseBase();
             }
+            else
+            {
+                throw new InvalidOperationException($"Fail to open database {_fileName}");
+            }
 
             return ids;
         }
 
         public List<int> FindRecordsSQL(string fieldName, string operation, object value, string orderByField = "")
         {
-            List<int> ids = null;
+            oThrowIfNotOpen();
+
+            List<int> ids;
             string where = zSQLOneLine(fieldName, operation);
 
             if (_engine.OpenBase(_fileName, _password))
@@ -237,13 +273,19 @@ namespace Microvision.DataBase
                 ids = _engine.GetRecordIds(zSQLGeneric(_name, _idFieldName, where, orderByField), new List<object> { value });
                 _engine.CloseBase();
             }
+            else
+            {
+                throw new InvalidOperationException($"Fail to open database {_fileName}");
+            }
 
             return ids;
         }
 
         public List<int> FindRecordsSQL(List<string> fields, List<string> operations, List<object> values, string logoper = "AND", string orderByField = "")
         {
-            List<int> ids = null;
+            oThrowIfNotOpen();
+
+            List<int> ids;
             string where = "";
 
             for (int i = 0; i < fields.Count; i++)
@@ -257,28 +299,40 @@ namespace Microvision.DataBase
                 ids = _engine.GetRecordIds(zSQLGeneric(_name, _idFieldName, where, orderByField), values);
                 _engine.CloseBase();
             }
+            else
+            {
+                throw new InvalidOperationException($"Fail to open database {_fileName}");
+            }
 
             return ids;
         }
 
         public string GetFieldName(int no)
         {
+            oThrowIfNotOpen();
+
             return _fieldsName[no];
         }
 
         public (List<string> fieldsName, List<DbType> fieldsType) GetFields()
         {
+            oThrowIfNotOpen();
+
             return (new List<string>(_fieldsName), new List<DbType>(_fieldsType));
         }
 
         public DbType GetFieldType(int no)
         {
+            oThrowIfNotOpen();
+
             return _fieldsType[no];
         }
 
         public IBDDRecord GetRecord(int id, IBDDRecord record)
         {
-            IBDDRecord output = null;
+            oThrowIfNotOpen();
+
+            IBDDRecord output;
 
             if (_engine.OpenBase(_fileName, _password))
             {
@@ -287,12 +341,18 @@ namespace Microvision.DataBase
                 output = record;
                 output.SetVals(_fieldsName, v);
             }
+            else
+            {
+                throw new InvalidOperationException($"Fail to open database {_fileName}");
+            }
 
             return output;
         }
 
         public bool GetRecords(List<int> ids, List<IBDDRecord> records)
         {
+            oThrowIfNotOpen();
+
             bool ok = false;
 
             if (_engine.OpenBase(_fileName, _password))
@@ -306,17 +366,25 @@ namespace Microvision.DataBase
                 _engine.CloseBase();
                 ok = true;
             }
+            else
+            {
+                throw new InvalidOperationException($"Fail to open database {_fileName}");
+            }
 
             return ok;
         }
 
         public bool HasField(string fieldName)
         {
+            oThrowIfNotOpen();
+
             return _fieldsName.IndexOf(fieldName) >= 0;
         }
 
         public void KillField(int no)
         {
+            oThrowIfNotOpen();
+
             if (_engine is IBDDCreator eng && _engine.OpenBase(_fileName, _password))
             {
                 eng.KillField(_name, _fieldsName[no]);
@@ -328,6 +396,8 @@ namespace Microvision.DataBase
 
         public void KillRecord(int id)
         {
+            oThrowIfNotOpen();
+
             if (_engine.OpenBase(_fileName, _password))
             {
                 _engine.KillRecord(_name, _idFieldName, id);
@@ -351,6 +421,8 @@ namespace Microvision.DataBase
 
         public int RecordsCount()
         {
+            oThrowIfNotOpen();
+
             int count = 0;
 
             if (_engine.OpenBase(_fileName, _password))
@@ -364,6 +436,8 @@ namespace Microvision.DataBase
 
         public void RenameField(int fieldNo, string newFieldName)
         {
+            oThrowIfNotOpen();
+
             if (_engine is IBDDCreator eng && _engine.OpenBase(_fileName, _password))
             {
                 eng.RenameField(_name, _fieldsName[fieldNo], newFieldName);
@@ -374,6 +448,8 @@ namespace Microvision.DataBase
 
         public void SetRecord(int id, IBDDRecord record)
         {
+            oThrowIfNotOpen();
+
             List<object> v = record.GetVals(_fieldsName);
 
             if (_engine.OpenBase(_fileName, _password))

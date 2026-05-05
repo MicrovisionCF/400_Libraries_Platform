@@ -37,15 +37,19 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
-        protected GlObject() : this(Color.WhiteSmoke)
+        protected GlObject(xGlMaterial material)
         {
+            _rotations = [];
+            _material = material;
         }
 
-        public GlObject(HColor col)
+        public GlObject(HColor col) : this(new xGlMaterial(col, 0.5f, 0.75f, 0, 0.3f, 0.3f))
         {
-            _rotations = new List<xRotation>();
             _visible = true;
-            _material = new xGlMaterial(col, 0.5f, 0.75f, 0, 0.3f, 0.3f);
+        }
+
+        protected GlObject() : this(Color.WhiteSmoke)
+        {
         }
 
 

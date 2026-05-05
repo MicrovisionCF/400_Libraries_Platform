@@ -34,18 +34,14 @@ namespace Microvision.Scanners
         // PnP ID String	16	\\?\usb#vid_04b8&pid_010e#6&1ba46697&0&4#{6bdd1fc6-810f-11d0-bec7-08002be2092f}
         // STI Driver Version	5	2
 
-        private WIA.DeviceInfo _devInfo;
+        private readonly WIA.DeviceInfo _devInfo;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        internal WiaDeviceInfo() : base()
-        {
-        }
-
-        internal WiaDeviceInfo(WIA.DeviceInfo devinf) : this()
+        internal WiaDeviceInfo(WIA.DeviceInfo devinf) : base()
         {
             _devInfo = devinf;
         }
@@ -100,11 +96,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_devInfo is not null)
-            {
-                Marshal.ReleaseComObject(_devInfo);
-                _devInfo = null;
-            }
+            Marshal.ReleaseComObject(_devInfo);
 
             base.oDispose(isExplicit);
         }

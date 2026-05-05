@@ -20,9 +20,9 @@ namespace Microvision.Avi
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private AVILib _lib;
+        private readonly AVILib _lib;
 
-        private IntPtr _handle;
+        private readonly IntPtr _handle;
         private AVILib.AVIStreamInfo _info;
         private AVILib.AVIError _lastError;
 
@@ -74,30 +74,28 @@ namespace Microvision.Avi
         // Méthodes
         // ----------------------------------------
 
-        public AVIStream CreateCompressedStream(AVILib.AviCompressOptions opts)
+        public AVIStream? CreateCompressedStream(AVILib.AviCompressOptions opts)
         {
             IntPtr hdl = IntPtr.Zero;
-            AVIStream output = null;
 
             // -- à déplacer vers AVIFile ?
 
             _lastError = _lib.CreateCompressedStream(_handle, opts, ref hdl);
-            if (_lastError == AVILib.AVIError.AVIERR_OK)
-                output = new AVIStream(_lib, hdl);
+
+            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hdl) : null;
 
             return output;
         }
 
-        public AVIStream CreateEditableStream()
+        public AVIStream? CreateEditableStream()
         {
             IntPtr hdl = IntPtr.Zero;
-            AVIStream output = null;
 
             // -- à déplacer vers AVIFile ?
 
             _lastError = _lib.CreateEditableStream(_handle, ref hdl);
-            if (_lastError == AVILib.AVIError.AVIERR_OK)
-                output = new AVIStream(_lib, hdl, _info);
+
+            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hdl) : null;
 
             return output;
         }
@@ -107,9 +105,9 @@ namespace Microvision.Avi
             return _lib.FindSampleKey(_handle, sampleNo);
         }
 
-        public AVIImage GetFormat()
+        public AVIImage? GetFormat()
         {
-            AVIImage img = null;
+            AVIImage? img = null;
             NativeMethods.Gdi32.BITMAPINFO bmi = default;
 
             switch (_info.FCCTypeString.ToLower())
@@ -128,30 +126,46 @@ namespace Microvision.Avi
             return _lib.FindSampleKey(_handle, sampleNo) == sampleNo;
         }
 
-        public AVIImage ReadSample(AVIImage img, int sampleNo)
+        public AVIImage? ReadSample(int sampleNo, AVIImage preallocated)
         {
-            AVIImage output = null;
-
-            _lastError = _lib.ReadVideoSample(_handle, sampleNo, img);
-            if (_lastError == AVILib.AVIError.AVIERR_OK) output = img;
+            _lastError = _lib.ReadVideoSample(_handle, sampleNo, preallocated);
+            AVIImage? output = _lastError == AVILib.AVIError.AVIERR_OK ? preallocated : null;
 
             return output;
         }
 
-        public BasicDibApi ReadSampleDib(BasicDibApi dib, int sampleNo)
+        public AVIImage? ReadSample(int sampleNo)
+        {
+            AVIImage img = new AVIImage();
+            AVIImage? output = this.ReadSample(sampleNo, img);
+
+            if (output is null) img.Dispose();
+
+            return output;
+        }
+
+        public BasicDibApi? ReadSampleDib(int sampleNo, BasicDibApi preallocated)
         {
             bool ok = false;
             IntPtr hfrm = _lib.OpenFrame(_handle);
 
             if (hfrm != IntPtr.Zero)
             {
-                ok = zReadFrame(_lib, hfrm, sampleNo, dib);
+                ok = zReadFrame(_lib, hfrm, sampleNo, preallocated);
                 _lib.CloseFrame(hfrm);
             }
 
-            if (!ok) dib = null;
+            return ok ? preallocated : null;
+        }
 
-            return dib;
+        public BasicDibApi? ReadSampleDib(int sampleNo)
+        {
+            BasicDibApi dib = new BasicDibApi();
+            BasicDibApi? output = this.ReadSampleDib(sampleNo, dib);
+
+            if (output is null) dib.Dispose();
+
+            return output;
         }
 
         public bool Save(string fname, AVILib.AVISaveCallback prghdlr, AVILib.AviCompressOptions copt)
@@ -215,16 +229,8 @@ namespace Microvision.Avi
         protected override void oDispose(bool isExplicit)
         {
             _info = default;
-            if (_lib is not null)
-            {
-                if (_handle != IntPtr.Zero)
-                {
-                    _lib.CloseStream(_handle);
-                    _handle = IntPtr.Zero;
-                }
 
-                _lib = null;
-            }
+            if (isExplicit) _lib.CloseStream(_handle);
 
             base.oDispose(isExplicit);
         }

@@ -11,8 +11,9 @@ namespace Microvision.Graphics3D
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private string _text;
-        private Font _font;
+        private readonly string _text;
+        private readonly Font _font;
+
         private Point3D _position;
         private float _extrusion;
 
@@ -21,9 +22,9 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
-        public GlText(string text, Point3D pos, float fontSize)
+        public GlText(string text, Point3D pos, string fontName, float fontSize, FontStyle fontStyle)
         {
-            _font = new Font("Courier New", fontSize);
+            _font = new Font(fontName, fontSize, fontStyle);
             _text = text;
             _position = pos;
             _extrusion = 0.2f;
@@ -43,51 +44,6 @@ namespace Microvision.Graphics3D
                 if (_extrusion != value)
                 {
                     _extrusion = value;
-                }
-            }
-        }
-
-        public string FontName
-        {
-            get => _font.Name;
-
-            set
-            {
-                if (_font.Name != value)
-                {
-                    Font tmp = _font;
-                    _font = new Font(value, tmp.Size, tmp.Style);
-                    tmp.Dispose();
-                }
-            }
-        }
-
-        public float FontSize
-        {
-            get => _font.Size;
-
-            set
-            {
-                if (_font.Size != value)
-                {
-                    Font tmp = _font;
-                    _font = new Font(tmp.FontFamily, value, tmp.Style);
-                    tmp.Dispose();
-                }
-            }
-        }
-
-        public FontStyle FontStyle
-        {
-            get => _font.Style;
-
-            set
-            {
-                if (_font.Style != value)
-                {
-                    Font tmp = _font;
-                    _font = new Font(tmp.FontFamily, tmp.Size, value);
-                    tmp.Dispose();
                 }
             }
         }
@@ -116,11 +72,7 @@ namespace Microvision.Graphics3D
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_font is not null)
-            {
-                if (isExplicit) _font.Dispose();
-                _font = null;
-            }
+            if (isExplicit) _font.Dispose();
 
             base.oDispose(isExplicit);
         }

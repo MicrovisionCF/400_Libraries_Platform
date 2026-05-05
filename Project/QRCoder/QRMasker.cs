@@ -48,30 +48,34 @@ namespace Microvision.QRCoder
 
         public QRData MaskCode(QRData qrCode)
         {
-            int bestPenalty = int.MaxValue;
-            QRData bestResult = null;
+            int? bestPenalty = null;
+            QRData? bestResult = null;
+            int iMask = 0;
 
-            for (int iMask = 0; iMask < _masks.Count; iMask++)
+            do
             {
                 string format = zGetFormatString(qrCode.Strength, iMask);
                 QRModulesShop.PlaceFormat(qrCode, format);
 
-                QRData qrMask = zCreateQrMask(_masks[iMask], qrCode.Infos);
-                QRData newQrCode = zApplyMask(new QRData(qrCode), qrMask);
-                qrMask.Dispose();
+                using QRData qrMask = zCreateQrMask(_masks[iMask], qrCode.Infos);
+                using QRData newQrCode = zApplyMask(new QRData(qrCode), qrMask);
 
                 int maskPenalty = QRPenaltyShop.CalcPenalty(newQrCode);
-                if (maskPenalty < bestPenalty)
+
+                if (bestResult is null)
                 {
                     bestPenalty = maskPenalty;
-                    bestResult?.Dispose();
-                    bestResult = newQrCode;
+                    bestResult = newQrCode.AddLife();
                 }
-                else
+                else if (maskPenalty < bestPenalty)
                 {
-                    newQrCode.Dispose();
+                    bestPenalty = maskPenalty;
+                    bestResult.Dispose();
+                    bestResult = newQrCode.AddLife();
                 }
             }
+            while (++iMask < _masks.Count);
+
 
             return bestResult;
         }

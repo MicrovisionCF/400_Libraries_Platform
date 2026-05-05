@@ -21,22 +21,23 @@ namespace Microvision.DDE
         public delegate void LinkChangeEventHandler(DDELink sender, bool isLinkEtablished);
         public delegate void ValueChangeEventHandler(DDELink sender, bool isValid, float value);
 
-        public event LinkChangeEventHandler LinkChange;
-        public event ValueChangeEventHandler ValueChange;
+        public event LinkChangeEventHandler? LinkChange;
+        public event ValueChangeEventHandler? ValueChange;
 
         // ***************************************************************************************************
 
-        private WinDDEManager.xDDEItem _item;
-        private string _longName;
-        private string _shortName;
-        private string _unit;
         private DecodeHandler _decoder;
         private EncodeHandler _encoder;
+
+        private WinDDEManager.xDDEItem _item;
+        private string? _longName;
+        private string? _shortName;
+        private string? _unit;
 
         private bool _valid;
         private float _value;
 
-        private WinDDEManager _ddeManager;  // -- connexion demandée
+        private WinDDEManager? _ddeManager;  // -- connexion demandée
         private bool _linked;           // -- connexion établie
 
 
@@ -48,6 +49,7 @@ namespace Microvision.DDE
         {
             _linked = false;
             _valid = false;
+
             _decoder = zGetValue;
             _encoder = zGetString;
         }
@@ -67,35 +69,21 @@ namespace Microvision.DDE
 
         public string LinkTopic => _item.topic;
 
-        public string LongName => _longName;
+        public string LongName => ArgumentNullException.Check(_longName);
 
-        public string ShortName => _shortName;
+        public string ShortName => ArgumentNullException.Check(_shortName);
 
-        public string Unit => _unit;
+        public string Unit => ArgumentNullException.Check(_unit);
 
 
         // ----------------------------------------
         // Méthodes
         // ----------------------------------------
 
-        [Obsolete("17.10.23 Utiliser la version avec retour nullable")]
-        public bool GetValue(ref float value)
-        {
-            if (!_linked)
-            {
-                // -- serveur arrivé après le client, ceci va connecter la conversation (Connect) et établir les liens déjà demandés
-                // si la source a balancé un événement XTYP_REGISTER (ce qui est le cas de Falcon, mais pas d'Excel, par exemple).
-                // -- MAIS : ceci ne fonctionne que si GetValue est appelé de la thread qui a initialisé la conversation.
-                _valid = _decoder.Invoke(_ddeManager.RequestItemData(_item), out _value);
-            }
-
-            if (_valid) value = _value;
-
-            return _valid;
-        }
-
         public float? GetValue()
         {
+            ArgumentNullException.Check(_ddeManager);
+
             if (!_linked)
             {
                 // -- serveur arrivé après le client, ceci va connecter la conversation (Connect) et établir les liens déjà demandés
@@ -131,6 +119,8 @@ namespace Microvision.DDE
 
         public bool SetValue(float value)
         {
+            ArgumentNullException.Check(_ddeManager);
+
             bool ok = false;
 
             if (_encoder.Invoke(value, out string caption))
@@ -159,6 +149,8 @@ namespace Microvision.DDE
 
         public void StopConnection()
         {
+            ArgumentNullException.Check(_ddeManager);
+
             _valid = false;
 
             if (_linked)
@@ -229,17 +221,19 @@ namespace Microvision.DDE
 
         private void _ddeManager_Attach(bool attach)
         {
+            ArgumentNullException.Check(_ddeManager);
+
             if (attach)
             {
                 _ddeManager.ItemDataChange += _ddeManager_ItemDataChange;
                 _ddeManager.ItemLinkStart += _ddeManager_ItemLinkStart;
-                _ddeManager.ItemLinkStop += _dDEMng_ItemLinkStop;
+                _ddeManager.ItemLinkStop += _ddeManager_ItemLinkStop;
             }
             else
             {
                 _ddeManager.ItemDataChange -= _ddeManager_ItemDataChange;
                 _ddeManager.ItemLinkStart -= _ddeManager_ItemLinkStart;
-                _ddeManager.ItemLinkStop -= _dDEMng_ItemLinkStop;
+                _ddeManager.ItemLinkStop -= _ddeManager_ItemLinkStop;
             }
         }
 
@@ -268,6 +262,8 @@ namespace Microvision.DDE
 
         private void _ddeManager_ItemLinkStart(WinDDEManager.xDDEItem item)
         {
+            ArgumentNullException.Check(_ddeManager);
+
             if (item == _item && !_linked)
             {
                 _linked = true;
@@ -277,7 +273,7 @@ namespace Microvision.DDE
             }
         }
 
-        private void _dDEMng_ItemLinkStop(WinDDEManager.xDDEItem item)
+        private void _ddeManager_ItemLinkStop(WinDDEManager.xDDEItem item)
         {
             if (item == _item && _linked)
             {

@@ -225,7 +225,7 @@ namespace Microvision.Graphics3D
 
         public void TurnOff(OpenGLContext gl)
         {
-            gl?.Disable((EnableTarget)_lightNo);
+            gl.Disable((EnableTarget)_lightNo);
         }
 
         public void TurnOn(OpenGLContext gl)

@@ -10,17 +10,18 @@
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
+        protected readonly int _antialiasing;
+        protected readonly DIBContext _dibBuffer;
+        
+        protected OpenGLContext? _gl;
+        protected IntPtr _dibSectionDeviceContext;
+
         protected uint _bufferFrameMulti;
         protected uint _bufferColorMulti;
         protected uint _bufferDepthMulti;
 
         protected uint _bufferFrameFinal;
         protected uint _bufferColorFinal;
-
-        protected OpenGLContext _gl;
-        protected IntPtr _dibSectionDeviceContext;
-        protected DIBContext _dibBuffer;
-        protected int _antialiasing;
 
 
         // ----------------------------------------
@@ -51,6 +52,8 @@
 
         protected bool oAllocBuffers()
         {
+            ArgumentNullException.Check(_gl);
+
             bool ok;
 
             try
@@ -84,6 +87,8 @@
 
         protected override void oBlit(IntPtr hdc)
         {
+            ArgumentNullException.Check(_gl);
+
             if (_deviceContextHandle != IntPtr.Zero)
             {
                 _gl.BindFramebuffer(OpenGLConst.GL_FRAMEBUFFER_EXT, _bufferFrameFinal);
@@ -104,7 +109,7 @@
             }
         }
 
-        protected override bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object parameter)
+        protected override bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object? parameter)
         {
             bool ok = base.oCreate(openGLVersion, gl, width, height, bitDepth, parameter);
 
@@ -123,8 +128,10 @@
 
         protected void oDestroyFramebuffers()
         {
-            if (_bufferColorMulti != 0) _gl.DeleteRenderbuffers(new[] { _bufferColorMulti, _bufferDepthMulti, _bufferColorFinal });
-            if (_bufferFrameMulti != 0) _gl.DeleteFramebuffers(new[] { _bufferFrameMulti, _bufferFrameFinal });
+            ArgumentNullException.Check(_gl);
+
+            if (_bufferColorMulti != 0) _gl.DeleteRenderbuffers([_bufferColorMulti, _bufferDepthMulti, _bufferColorFinal]);
+            if (_bufferFrameMulti != 0) _gl.DeleteFramebuffers([_bufferFrameMulti, _bufferFrameFinal]);
             _bufferColorMulti = 0U;
             _bufferDepthMulti = 0U;
             _bufferColorFinal = 0U;
@@ -134,11 +141,7 @@
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_dibBuffer is not null)
-            {
-                if (isExplicit) _dibBuffer.Dispose();
-                _dibBuffer = null;
-            }
+            if (isExplicit) _dibBuffer.Dispose();
 
             oDestroyFramebuffers();
             Win32.DeleteDC(_dibSectionDeviceContext);

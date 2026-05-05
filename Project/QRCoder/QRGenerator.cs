@@ -12,11 +12,11 @@ namespace Microvision.QRCoder
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private List<char> _numChars;
-        private Dictionary<char, int> _alphaNumEncValues;
-        private List<xQRAntilog> _galoisField;
-        private QRConfigsInfos _configsInfos;
-        private QRMasker _masker;
+        private readonly List<char> _numChars;
+        private readonly Dictionary<char, int> _alphaNumEncValues;
+        private readonly List<xQRAntilog> _galoisField;
+        private readonly QRConfigsInfos _configsInfos;
+        private readonly QRMasker _masker;
 
 
         // ----------------------------------------
@@ -249,20 +249,7 @@ namespace Microvision.QRCoder
 
         protected override void oDispose(bool isExplicit)
         {
-            _numChars.Clear();
-            _numChars = null;
-
-            _alphaNumEncValues.Clear();
-            _alphaNumEncValues = null;
-
-            _galoisField.Clear();
-            _galoisField = null;
-
-            if (_masker is not null)
-            {
-                if (isExplicit) _masker.Dispose();
-                _masker = null;
-            }
+            if (isExplicit) _masker.Dispose();
 
             base.oDispose(isExplicit);
         }
@@ -295,7 +282,7 @@ namespace Microvision.QRCoder
 
             resultPolynom.PolyItems.RemoveAll(x => exponentsToGlue.Contains(x.exponent));
             resultPolynom.PolyItems.AddRange(gluedPolynoms);
-            resultPolynom.PolyItems = resultPolynom.PolyItems.OrderByDescending(x => x.exponent).ToList();
+            resultPolynom.PolyItems.SortRegarding(resultPolynom.PolyItems.ConvertAll(o => -o.exponent));
 
             return resultPolynom;
         }

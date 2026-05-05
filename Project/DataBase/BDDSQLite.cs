@@ -37,7 +37,7 @@ namespace Microvision.DataBase
         }
 
 
-        private SQLiteConnection _sqlCon;
+        private SQLiteConnection? _sqlCon;
         private SQLiteError _lastError;
 
 
@@ -92,6 +92,18 @@ namespace Microvision.DataBase
             base.oDispose(isExplicit);
         }
 
+        protected void oEnableForeignKeyConstrains(bool enable)
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
+            zExecute(_sqlCon, "END");
+            SQLiteCommand cmd = new SQLiteCommand(_sqlCon);
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "PRAGMA foreign_keys = " + (enable ? "ON" : "OFF");
+            cmd.ExecuteNonQuery();
+            zExecute(_sqlCon, "BEGIN");
+        }
+
         protected bool oOpenBase(string baseName, string password, bool isExclusive)
         {
             bool success;
@@ -104,7 +116,7 @@ namespace Microvision.DataBase
                 _sqlCon.DefaultTimeout = 1;
 
                 zExecute(_sqlCon, "BEGIN" + (isExclusive ? " EXCLUSIVE" : "")); // Débute une transaction
-                zTestBase();
+                oTestBase();
 
                 success = true;
                 _lastError = SQLiteError.NoError;
@@ -148,16 +160,6 @@ namespace Microvision.DataBase
             {
                 cmd.Parameters.AddWithValue("", o);
             }
-        }
-
-        private void zEnableForeignKeyConstrains(bool enable)
-        {
-            zExecute(_sqlCon, "END");
-            SQLiteCommand cmd = new SQLiteCommand(_sqlCon);
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "PRAGMA foreign_keys = " + (enable ? "ON" : "OFF");
-            cmd.ExecuteNonQuery();
-            zExecute(_sqlCon, "BEGIN");
         }
 
         private static void zExecute(SQLiteConnection conn, string cmd)
@@ -298,7 +300,7 @@ namespace Microvision.DataBase
             return (nams, types, isKey);
         }
 
-        private static List<int> zSQLIDsWhere(SQLiteConnection con, string req, List<object> vals)
+        private static List<int> zSQLIDsWhere(SQLiteConnection con, string req, List<object>? vals)
         {
             SQLiteCommand cmd = new SQLiteCommand(con);
             cmd.CommandType = CommandType.Text;
@@ -424,7 +426,7 @@ namespace Microvision.DataBase
             }
         }
 
-        private void zTestBase()
+        protected void oTestBase()
         {
             // Sert uniquement à tester si la base répond correctement ou si des choses sont verrouillées auquel cas les exceptions correspondantes seront levées
 
@@ -433,14 +435,16 @@ namespace Microvision.DataBase
             ((IBDDCreator)this).KillTable("MicrovisionTestDatabaseTable");
         }
 
-        private bool zTryCreate(string filnam, string sqlscript)
+        protected bool oTryCreate(string filnam, string? sqlScript)
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             bool success;
 
             try
             {
                 success = oCreateBase(filnam);
-                if (sqlscript is not null) zExecute(_sqlCon, sqlscript);
+                if (sqlScript is not null) zExecute(_sqlCon, sqlScript);
                 zExecute(_sqlCon, "BEGIN");
                 _lastError = SQLiteError.NoError;
             }
@@ -514,7 +518,7 @@ namespace Microvision.DataBase
 
             try
             {
-                success = zTryCreate(fileName, null);
+                success = oTryCreate(fileName, null);
             }
             catch
             {
@@ -534,7 +538,7 @@ namespace Microvision.DataBase
 
             try
             {
-                success = zTryCreate(fileName, sqlScript);
+                success = oTryCreate(fileName, sqlScript);
             }
             catch
             {
@@ -545,8 +549,10 @@ namespace Microvision.DataBase
             return success;
         }
 
-        bool IBDDCreator.CreateTable(string tableName, string indexName, string indexField)
+        bool IBDDCreator.CreateTable(string tableName, string? indexName, string indexField)
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             zSQLCreate(_sqlCon, tableName, new[] { indexField }.ToList(), new[] { DbType.Int64 }.ToList(), new[] { true }.ToList());
 
             // Création index
@@ -565,7 +571,9 @@ namespace Microvision.DataBase
 
         void IBDDCreator.KillField(string tableName, string fieldName)
         {
-            zEnableForeignKeyConstrains(false);
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
+            oEnableForeignKeyConstrains(false);
 
             string oldName = tableName + "_old";
             (List<string> colsName, List<DbType> colsType, List<bool> colsKey) = zSQLFieldsList(_sqlCon, tableName, "");
@@ -584,7 +592,7 @@ namespace Microvision.DataBase
             // Supprimer tbnam_old
             ((IBDDCreator)this).KillTable(oldName);
 
-            zEnableForeignKeyConstrains(true);
+            oEnableForeignKeyConstrains(true);
         }
 
         void IBDDCreator.KillTable(string tableName)
@@ -598,6 +606,8 @@ namespace Microvision.DataBase
 
         void IBDDCreator.RenameField(string tableName, string fieldName, string newFieldName)
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             string oldName = tableName + "_old";
             (List<string> oldColsName, List<DbType> colsType, List<bool> colsKey) = zSQLFieldsList(_sqlCon, tableName, "");
 
@@ -641,16 +651,25 @@ namespace Microvision.DataBase
 
         int IBDDEngine.AddRecord(string tableName, string indexFieldName)
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             zSQLInsertID(_sqlCon, tableName, indexFieldName);
             return zSQLLastInsertedID(_sqlCon);
         }
 
         string IBDDEngine.BaseProvider() => "SQLite";
 
-        string IBDDEngine.BaseVersion() => _sqlCon.ServerVersion;
+        string IBDDEngine.BaseVersion()
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
+            return _sqlCon.ServerVersion;
+        }
 
         void IBDDEngine.CloseBase()
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             zExecute(_sqlCon, "END"); // Mets fin à la transaction
 
             _sqlCon.Close();
@@ -662,6 +681,8 @@ namespace Microvision.DataBase
 
         void IBDDEngine.Flush()
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             // TODO : le fonctionnement avait été calqué sur la classe historique BDDAce12, mais ça serait bien mieux de gérer efficacement
             // avec des COMMIT par exemple...
 
@@ -669,15 +690,28 @@ namespace Microvision.DataBase
             zExecute(_sqlCon, "BEGIN");
         }
 
-        List<int> IBDDEngine.GetRecordIds(string tabOrSql, List<object> parameters) => zSQLIDsWhere(_sqlCon, tabOrSql, parameters);
+        List<int> IBDDEngine.GetRecordIds(string tabOrSql, List<object>? parameters)
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
 
-        bool IBDDEngine.KillRecord(string tableName, string indexName, int recordId) => zSQLDeleteRow(_sqlCon, tableName, indexName, recordId) == 1;
+            return zSQLIDsWhere(_sqlCon, tabOrSql, parameters);
+        }
+
+        bool IBDDEngine.KillRecord(string tableName, string indexName, int recordId)
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
+            return zSQLDeleteRow(_sqlCon, tableName, indexName, recordId) == 1;
+        }
 
         int IBDDEngine.LastError() => (int)_lastError; // TODO
 
         bool IBDDEngine.NewPassword(string oldPassword, string newPassword)
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             _sqlCon.ChangePassword(newPassword);
+
             return true;
         }
 
@@ -704,18 +738,36 @@ namespace Microvision.DataBase
 
         (List<string> fieldsName, List<DbType> fieldsType) IBDDEngine.ReadFields(string tableName, string indexName)
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             (List<string> fieldsName, List<DbType> fieldsType, _) = zSQLFieldsList(_sqlCon, tableName, indexName);
             return (fieldsName, fieldsType);
         }
 
-        List<object> IBDDEngine.ReadRecord(string tableName, string indexName, int recordId, List<string> fieldsName) => zSQLReadRecord(_sqlCon, tableName, indexName, recordId, fieldsName);
+        List<object> IBDDEngine.ReadRecord(string tableName, string indexName, int recordId, List<string> fieldsName)
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
 
-        List<string> IBDDEngine.ReadTables() => zSQLTablesList(_sqlCon);
+            return zSQLReadRecord(_sqlCon, tableName, indexName, recordId, fieldsName);
+        }
 
-        int IBDDEngine.RecordsCount(string tableName) => zSQLCount(_sqlCon, tableName);
+        List<string> IBDDEngine.ReadTables()
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
+            return zSQLTablesList(_sqlCon);
+        }
+
+        int IBDDEngine.RecordsCount(string tableName)
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+            return zSQLCount(_sqlCon, tableName);
+        }
 
         int IBDDEngine.UserVersion()
         {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
+
             SQLiteCommand cmd = new SQLiteCommand(_sqlCon);
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = "PRAGMA user_version;";
@@ -730,8 +782,11 @@ namespace Microvision.DataBase
             return id;
         }
 
-        void IBDDEngine.WriteRecord(string tableName, string indexName, int recordId, List<string> fieldsName, List<object> fieldsValue) => zSQLUpdateRow(_sqlCon, tableName, indexName, recordId, fieldsName, fieldsValue);
+        void IBDDEngine.WriteRecord(string tableName, string indexName, int recordId, List<string> fieldsName, List<object> fieldsValue)
+        {
+            ArgumentNullException.ThrowIfNull(_sqlCon);
 
-
+            zSQLUpdateRow(_sqlCon, tableName, indexName, recordId, fieldsName, fieldsValue);
+        }
     }
 }

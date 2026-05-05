@@ -23,7 +23,7 @@ namespace Microvision.QRCoder
         }
 
 
-        private List<Item> _items;
+        private readonly List<Item> _items;
 
 
         // ----------------------------------------
@@ -32,7 +32,7 @@ namespace Microvision.QRCoder
 
         public QRPolynom()
         {
-            this.PolyItems = new List<Item>();
+            _items = [];
         }
 
 
@@ -40,11 +40,7 @@ namespace Microvision.QRCoder
         // Propriétés
         // ----------------------------------------
 
-        public List<Item> PolyItems
-        {
-            get => _items;
-            set => _items = value;
-        }
+        public List<Item> PolyItems => _items;
 
 
         // ----------------------------------------

@@ -17,7 +17,7 @@ namespace Microvision.HID
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        public struct USAGE_AND_PAGE
+        public record struct USAGE_AND_PAGE
         {
             public SomeUsage Usage;
             public SomeUsagePage UsagePage;
@@ -26,32 +26,6 @@ namespace Microvision.HID
             {
                 Usage = us;
                 UsagePage = uspg;
-            }
-
-            public static bool operator ==(USAGE_AND_PAGE a, USAGE_AND_PAGE b)
-            {
-                return a.Usage == b.Usage && a.UsagePage == b.UsagePage;
-            }
-
-            public static bool operator !=(USAGE_AND_PAGE a, USAGE_AND_PAGE b)
-            {
-                return a.Usage != b.Usage || a.UsagePage != b.UsagePage;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is USAGE_AND_PAGE objT && objT == this;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 23 + Usage.GetHashCode();
-                    hash = hash * 23 + UsagePage.GetHashCode();
-                    return hash;
-                }
             }
         }
 

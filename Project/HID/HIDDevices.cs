@@ -14,7 +14,7 @@ namespace Microvision.HID
 
         public delegate void InputChangeEventHandler(int no, RawInputLib.RAWINPUT inpt);
 
-        public event InputChangeEventHandler InputChange;
+        public event InputChangeEventHandler? InputChange;
 
         // ***************************************************************************************************
 

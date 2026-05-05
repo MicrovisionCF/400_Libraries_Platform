@@ -14,7 +14,7 @@ namespace Microvision.Scanners
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private WIA.CommonDialog _dialogs;
+        private readonly WIA.CommonDialog _dialogs;
 
 
         // ----------------------------------------
@@ -36,11 +36,11 @@ namespace Microvision.Scanners
         // Méthodes
         // ----------------------------------------
 
-        public WiaImageFile ShowAcquireImage()
+        public WiaImageFile? ShowAcquireImage()
         {
             WIA.ImageFile imgf = _dialogs.ShowAcquireImage(WIA.WiaDeviceType.ScannerDeviceType, FormatID: WiaItem.wiaFormatBmp);
 
-            WiaImageFile output = null;
+            WiaImageFile? output = null;
             if (imgf is not null) output = new WiaImageFile(imgf);
 
             return output;
@@ -61,31 +61,31 @@ namespace Microvision.Scanners
             _dialogs.ShowItemProperties(itm.Core);
         }
 
-        public WiaDevice ShowSelectDevice(WiaDevice.DeviceType devtyp)
+        public WiaDevice? ShowSelectDevice(WiaDevice.DeviceType devtyp)
         {
             WIA.Device dev = _dialogs.ShowSelectDevice((WIA.WiaDeviceType)devtyp, false, false);
 
-            WiaDevice output = null;
+            WiaDevice? output = null;
             if (dev is not null) output = new WiaDevice(dev);
 
             return output;
         }
 
-        public List<WiaItem> ShowSelectItems(WiaDevice dev)
+        public List<WiaItem>? ShowSelectItems(WiaDevice dev)
         {
             List<WIA.Item> itms = _dialogs.ShowSelectItems(dev.Core).ToList();
 
-            List<WiaItem> output = null;
+            List<WiaItem>? output = null;
             if (itms is not null) output = itms.Select(o => new WiaItem(o)).ToList();
 
             return output;
         }
 
-        public WiaImageFile ShowTransfer(WiaItem itm, string fmtid)
+        public WiaImageFile? ShowTransfer(WiaItem itm, string fmtid)
         {
             WIA.ImageFile imgf = (WIA.ImageFile)_dialogs.ShowTransfer(itm.Core, fmtid);
 
-            WiaImageFile output = null;
+            WiaImageFile? output = null;
             if (imgf is not null) output = new WiaImageFile(imgf);
 
             return output;
@@ -98,11 +98,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_dialogs is not null)
-            {
-                Marshal.ReleaseComObject(_dialogs);
-                _dialogs = null;
-            }
+            Marshal.ReleaseComObject(_dialogs);
 
             base.oDispose(isExplicit);
         }

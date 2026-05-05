@@ -24,13 +24,13 @@ namespace Microvision.DDE
         public delegate void ItemLinkStartEventHandler(xDDEItem item);
         public delegate void ItemLinkStopEventHandler(xDDEItem item);
 
-        public event ItemDataChangeEventHandler ItemDataChange;
-        public event ItemLinkStartEventHandler ItemLinkStart;
-        public event ItemLinkStopEventHandler ItemLinkStop;
+        public event ItemDataChangeEventHandler? ItemDataChange;
+        public event ItemLinkStartEventHandler? ItemLinkStart;
+        public event ItemLinkStopEventHandler? ItemLinkStop;
 
         // ***************************************************************************************************
 
-        public struct xDDEItem
+        public record struct xDDEItem
         {
             public string serverName;
             public string topic;
@@ -42,39 +42,12 @@ namespace Microvision.DDE
                 this.topic = topic;
                 this.itemName = itemName;
             }
-
-            public static bool operator ==(xDDEItem a, xDDEItem b)
-            {
-                return (a.serverName == b.serverName) && (a.topic == b.topic) && (a.itemName == b.itemName);
-            }
-
-            public static bool operator !=(xDDEItem a, xDDEItem b)
-            {
-                return !(a == b);
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is xDDEItem objT && objT == this;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 23 + serverName.GetHashCode();
-                    hash = hash * 23 + topic.GetHashCode();
-                    hash = hash * 23 + itemName.GetHashCode();
-                    return hash;
-                }
-            }
         }
 
+        private readonly WinDDEConversations _convs;
 
-        private WinDDELibrary _lib;
-        private WinDDELibrary.FNCALLBACK _callBack;
-        private WinDDEConversations _convs;
+        private WinDDELibrary? _lib;
+        private WinDDELibrary.FNCALLBACK? _callBack;
 
 
         // ----------------------------------------
@@ -99,21 +72,17 @@ namespace Microvision.DDE
 
         public bool Initialize()
         {
-            WinDDELibrary lb = new WinDDELibrary();
-            WinDDELibrary.FNCALLBACK fct = zDDECallback;
+            _lib = new WinDDELibrary();
+            _callBack = zDDECallback;
 
-            if (lb.Initialize(fct))
+            if (!_lib.Initialize(_callBack))
             {
-                _lib = lb;
-                _callBack = fct;
-            }
-            else
-            {
-                lb.Dispose();
-                fct = null;
+                _lib.Dispose();
+                _lib = null;
+                _callBack = null;
             }
 
-            return (_lib is not null);
+            return _lib is not null;
         }
 
         public bool LinkItem(xDDEItem item)
@@ -138,6 +107,8 @@ namespace Microvision.DDE
 
         public xDDEItem RegisterItem(string serverName, string topic, string itemName)
         {
+            ArgumentNullException.Check(_lib);
+
             xDDEItem item = new xDDEItem(serverName, topic, itemName);
 
             int cno = _convs.Find(item.serverName, item.topic);
@@ -159,6 +130,8 @@ namespace Microvision.DDE
 
         public void Terminate()
         {
+            ArgumentNullException.Check(_lib);
+
             _lib.Uninitialize();
             _lib.Dispose();
             _lib = null;
@@ -229,6 +202,8 @@ namespace Microvision.DDE
 
         protected void oDDERegisterServer(IntPtr hsrvnam)
         {
+            ArgumentNullException.Check(_lib);
+
             string srvnam = _lib.QueryString(hsrvnam);
             Debug.Print("==> " + "XTYP_REGISTER" + SpecialChars.Tab + srvnam);
 
@@ -243,17 +218,15 @@ namespace Microvision.DDE
 
         protected void oDDEUnregisterServer(IntPtr hsrvnam)
         {
+            ArgumentNullException.Check(_lib);
+
             Debug.Print("==> " + "XTYP_UNREGISTER" + SpecialChars.Tab + _lib.QueryString(hsrvnam));
         }
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_convs is not null)
-            {
-                _convs_Attach(false);
-                if (isExplicit) _convs.Dispose();
-                _convs = null;
-            }
+            _convs_Attach(false);
+            if (isExplicit) _convs.Dispose();
 
             base.oDispose(isExplicit);
         }

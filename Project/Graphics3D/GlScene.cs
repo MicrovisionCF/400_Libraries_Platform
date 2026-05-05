@@ -14,17 +14,16 @@ namespace Microvision.Graphics3D
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private OpenGLContext _gl;
+        private readonly IntPtr _hdc;
+        private readonly OpenGLContext? _gl;
+        private readonly GlContainer _objects;
+        private readonly GlLight _defaultLight;
+        private readonly List<GlLight> _lights;
+
         private SizeI _size;
-
-        private IntPtr _hdc;
-
-        private List<GlLight> _lights;
-        private GlLight _defaultLight;
         private GlCamera _camera;
+        
         private HColor _backColor;
-
-        private GlContainer _objects;
         private float _nearestDistance, _farestDistance;
 
 
@@ -40,8 +39,8 @@ namespace Microvision.Graphics3D
         {
             if (winHdc != (IntPtr)0) _hdc = winHdc;
 
-            oInitGL();
-            oSetBackColor(Color.White);
+            _backColor = Color.White;
+            _gl = zInitGL(_backColor);
 
             _objects = new GlContainer();
 
@@ -98,15 +97,12 @@ namespace Microvision.Graphics3D
 
         public void AddLight(GlLight light)
         {
+            bool hadLamps = _lights.Count > 0;
+
             _lights.Add(light.AddLife());
 
-            if (_defaultLight is not null)
-            {
-                // La lampe par défaut sert uniquement si on n'ajoute aucune lumière
-                _defaultLight.TurnOff(_gl);
-                _defaultLight.Dispose();
-                _defaultLight = null;
-            }
+            // La lampe par défaut sert uniquement si on n'ajoute aucune lumière
+            if (!hadLamps && _gl is not null) _defaultLight.TurnOff(_gl);
         }
 
         public void AddObject(GlObject obj)
@@ -147,17 +143,10 @@ namespace Microvision.Graphics3D
 
         public void SetCamera(GlCamera cam)
         {
-            if (_camera is not null)
-            {
-                _camera.Dispose();
-            }
+            _camera.Dispose();
+            _camera = cam.AddLife();
 
-            _camera = cam;
-            if (_camera is not null)
-            {
-                _camera.AddLife();
-                oSetRenderDimensions(_size, (float)_camera.FieldOfView);
-            }
+            oSetRenderDimensions(_size, (float)_camera.FieldOfView);
         }
 
         public void SetDistanceLimits(float nearest, float farest)
@@ -173,69 +162,20 @@ namespace Microvision.Graphics3D
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_objects is not null)
-            {
-                if (isExplicit) _objects.Dispose();
-                _objects = null;
-            }
+            if (isExplicit) _objects.Dispose();
 
-            if (_lights is not null)
-            {
-                if (isExplicit) _lights.ForEach(o => o.Dispose());
-                _lights = null;
-            }
+            if (isExplicit) _defaultLight.Dispose();
 
-            if (_defaultLight is not null)
-            {
-                if (isExplicit) _defaultLight.Dispose();
-                _defaultLight = null;
-            }
+            if (isExplicit) _lights.ForEach(o => o.Dispose());
 
-            if (_camera is not null)
-            {
-                if (isExplicit) _camera.Dispose();
-                _camera = null;
-            }
+            if (isExplicit) _camera.Dispose();
 
             if (_gl is not null)
             {
                 if (isExplicit) _gl.Dispose();
-                _gl = null;
             }
 
             base.oDispose(isExplicit);
-        }
-
-        protected bool oInitGL()
-        {
-            _gl = new OpenGLContext();
-
-            if (_gl.CreateInMemory())
-            {
-                _gl.Enable(EnableTarget.DepthTest);
-                _gl.Enable(EnableTarget.Blend);
-                _gl.Enable(EnableTarget.LineSmooth);
-                _gl.Enable(EnableTarget.PolygonSmooth);
-                _gl.Enable(EnableTarget.AutoNormal);
-                _gl.Enable(EnableTarget.Normalize);
-                _gl.Enable(EnableTarget.Lighting);
-                // _gL.Enable(OpenGL.GL_MULTISAMPLE)
-
-                _gl.ClearDepth(1d);
-                _gl.ShadeModel(ShadeModel.Smooth);
-                _gl.DepthFunc(DepthFunction.LessThanOrEqual);
-                _gl.BlendFunc(BlendingSourceFactor.SourceAlpha, BlendingDestinationFactor.OneMinusSourceAlpha);
-                _gl.Hint(HintTarget.LineSmooth, HintMode.Nicest);
-                _gl.Hint(HintTarget.PolygonSmooth, HintMode.Nicest);
-                _gl.Hint(HintTarget.PerspectiveCorrection, HintMode.Nicest);
-            }
-            else
-            {
-                _gl.Dispose();
-                _gl = null;
-            }
-
-            return _gl is not null;
         }
 
         protected void oRenderGraphics(Graphics g)
@@ -264,17 +204,19 @@ namespace Microvision.Graphics3D
 
                 _camera.Apply(_gl);
 
-                if (_defaultLight is not null)
+                if (_lights.Count > 0)
+                {
+                    _lights.ForEach(o =>
+                    {
+                        o.TurnOn(_gl);
+                        o.Render(_gl, Color.Orange);
+                    });
+                }
+                else
                 {
                     _defaultLight.TurnOn(_gl);
                     _defaultLight.Render(_gl, Color.Orange);
                 }
-
-                _lights.ForEach(o =>
-                {
-                    o.TurnOn(_gl);
-                    o.Render(_gl, Color.Orange);
-                });
 
                 _objects.Render(_gl);
 
@@ -311,6 +253,41 @@ namespace Microvision.Graphics3D
         // ----------------------------------------
         // Privées
         // ----------------------------------------
+
+
+        private static OpenGLContext? zInitGL(HColor backColor)
+        {
+            OpenGLContext? gl = new OpenGLContext();
+
+            if (gl.CreateInMemory())
+            {
+                gl.Enable(EnableTarget.DepthTest);
+                gl.Enable(EnableTarget.Blend);
+                gl.Enable(EnableTarget.LineSmooth);
+                gl.Enable(EnableTarget.PolygonSmooth);
+                gl.Enable(EnableTarget.AutoNormal);
+                gl.Enable(EnableTarget.Normalize);
+                gl.Enable(EnableTarget.Lighting);
+                // _gL.Enable(OpenGL.GL_MULTISAMPLE)
+
+                gl.ClearDepth(1d);
+                gl.ShadeModel(ShadeModel.Smooth);
+                gl.DepthFunc(DepthFunction.LessThanOrEqual);
+                gl.BlendFunc(BlendingSourceFactor.SourceAlpha, BlendingDestinationFactor.OneMinusSourceAlpha);
+                gl.Hint(HintTarget.LineSmooth, HintMode.Nicest);
+                gl.Hint(HintTarget.PolygonSmooth, HintMode.Nicest);
+                gl.Hint(HintTarget.PerspectiveCorrection, HintMode.Nicest);
+
+                gl.ClearColor(backColor.Red / 255.0f, backColor.Green / 255.0f, backColor.Blue / 255.0f, 0);
+            }
+            else
+            {
+                gl.Dispose();
+                gl = null;
+            }
+
+            return gl;
+        }
 
         private static float zFovXToFovY(float fovX, SizeI viewportSize)
         {

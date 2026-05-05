@@ -18,8 +18,8 @@ namespace Microvision.DDE
         public delegate void LinkChangeEventHandler(int no, bool isLinkEtablished);
         public delegate void ValueChangeEventHandler(int no, bool isValid, float value);
 
-        public event LinkChangeEventHandler LinkChange;
-        public event ValueChangeEventHandler ValueChange;
+        public event LinkChangeEventHandler? LinkChange;
+        public event ValueChangeEventHandler? ValueChange;
 
         // ***************************************************************************************************
 

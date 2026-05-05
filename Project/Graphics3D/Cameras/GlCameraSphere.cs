@@ -14,7 +14,7 @@ namespace Microvision.Graphics3D
 
         public delegate void PositionChangedEventHandler();
 
-        public event PositionChangedEventHandler PositionChanged;
+        public event PositionChangedEventHandler? PositionChanged;
 
         // ***************************************************************************************************
 
@@ -24,7 +24,7 @@ namespace Microvision.Graphics3D
         protected int _animInterval;
         protected float _animThetaX;
         protected float _animThetaY;
-        private System.Timers.Timer _timer;
+        private System.Timers.Timer? _timer;
 
 
         // ----------------------------------------
@@ -33,8 +33,8 @@ namespace Microvision.Graphics3D
 
         public GlCameraSphere()
         {
-            oSetObservation(new Point3D());
-            oSetUpDirection(new Vect3D(0, 0, 1));
+            _observation = new Point3D();
+            _upDirection = new Vect3D(0, 0, 1);
 
             _distance = 10;
             _animInterval = 50;
@@ -47,7 +47,7 @@ namespace Microvision.Graphics3D
         // Propriétés
         // ----------------------------------------
 
-        public bool AnimationRunning => (_timer is not null);
+        public bool AnimationRunning => _timer is not null;
 
         public Point3D Center
         {
@@ -220,6 +220,8 @@ namespace Microvision.Graphics3D
 
         private void _timer_Attach(bool attach)
         {
+            ArgumentNullException.Check(_timer);
+
             if (attach)
             {
                 _timer.Elapsed += _timer_Elapsed;
@@ -230,7 +232,7 @@ namespace Microvision.Graphics3D
             }
         }
 
-        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void _timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             this.ThetaX += _animThetaX;
             this.ThetaY += _animThetaY;

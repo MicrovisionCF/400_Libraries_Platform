@@ -11,19 +11,21 @@ namespace Microvision.Graphics3D
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private GlTexture _texture;
+        private readonly List<Point3D> _points;
 
-        private List<Point3D> _points;
+        private GlTexture? _texture;
+
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public GlFace(List<Point3D> pts)
+        public GlFace(List<Point3D> pts) : base(new xGlMaterial(Color.White, 1, 1, 0, 0, 0))
         {
+            if (pts.Count != 4) throw new InvalidOperationException("Une face doit être constituée de 4 points");
+
             _points = pts;
-            oSetMaterial(new xGlMaterial(Color.White, 1, 1, 0, 0, 0));
         }
 
 
@@ -86,7 +88,7 @@ namespace Microvision.Graphics3D
         protected override void oRenderLines(OpenGLContext gl)
         {
             gl.Begin(BeginMode.LineLoop);
-            gl.Vertices(_points.ToArray());
+            gl.Vertices([.. _points]);
             gl.End();
         }
 

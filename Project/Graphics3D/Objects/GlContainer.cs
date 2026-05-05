@@ -10,7 +10,7 @@ namespace Microvision.Graphics3D
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private List<GlObject> _children;
+        private readonly List<GlObject> _children;
 
 
         // ----------------------------------------
@@ -19,7 +19,7 @@ namespace Microvision.Graphics3D
 
         public GlContainer()
         {
-            _children = new List<GlObject>();
+            _children = [];
         }
 
 
@@ -66,16 +66,13 @@ namespace Microvision.Graphics3D
         {
             _children.ForEach(o => o.Dispose());
             _children.Clear();
+            _children.TrimExcess();
         }
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_children is not null)
-            {
-                if (isExplicit) _children.ForEach(o => o.Dispose());
-                _children = null;
-            }
-
+            if (isExplicit) _children.ForEach(o => o.Dispose());
+            
             base.oDispose(isExplicit);
         }
 

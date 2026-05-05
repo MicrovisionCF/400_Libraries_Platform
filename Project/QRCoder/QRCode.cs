@@ -10,7 +10,7 @@ namespace Microvision.QRCoder
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private QRData _data;
+        private readonly QRData _data;
 
 
         // ----------------------------------------
@@ -34,7 +34,7 @@ namespace Microvision.QRCoder
         // Méthodes
         // ----------------------------------------
 
-        public Bitmap GetBitmap(Size maxSize, QRCodeGraphics customGraphics = null)
+        public Bitmap GetBitmap(Size maxSize, QRCodeGraphics? customGraphics = null)
         {
             if (customGraphics is null)
                 customGraphics = zCreateDefaultGraphics();
@@ -54,11 +54,7 @@ namespace Microvision.QRCoder
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_data is not null)
-            {
-                if (isExplicit) _data.Dispose();
-                _data = null;
-            }
+            if (isExplicit) _data.Dispose();
 
             base.oDispose(isExplicit);
         }

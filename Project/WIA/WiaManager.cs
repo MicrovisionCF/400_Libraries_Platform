@@ -16,7 +16,7 @@ namespace Microvision.Scanners
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private WIA.DeviceManager _manager;
+        private readonly WIA.DeviceManager _manager;
 
 
         // ----------------------------------------
@@ -58,12 +58,8 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_manager is not null)
-            {
-                _manager_Attach(false);
-                Marshal.ReleaseComObject(_manager);
-                _manager = null;
-            }
+            _manager_Attach(false);
+            Marshal.ReleaseComObject(_manager);
 
             base.oDispose(isExplicit);
         }

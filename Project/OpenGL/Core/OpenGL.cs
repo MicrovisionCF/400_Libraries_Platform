@@ -11,8 +11,9 @@ namespace Microvision.OpenGL
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private IntPtr _openGLLib;
-        private RenderContext _renderContext;
+        private readonly IntPtr _openGLLib;
+        
+        private RenderContext? _renderContext;
 
 
         // ----------------------------------------
@@ -22,14 +23,14 @@ namespace Microvision.OpenGL
         public OpenGLContext()
         {
             _openGLLib = Win32.LoadLibraryA("opengl32.dll");
+
+            _fontEntries = [];
         }
 
 
         // ----------------------------------------
         // Propriétés
         // ----------------------------------------
-
-        internal RenderContext RenderContext => _renderContext;
 
 
         // ----------------------------------------
@@ -84,8 +85,6 @@ namespace Microvision.OpenGL
                 if (isExplicit) _renderContext.Dispose();
                 _renderContext = null;
             }
-
-            _openGLLib = IntPtr.Zero;
 
             base.oDispose(isExplicit);
         }

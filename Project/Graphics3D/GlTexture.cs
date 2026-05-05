@@ -15,7 +15,7 @@ namespace Microvision.Graphics3D
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private OpenGLContext _gl;
+        private readonly OpenGLContext? _gl;
 
         private uint _glTextureID;
         private SizeI _size;
@@ -25,9 +25,9 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
-        public GlTexture(object gl, Bitmap img)
+        public GlTexture(OpenGLContext? gl, Bitmap img)
         {
-            _gl = (OpenGLContext)gl;
+            _gl = gl;
 
             _size = img.Size;
 
@@ -74,13 +74,11 @@ namespace Microvision.Graphics3D
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_glTextureID != 0)
+            if (_gl is not null && _glTextureID != 0)
             {
                 _gl.DeleteTexture(_glTextureID);
                 _glTextureID = 0;
             }
-
-            _gl = null;
 
             base.oDispose(isExplicit);
         }

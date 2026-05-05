@@ -19,7 +19,7 @@ namespace Microvision.OpenGL
         [DllImport("opengl32.dll")] public static extern int wglDeleteContext(IntPtr hrc);
         [DllImport("opengl32.dll")] public static extern IntPtr wglGetProcAddress(string name);
         [DllImport("opengl32.dll")] public static extern bool wglUseFontBitmaps(IntPtr hDC, uint first, uint count, uint listBase);
-        [DllImport("opengl32.dll")] public static extern bool wglUseFontOutlinesA(IntPtr hDC, uint first, uint count, uint listBase, float deviation, float extrusion, int format, GLYPHMETRICSFLOAT[] lpgmf);
+        [DllImport("opengl32.dll")] public static extern bool wglUseFontOutlinesA(IntPtr hDC, uint first, uint count, uint listBase, float deviation, float extrusion, int format, GLYPHMETRICSFLOAT[]? lpgmf);
         [DllImport("opengl32.dll")] public static extern bool wglShareLists(IntPtr hrc1, IntPtr hrc2);
 
         [DllImport("gdi32.dll")] public static extern int ChoosePixelFormat(IntPtr hDC, [In][MarshalAs(UnmanagedType.LPStruct)] PIXELFORMATDESCRIPTOR ppfd);
@@ -282,8 +282,8 @@ namespace Microvision.OpenGL
             public IntPtr hIcon;
             public IntPtr hCursor;
             public IntPtr hbrBackground;
-            public string lpszMenuName;
-            public string lpszClassName;
+            public string? lpszMenuName;
+            public string? lpszClassName;
             public IntPtr hIconSm;
 
             public void Init()

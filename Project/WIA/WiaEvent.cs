@@ -20,16 +20,12 @@ namespace Microvision.Scanners
         }
 
 
-        private WIA.DeviceEvent _event;
+        private readonly WIA.DeviceEvent _event;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
-
-        internal WiaEvent() : base()
-        {
-        }
 
         internal WiaEvent(WIA.DeviceEvent evt) : base()
         {
@@ -66,11 +62,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_event is not null)
-            {
-                Marshal.ReleaseComObject(_event);
-                _event = null;
-            }
+            Marshal.ReleaseComObject(_event);
 
             base.oDispose(isExplicit);
         }

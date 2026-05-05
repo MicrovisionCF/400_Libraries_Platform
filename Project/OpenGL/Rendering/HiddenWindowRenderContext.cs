@@ -47,7 +47,7 @@
             }
         }
 
-        protected override bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object parameter)
+        protected override bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object? parameter)
         {
             bool ok = base.oCreate(openGLVersion, gl, width, height, bitDepth, parameter);
 

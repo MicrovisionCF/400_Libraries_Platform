@@ -25,23 +25,23 @@ namespace Microvision.Platform
         // Propriétés
         // ----------------------------------------
 
-        public String AssemblyName => _assembly.GetName().Name;
+        public string AssemblyName => _assembly.GetName().Name ?? throw new InvalidOperationException("Assembly name is null.");
 
-        public Version AssemblyVersion => _assembly.GetName().Version;
+        public Version AssemblyVersion => _assembly.GetName().Version ?? throw new InvalidOperationException("Assembly version is null.");
 
-        public String Company => zGetAttribute<AssemblyCompanyAttribute>(_assembly).Company;
+        public string Company => zGetAttribute<AssemblyCompanyAttribute>(_assembly).Company;
 
-        public String Copyright => zGetAttribute<AssemblyCopyrightAttribute>(_assembly).Copyright;
+        public string Copyright => zGetAttribute<AssemblyCopyrightAttribute>(_assembly).Copyright;
 
-        public String Description => zGetAttribute<AssemblyDescriptionAttribute>(_assembly).Description;
+        public string Description => zGetAttribute<AssemblyDescriptionAttribute>(_assembly).Description;
 
         public Version FileVersion => new Version(zGetAttribute<AssemblyFileVersionAttribute>(_assembly).Version);
 
-        public String Product => zGetAttribute<AssemblyProductAttribute>(_assembly).Product;
+        public string Product => zGetAttribute<AssemblyProductAttribute>(_assembly).Product;
 
-        public String ProductTitle => zGetAttribute<AssemblyTitleAttribute>(_assembly).Title;
+        public string ProductTitle => zGetAttribute<AssemblyTitleAttribute>(_assembly).Title;
 
-        public String Trademark => zGetAttribute<AssemblyTrademarkAttribute>(_assembly).Trademark;
+        public string Trademark => zGetAttribute<AssemblyTrademarkAttribute>(_assembly).Trademark;
 
 
         // ----------------------------------------

@@ -105,7 +105,7 @@ namespace Microvision.HID
                 return output;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 return obj is RAWINPUT objT && this == objT;
             }
@@ -128,40 +128,12 @@ namespace Microvision.HID
             public RIM dwType;
         }
 
-        public struct RAWINPUTHEADER
+        public record struct RAWINPUTHEADER
         {
             public RIM dwType;
             public int dwSize;
             public IntPtr hDevice;
             public IntPtr wParam;
-
-            public static bool operator ==(RAWINPUTHEADER a, RAWINPUTHEADER b)
-            {
-                return a.dwType == b.dwType && a.dwSize == b.dwSize && a.hDevice == b.hDevice && a.wParam == b.wParam;
-            }
-
-            public static bool operator !=(RAWINPUTHEADER a, RAWINPUTHEADER b)
-            {
-                return a.dwType != b.dwType || a.dwSize != b.dwSize || a.hDevice != b.hDevice || a.wParam != b.wParam;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return obj is RAWINPUTHEADER objT && this == objT;
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    int hash = 17;
-                    hash = hash * 23 + dwType.GetHashCode();
-                    hash = hash * 23 + dwSize.GetHashCode();
-                    hash = hash * 23 + hDevice.GetHashCode();
-                    hash = hash * 23 + wParam.GetHashCode();
-                    return hash;
-                }
-            }
         }
 
         public struct RAWKEYBOARD
@@ -435,19 +407,20 @@ namespace Microvision.HID
             IntPtr pData = Marshal.AllocHGlobal(((int)strsize) * 2);
             RawInputLib.GetRawInputDeviceInfo(hdevice, RIDIType.RIDI_DEVICENAME, pData, ref strsize);
 
-            string name = Marshal.PtrToStringAuto(pData);
+            string name = Marshal.PtrToStringAuto(pData)?.TrimEnd('\0') ?? "Unidentified";
 
-            return name.TrimEnd('\0');
+            return name;
         }
 
         public static List<RAWINPUTDEVICELIST> GetDevicesList()
         {
             int devicesCount = 0;
 
-            List<RAWINPUTDEVICELIST> lst = null;
+            List<RAWINPUTDEVICELIST> lst = [];
+
             if (GetRawInputDeviceList(IntPtr.Zero, ref devicesCount, (uint)MarshShop.SizeOf<RAWINPUTDEVICELIST>()) == 0)
             {
-                lst = new List<RAWINPUTDEVICELIST>().Resize(devicesCount);
+                lst.Resize(devicesCount);
                 LockList<RAWINPUTDEVICELIST> hlst = new LockList<RAWINPUTDEVICELIST>(lst);
                 GetRawInputDeviceList(hlst.Address(0), ref devicesCount, checked((uint)MarshShop.SizeOf<RawInputLib.RAWINPUTDEVICELIST>()));
                 hlst.Free();

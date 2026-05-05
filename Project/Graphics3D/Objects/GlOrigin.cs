@@ -99,7 +99,7 @@ namespace Microvision.Graphics3D
             gl.Translate(size / 50, size / 28, size / 10);
             gl.Rotate(90, -135, 0);
 
-            GlText text = new GlText(letter, new Point3D(), size / 10);
+            GlText text = new GlText(letter, new Point3D(), "Courier New", size / 10, FontStyle.Regular);
             text.Material = new xGlMaterial(color, 0.2f, 0.6f, 0, 1, 0.2f);
             text.LinesVisible = true;
             text.Extrusion = 0.1f;

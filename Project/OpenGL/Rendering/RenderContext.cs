@@ -69,7 +69,7 @@ namespace Microvision.OpenGL
         // Méthodes
         // ----------------------------------------
 
-        public bool Create(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object parameter)
+        public bool Create(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object? parameter)
         {
             bool ok = oCreate(openGLVersion, gl, width, height, bitDepth, parameter);
 
@@ -104,7 +104,7 @@ namespace Microvision.OpenGL
 
         protected abstract void oBlit(IntPtr hdc);
 
-        protected virtual bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object parameter)
+        protected virtual bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object? parameter)
         {
             _width = width;
             _height = height;
@@ -141,13 +141,13 @@ namespace Microvision.OpenGL
             bool ok;
             VersionAttribute requestedVersionNumber = VersionAttribute.GetVersionAttribute(_requestedOpenGLVersion);
 
-            int[] attributes = new[] {  OpenGLConst.WGL_CONTEXT_MAJOR_VERSION_ARB,
-                                        requestedVersionNumber.Major,
-                                        OpenGLConst.WGL_CONTEXT_MINOR_VERSION_ARB,
-                                        requestedVersionNumber.Minor,
-                                        OpenGLConst.WGL_CONTEXT_FLAGS_ARB,
-                                        OpenGLConst.WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
-                                        0 };
+            int[] attributes = [  OpenGLConst.WGL_CONTEXT_MAJOR_VERSION_ARB,
+                                  requestedVersionNumber.Major,
+                                  OpenGLConst.WGL_CONTEXT_MINOR_VERSION_ARB,
+                                  requestedVersionNumber.Minor,
+                                  OpenGLConst.WGL_CONTEXT_FLAGS_ARB,
+                                  OpenGLConst.WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+                                  0 ];
             try
             {
                 if (!requestedVersionNumber.IsAtLeastVersion(3, 0))

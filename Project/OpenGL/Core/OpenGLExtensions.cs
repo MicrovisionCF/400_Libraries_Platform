@@ -59,6 +59,8 @@ namespace Microvision.OpenGL
 
         internal IntPtr CreateContextAttribsARB(IntPtr hShareContext, int[] attribList)
         {
+            ArgumentNullException.Check(_renderContext);
+
             return oGetDelegateFor<wglCreateContextAttribsARB>()(_renderContext.DeviceContextHandle, hShareContext, attribList);
         }
 
@@ -137,7 +139,9 @@ namespace Microvision.OpenGL
                     throw new Exception("OpenGL : Extension function " + delName + " not supported");
             }
 
-            return _delegates[delName] as T;
+            if (_delegates[delName] is not T output) throw new InvalidCastException($"OpenGL : Extension function {delName} is not type {typeof(T).Name}");
+
+            return output;
         }
 
 

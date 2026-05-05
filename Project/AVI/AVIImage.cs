@@ -19,7 +19,7 @@ namespace Microvision.Avi
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        private DrawDibDC _drawDib;
+        private DrawDibDC? _drawDib;
 
 
         // ----------------------------------------
@@ -85,6 +85,8 @@ namespace Microvision.Avi
 
         public void DrawEnd(Graphics gf)
         {
+            ArgumentNullException.ThrowIfNull(_drawDib);
+
             _drawDib.EndDraw(gf);
             _drawDib.Dispose();
             _drawDib = null;

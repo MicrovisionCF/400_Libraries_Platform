@@ -86,18 +86,14 @@ namespace Microvision.Scanners
         // -- formats constatés sur Epson Expression 1680, premier Item :
         // wiaFormatBMP
 
-        private WIA.Item _item;
+        private readonly WIA.Item _item;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        internal WiaItem() : base()
-        {
-        }
-
-        internal WiaItem(WIA.Item itm) : this()
+        internal WiaItem(WIA.Item itm) : base()
         {
             _item = itm;
         }
@@ -274,11 +270,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_item is not null)
-            {
-                Marshal.ReleaseComObject(_item);
-                _item = null;
-            }
+            Marshal.ReleaseComObject(_item);
 
             base.oDispose(isExplicit);
         }

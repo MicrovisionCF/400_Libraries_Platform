@@ -30,7 +30,7 @@ namespace Microvision.Avi
         }
 
 
-        private AVILib _lib;
+        private readonly AVILib _lib;
 
         private IntPtr _handle;
         private AVILib.AVIFileInfo _info;
@@ -70,14 +70,12 @@ namespace Microvision.Avi
             }
         }
 
-        public AVIStream CreateStream(AVILib.AVIStreamInfo info)
+        public AVIStream? CreateStream(AVILib.AVIStreamInfo info)
         {
             IntPtr hStream = IntPtr.Zero;
-            AVIStream output = null;
             _lastError = _lib.CreateStream(_handle, info, ref hStream);
 
-            if (_lastError == AVILib.AVIError.AVIERR_OK)
-                output = new AVIStream(_lib, hStream);
+            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hStream) : null;
 
             return output;
         }
@@ -103,15 +101,12 @@ namespace Microvision.Avi
             return _handle != IntPtr.Zero;
         }
 
-        public AVIStream OpenStream(AVILib.AVIStreamType streamtype, int noInType)
+        public AVIStream? OpenStream(AVILib.AVIStreamType streamtype, int noInType)
         {
             IntPtr hStream = IntPtr.Zero;
             _lastError = _lib.OpenStream(_handle, streamtype, noInType, ref hStream);
 
-            AVIStream output = null;
-
-            if (_lastError == AVILib.AVIError.AVIERR_OK)
-                output = new AVIStream(_lib, hStream);
+            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hStream) : null;
 
             return output;
         }
@@ -123,11 +118,7 @@ namespace Microvision.Avi
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_lib is not null)
-            {
-                if (isExplicit) _lib.Dispose();
-                _lib = null;
-            }
+            if (isExplicit) _lib.Dispose();
 
             base.oDispose(isExplicit);
         }

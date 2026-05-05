@@ -46,7 +46,7 @@ namespace Microvision.DataBase
         bool AddField(string tableName, string fieldName, DbType fieldType, bool isAutoIncrement = false);
         bool CreateBase(string fileName);
         bool CreateBase(string fileName, string sqlScript);
-        bool CreateTable(string tableName, string indexName, string indexField);
+        bool CreateTable(string tableName, string? indexName, string indexField);
         void KillField(string tableName, string fieldName);
         void KillTable(string tableName);
         void RenameField(string tableName, string fieldName, string newFieldName);
@@ -75,7 +75,7 @@ namespace Microvision.DataBase
         string BaseVersion();
         void CloseBase();
         void Flush();
-        List<int> GetRecordIds(string tabOrSql, List<object> parameters);
+        List<int> GetRecordIds(string tabOrSql, List<object>? parameters);
         bool KillRecord(string tableName, string idName, int id);
         int LastError();
         bool NewPassword(string oldPasswork, string newPassword);
