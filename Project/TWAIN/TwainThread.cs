@@ -11,9 +11,10 @@ namespace Microvision.Scanners
         //            via la message loop. Ce thread crée une message loop destinée à recevoir ces messages.
         // ***************************************************************************************************
 
-        private Thread _thread;
-        private ApplicationContext _appContext;
-        private ISynchronizeInvoke _form;
+        private readonly Thread _thread;
+
+        private ApplicationContext? _appContext;
+        private ISynchronizeInvoke? _sync;
         private IntPtr _hWnd;
 
 
@@ -25,11 +26,9 @@ namespace Microvision.Scanners
         {
             _thread = new Thread(zThreadCallback);
 
-            Semaphore sem = new Semaphore(0, 1);
+            using Semaphore sem = new Semaphore(0, 1);
             _thread.Start(sem);
             sem.WaitOne();
-            sem.Dispose();
-            sem = null;
         }
 
 
@@ -69,10 +68,9 @@ namespace Microvision.Scanners
                 _appContext = null;
             }
 
-            if (_thread is not null)
+            if (_thread.ThreadState == ThreadState.Running)
             {
                 _thread.Join();
-                _thread = null;
             }
 
             base.oDispose(isExplicit);
@@ -80,7 +78,9 @@ namespace Microvision.Scanners
 
         protected void oRunInUIThread(Action action)
         {
-            if (_form.InvokeRequired) _form.Invoke(action, null);
+            ArgumentNullException.Check(_sync);
+
+            if (_sync.InvokeRequired) _sync.Invoke(action, null);
             else action();
         }
 
@@ -89,24 +89,23 @@ namespace Microvision.Scanners
         // Privées
         // ----------------------------------------
 
-        private void zThreadCallback(object arg)
+        private void zThreadCallback(object? arg)
         {
-            ApplicationContext appContext = new ApplicationContext();
-            Form form = new Form();
+            Semaphore locker = ArgumentNullException.Check(arg as Semaphore);
+
+            using ApplicationContext appContext = new ApplicationContext();
+            using Form form = new Form();
 
             _appContext = appContext;
-            _form = form;
+            _sync = form;
             _hWnd = form.Handle;
 
-            ((Semaphore)arg).Release();
+            locker.Release();
 
             Application.Run(appContext);
 
+            _sync = null;
             _hWnd = IntPtr.Zero;
-            _form = null;
-            form.Dispose();
-
-            appContext.Dispose();
         }
 
 

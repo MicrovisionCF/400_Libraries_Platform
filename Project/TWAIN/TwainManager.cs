@@ -1,4 +1,5 @@
-﻿using System.Drawing.Imaging;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
 using Microvision.Types;
@@ -13,7 +14,7 @@ namespace Microvision.Scanners
         // 16.03.23 : Création
         // ***************************************************************************************************
 
-        delegate void ImageReceivedEventHandler(Bitmap bmp, bool userCancel);
+        delegate void ImageReceivedEventHandler(Bitmap? bmp, bool userCancel);
 
         event ImageReceivedEventHandler ImageReceived;
     }
@@ -27,7 +28,7 @@ namespace Microvision.Scanners
         // 20.03.24 : Suppression de l'instanciation spécialisée des DataSources.
         // ***************************************************************************************************
 
-        public event ITwainImageReceiver.ImageReceivedEventHandler ImageReceived;
+        public event ITwainImageReceiver.ImageReceivedEventHandler? ImageReceived;
 
         // ***************************************************************************************************
 
@@ -39,8 +40,9 @@ namespace Microvision.Scanners
         private const TWAIN.TWLG KLanguage = TWAIN.TWLG.ENGLISH_USA;
 
 
-        private TwainDataSources? _dataSources;
-        private TwainThread? _thread;
+        private readonly TwainDataSources _dataSources;
+        private readonly TwainThread _thread;
+
         private IntPtr _hWnd;
         private TWAIN? _dsm;
 
@@ -70,6 +72,8 @@ namespace Microvision.Scanners
 
         public void CloseDSM()
         {
+            ArgumentNullException.Check(_dsm);
+
             _dsm.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDSM, ref _hWnd);
 
             _dsm.Dispose();
@@ -78,6 +82,8 @@ namespace Microvision.Scanners
 
         public void EnumerateDS()
         {
+            ArgumentNullException.Check(_dsm);
+
             _dataSources.Clear();
 
             TWAIN.TW_IDENTITY id = default;
@@ -101,8 +107,10 @@ namespace Microvision.Scanners
             return _dataSources.GetProductName(no);
         }
 
-        public TwainDataSource OpenDS(int no)
+        public TwainDataSource? OpenDS(int no)
         {
+            ArgumentNullException.Check(_dsm);
+
             return _dataSources.Open(no, _dsm, _thread, this);
         }
 
@@ -128,7 +136,7 @@ namespace Microvision.Scanners
                     false,
                     true,
                     null,
-                    zScanCallback,
+                    oScanCallback,
                     _thread.RunInUIThread,
                     _hWnd);
 
@@ -167,107 +175,22 @@ namespace Microvision.Scanners
 
             _hWnd = IntPtr.Zero;
 
-            if (_thread is not null)
-            {
-                if (isExplicit) _thread.Dispose();
-                _thread = null;
-            }
+            if (isExplicit) _thread.Dispose();
 
-            if (_dataSources is not null)
-            {
-                if (isExplicit) _dataSources.Dispose();
-                _dataSources = null;
-            }
+            if (isExplicit) _dataSources.Dispose();
 
             base.oDispose(isExplicit);
         }
 
-        protected void oOnImageReceived(Bitmap bmp, bool userCancel)
+        protected void oOnImageReceived(Bitmap? bmp, bool userCancel)
         {
             this.ImageReceived?.Invoke(bmp, userCancel);
         }
 
-
-        // ----------------------------------------
-        // Privées
-        // ----------------------------------------
-
-        private static void zFillBitmap(in TWAIN.TW_IMAGEINFO info, in TWAIN.TW_IMAGEMEMXFER xfer, IntPtr src, Bitmap bmp)
+        protected TWAIN.STS oScanCallback(bool closing)
         {
-            int bytesPerRow = (int)xfer.Columns * info.BitsPerPixel / 8;    // peut-être différent de xfer.BytesPerRow pour des raisons d'alignement.
+            ArgumentNullException.Check(_dsm);
 
-            // La structure TWAIN.TW_IMAGEMEMXFER contient une partie de l'image
-            // qui peut être une "strip" ou une "tile".
-            // Notre scanner EPSON Perfection V850 Pro nous renvoie des "strips".
-            // Le test ci-dessous permet de détecter une "strip".
-            // cf. TWAIN 2.5 page 336 / 766.
-            if ((xfer.XOffset == 0) && (xfer.Columns == info.ImageWidth))
-            {
-                BitmapData data = bmp.LockBits(new Rectangle(0, (int)xfer.YOffset, bmp.Width, (int)xfer.Rows), ImageLockMode.WriteOnly, bmp.PixelFormat);
-
-                for (int row = 0; row < xfer.Rows; row++)
-                {
-                    if (info.PixelType == (short)TWAIN.TWPT.RGB)
-                        QuickShop.RGBToBGR(src + row * (int)xfer.BytesPerRow, data.Scan0 + row * data.Stride, 3, (int)xfer.Columns);
-                    else
-                        KernelShop.Copy(src + row * (int)xfer.BytesPerRow, data.Scan0 + row * data.Stride, (int)xfer.Columns);
-                }
-
-                bmp.UnlockBits(data);
-            }
-        }
-
-        private static bool zIsLibraryInstalled()
-        {
-            IntPtr module = zLoadLibrary("twaindsm.dll");
-            bool ok = (module != IntPtr.Zero);
-
-            if (ok) zFreeLibrary(module);
-
-            return ok;
-        }
-
-        private static bool zMakeBitmap(in TWAIN.TW_IMAGEINFO info, out Bitmap? bmp)
-        {
-            bmp = null;
-
-            if (info.PixelType == (short)TWAIN.TWPT.RGB)
-            {
-                try
-                {
-                    bmp = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format24bppRgb);
-                }
-                catch (ArgumentException)    // survient lorsque l'image est trop lourde.
-                {
-                    bmp = null;
-                }
-            }
-            else if (info.PixelType == (short)TWAIN.TWPT.GRAY)
-            {
-                try
-                {
-                    bmp = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format8bppIndexed);
-                }
-                catch (ArgumentException)    // survient lorsque l'image est trop lourde.
-                {
-                    bmp = null;
-                }
-
-                if (bmp is not null)
-                {
-                    ColorPalette palette = bmp.Palette;
-                    Enumerable.Range(0, palette.Entries.Length).ToList().ForEach(o => palette.Entries[o] = Color.FromArgb(o, o, o));
-                    bmp.Palette = palette;
-                }
-            }
-
-            bmp?.SetResolution(info.XResolution.Get(), info.YResolution.Get());
-
-            return bmp is not null;
-        }
-
-        private TWAIN.STS zScanCallback(bool closing)
-        {
             bool ok = true;
             bool userCancel = false;
             Bitmap? bmp = null;
@@ -316,9 +239,15 @@ namespace Microvision.Scanners
 
                         if (((status == TWAIN.STS.SUCCESS) || (status == TWAIN.STS.XFERDONE)) && (xfer.BytesWritten > 0))
                         {
-                            ok = (bmp is not null) || zMakeBitmap(info, out bmp);
-
-                            if (ok) zFillBitmap(info, xfer, memPointer, bmp);
+                            if ((bmp is not null) || zMakeBitmap(info, out bmp))
+                            {
+                                zFillBitmap(info, xfer, memPointer, bmp);
+                                ok = true;
+                            }
+                            else
+                            {
+                                ok = false;
+                            }
                         }
                     } while (ok && (status == TWAIN.STS.SUCCESS));
 
@@ -334,13 +263,88 @@ namespace Microvision.Scanners
 
             oOnImageReceived(ok ? bmp : null, userCancel);
 
-            if (bmp is not null)
-            {
-                bmp.Dispose();
-                bmp = null;
-            }
+            bmp?.Dispose();
 
             return ok ? TWAIN.STS.SUCCESS : TWAIN.STS.FAILURE;
+        }
+
+
+        // ----------------------------------------
+        // Privées
+        // ----------------------------------------
+
+        private static void zFillBitmap(in TWAIN.TW_IMAGEINFO info, in TWAIN.TW_IMAGEMEMXFER xfer, IntPtr src, Bitmap bmp)
+        {
+            int bytesPerRow = (int)xfer.Columns * info.BitsPerPixel / 8;    // peut-être différent de xfer.BytesPerRow pour des raisons d'alignement.
+
+            // La structure TWAIN.TW_IMAGEMEMXFER contient une partie de l'image
+            // qui peut être une "strip" ou une "tile".
+            // Notre scanner EPSON Perfection V850 Pro nous renvoie des "strips".
+            // Le test ci-dessous permet de détecter une "strip".
+            // cf. TWAIN 2.5 page 336 / 766.
+            if ((xfer.XOffset == 0) && (xfer.Columns == info.ImageWidth))
+            {
+                BitmapData data = bmp.LockBits(new Rectangle(0, (int)xfer.YOffset, bmp.Width, (int)xfer.Rows), ImageLockMode.WriteOnly, bmp.PixelFormat);
+
+                for (int row = 0; row < xfer.Rows; row++)
+                {
+                    if (info.PixelType == (short)TWAIN.TWPT.RGB)
+                        QuickShop.RGBToBGR(src + row * (int)xfer.BytesPerRow, data.Scan0 + row * data.Stride, 3, (int)xfer.Columns);
+                    else
+                        KernelShop.Copy(src + row * (int)xfer.BytesPerRow, data.Scan0 + row * data.Stride, (int)xfer.Columns);
+                }
+
+                bmp.UnlockBits(data);
+            }
+        }
+
+        private static bool zIsLibraryInstalled()
+        {
+            IntPtr module = zLoadLibrary("twaindsm.dll");
+            bool ok = (module != IntPtr.Zero);
+
+            if (ok) zFreeLibrary(module);
+
+            return ok;
+        }
+
+        private static bool zMakeBitmap(in TWAIN.TW_IMAGEINFO info, [NotNullWhen(true)] out Bitmap? bmp)
+        {
+            bmp = null;
+
+            if (info.PixelType == (short)TWAIN.TWPT.RGB)
+            {
+                try
+                {
+                    bmp = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format24bppRgb);
+                }
+                catch (ArgumentException)    // survient lorsque l'image est trop lourde.
+                {
+                    bmp = null;
+                }
+            }
+            else if (info.PixelType == (short)TWAIN.TWPT.GRAY)
+            {
+                try
+                {
+                    bmp = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format8bppIndexed);
+                }
+                catch (ArgumentException)    // survient lorsque l'image est trop lourde.
+                {
+                    bmp = null;
+                }
+
+                if (bmp is not null)
+                {
+                    ColorPalette palette = bmp.Palette;
+                    Enumerable.Range(0, palette.Entries.Length).ToList().ForEach(o => palette.Entries[o] = Color.FromArgb(o, o, o));
+                    bmp.Palette = palette;
+                }
+            }
+
+            bmp?.SetResolution(info.XResolution.Get(), info.YResolution.Get());
+
+            return bmp is not null;
         }
 
 
@@ -357,7 +361,7 @@ namespace Microvision.Scanners
         // As IMessageFilter
         // ####################################
 
-        bool IMessageFilter.PreFilterMessage(ref Message m) => _dsm.PreFilterMessage(m.HWnd, m.Msg, m.WParam, m.LParam);
+        bool IMessageFilter.PreFilterMessage(ref Message m) => ArgumentNullException.Check(_dsm).PreFilterMessage(m.HWnd, m.Msg, m.WParam, m.LParam);
 
 
     }

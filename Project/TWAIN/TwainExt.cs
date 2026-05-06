@@ -151,7 +151,7 @@ namespace Microvision.Scanners
         // Statiques
         // ----------------------------------------
 
-        public static List<T> GetArray<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm)
+        public static List<T> GetArray<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
         {
             IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
 
@@ -161,7 +161,8 @@ namespace Microvision.Scanners
 
             for (int i = 0; i < array.NumItems; i++)
             {
-                values.Add(Marshal.PtrToStructure<T>(ptr));
+                T value = Marshal.PtrToStructure<T>(ptr);
+                values.Add(value);
                 ptr += Marshal.SizeOf(values[i]);
             }
 
@@ -170,7 +171,7 @@ namespace Microvision.Scanners
             return values;
         }
 
-        public static List<T> GetEnumeration<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm)
+        public static List<T> GetEnumeration<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
         {
             IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
 
@@ -189,7 +190,7 @@ namespace Microvision.Scanners
             return values;
         }
 
-        public static T GetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm)
+        public static T GetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
         {
             IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
 
@@ -202,7 +203,7 @@ namespace Microvision.Scanners
             return output;
         }
 
-        public static (T min, T max, T step, T def, T cur) GetRange<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm)
+        public static (T min, T max, T step, T def, T cur) GetRange<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
         {
             IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
 
@@ -218,7 +219,7 @@ namespace Microvision.Scanners
             return (min, max, step, def, cur);
         }
 
-        public static bool SetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm, T value)
+        public static bool SetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm, T value) where T : struct
         {
             IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
 

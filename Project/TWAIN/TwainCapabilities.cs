@@ -13,7 +13,7 @@ namespace Microvision.Scanners
 
         internal delegate void PhysicalSizeChangedEventHandler(float width, float height);
 
-        internal event PhysicalSizeChangedEventHandler PhysicalSizeChanged;
+        internal event PhysicalSizeChangedEventHandler? PhysicalSizeChanged;
 
         // ***************************************************************************************************
 
@@ -22,19 +22,22 @@ namespace Microvision.Scanners
 
         private TWAIN _dsm;
 
-        private TwainCapability<short> _xferCount;                      // TWAIN 2.5 page 539/766:  TW_INT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
-        private TwainCapabilityEnum<TWAIN.TWSX, ushort> _xferMech;      // TWAIN 2.5 page 637/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
-        private TwainCapabilityEnum<TWAIN.TWUN, ushort> _units;         // TWAIN 2.5 page 636/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
-        private TwainCapabilityEnum<TWAIN.TWCP, ushort> _compression;   // TWAIN 2.5 page 567/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
-        private TwainCapabilityFloat _physicalHeight;                   // TWAIN 2.5 page 617/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:Not allowed
-        private TwainCapabilityFloat _physicalWidth;                    // TWAIN 2.5 page 618/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:Not allowed
-        private TwainCapabilityFloat _xResolution;                      // TWAIN 2.5 page 639/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE|TW_ENUMERATION
-        private TwainCapabilityFloat _yResolution;                      // TWAIN 2.5 page 642/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE|TW_ENUMERATION
-        private TwainCapabilityEnum<TWAIN.TWPT, ushort> _pixelType;     // TWAIN 2.5 page 621/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
-        private TwainCapability<ushort> _bitDepth;                      // TWAIN 2.5 page 559/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
-        private TwainCapabilityRectangleF _frame;                       // TWAIN 2.5 page 581/766:  TW_FRAME, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_ENUMERATION
-        private TwainCapabilityEnum<TWAIN.TWLP, ushort> _lightPath;     // TWAIN 2.5 page 600/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_ENUMERATION
-        private TwainCapabilityFloat _gamma;                            // TWAIN 2.5 page 582/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE, MSG_GETDEFAULT:TW_ONEVALUE
+        // Obligatoires :
+        private readonly TwainCapability<short> _xferCount;                      // TWAIN 2.5 page 539/766:  TW_INT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
+        private readonly TwainCapabilityEnum<TWAIN.TWSX, ushort> _xferMech;      // TWAIN 2.5 page 637/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
+        private readonly TwainCapabilityEnum<TWAIN.TWUN, ushort> _units;         // TWAIN 2.5 page 636/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
+        private readonly TwainCapabilityEnum<TWAIN.TWCP, ushort> _compression;   // TWAIN 2.5 page 567/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
+        private readonly TwainCapabilityFloat _physicalHeight;                   // TWAIN 2.5 page 617/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:Not allowed
+        private readonly TwainCapabilityFloat _physicalWidth;                    // TWAIN 2.5 page 618/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:Not allowed
+        private readonly TwainCapabilityFloat _xResolution;                      // TWAIN 2.5 page 639/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE|TW_ENUMERATION
+        private readonly TwainCapabilityFloat _yResolution;                      // TWAIN 2.5 page 642/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE|TW_ENUMERATION
+        private readonly TwainCapabilityEnum<TWAIN.TWPT, ushort> _pixelType;     // TWAIN 2.5 page 621/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
+        private readonly TwainCapability<ushort> _bitDepth;                      // TWAIN 2.5 page 559/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
+        private readonly TwainCapabilityRectangleF _frame;                       // TWAIN 2.5 page 581/766:  TW_FRAME, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_ENUMERATION
+
+        // Optionnels : 
+        private readonly TwainCapabilityFloat? _gamma;                           // TWAIN 2.5 page 582/766:  TW_FIX32, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE, MSG_GETDEFAULT:TW_ONEVALUE
+        private readonly TwainCapabilityEnum<TWAIN.TWLP, ushort>? _lightPath;    // TWAIN 2.5 page 600/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_ENUMERATION
 
 
         // ----------------------------------------
@@ -64,7 +67,9 @@ namespace Microvision.Scanners
             }
 
             if (zQuerySupport(_dsm, TWAIN.CAP.ICAP_GAMMA, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT | TWAIN.MSG.GETDEFAULT)))
+            {
                 _gamma = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_GAMMA);
+            }
 
             // cf. TWAIN 2.5 page 422/766 § Best Practices for Applications
             _xferCount.SetOneValue(1);
@@ -146,6 +151,8 @@ namespace Microvision.Scanners
 
         public float GetDefaultGamma()
         {
+            ArgumentNullException.Check(_gamma);
+
             return _gamma.GetDefaultOneValue();
         }
 
@@ -183,14 +190,19 @@ namespace Microvision.Scanners
 
         public List<TWAIN.TWLP> GetSupportedLightPaths()
         {
-            List<TWAIN.TWLP> lightPaths = _lightPath.IsGetEnumeration ? _lightPath.GetEnumeration() : new List<TWAIN.TWLP> { _lightPath.GetOneValue() };
+            List<TWAIN.TWLP> lightPaths;
+
+            if (_lightPath is not null)
+                lightPaths = _lightPath.IsGetEnumeration ? _lightPath.GetEnumeration() : [_lightPath.GetOneValue()];
+            else
+                lightPaths = [];
 
             return lightPaths;
         }
 
         public List<TWAIN.TWPT> GetSupportedPixelTypes()
         {
-            List<TWAIN.TWPT> pixelTypes = _pixelType.IsGetEnumeration ? _pixelType.GetEnumeration() : new List<TWAIN.TWPT> { _pixelType.GetOneValue() };
+            List<TWAIN.TWPT> pixelTypes = _pixelType.IsGetEnumeration ? _pixelType.GetEnumeration() : [_pixelType.GetOneValue()];
 
             return pixelTypes;
         }
@@ -207,11 +219,15 @@ namespace Microvision.Scanners
 
         public void SetGamma(float gamma, bool force = false)
         {
+            ArgumentNullException.Check(_gamma);
+
             _gamma.SetOneValue(gamma, force);
         }
 
         public void SetLightPath(TWAIN.TWLP lightPath)
         {
+            ArgumentNullException.Check(_lightPath);
+
             _lightPath.SetOneValue(lightPath);
         }
 
@@ -233,85 +249,37 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            _dsm = null;
+            if (isExplicit) _xferCount.Dispose();
 
-            if (_xferCount is not null)
-            {
-                if (isExplicit) _xferCount.Dispose();
-                _xferCount = null;
-            }
+            if (isExplicit) _xferMech.Dispose();
 
-            if (_xferMech is not null)
-            {
-                if (isExplicit) _xferMech.Dispose();
-                _xferMech = null;
-            }
+            if (isExplicit) _units.Dispose();
 
-            if (_units is not null)
-            {
-                if (isExplicit) _units.Dispose();
-                _units = null;
-            }
+            if (isExplicit) _compression.Dispose();
 
-            if (_compression is not null)
-            {
-                if (isExplicit) _compression.Dispose();
-                _compression = null;
-            }
+            if (isExplicit) _physicalHeight.Dispose();
 
-            if (_physicalHeight is not null)
-            {
-                if (isExplicit) _physicalHeight.Dispose();
-                _physicalHeight = null;
-            }
+            if (isExplicit) _physicalWidth.Dispose();
 
-            if (_physicalWidth is not null)
-            {
-                if (isExplicit) _physicalWidth.Dispose();
-                _physicalWidth = null;
-            }
+            if (isExplicit) _xResolution.Dispose();
 
-            if (_xResolution is not null)
-            {
-                if (isExplicit) _xResolution.Dispose();
-                _xResolution = null;
-            }
+            if (isExplicit) _yResolution.Dispose();
 
-            if (_yResolution is not null)
-            {
-                if (isExplicit) _yResolution.Dispose();
-                _yResolution = null;
-            }
+            if (isExplicit) _pixelType.Dispose();
 
-            if (_pixelType is not null)
-            {
-                if (isExplicit) _pixelType.Dispose();
-                _pixelType = null;
-            }
+            if (isExplicit) _bitDepth.Dispose();
 
-            if (_bitDepth is not null)
-            {
-                if (isExplicit) _bitDepth.Dispose();
-                _bitDepth = null;
-            }
-
-            if (_frame is not null)
-            {
-                if (isExplicit) _frame.Dispose();
-                _frame = null;
-            }
+            if (isExplicit) _frame.Dispose();
 
             if (_lightPath is not null)
             {
                 _lightPath_Attach(false);
                 if (isExplicit) _lightPath.Dispose();
-                _lightPath = null;
             }
 
             if (_gamma is not null)
             {
                 if (isExplicit) _gamma.Dispose();
-                _gamma = null;
             }
 
             base.oDispose(isExplicit);
@@ -349,6 +317,8 @@ namespace Microvision.Scanners
 
         private void _lightPath_Attach(bool attach)
         {
+            ArgumentNullException.Check(_lightPath);
+
             if (attach)
             {
                 _lightPath.ValueChanged += _lightPath_ValueChanged;

@@ -1,4 +1,6 @@
-﻿using Microvision.Types;
+﻿using System.Diagnostics.CodeAnalysis;
+
+using Microvision.Types;
 
 using TWAINWorkingGroup;
 
@@ -17,7 +19,7 @@ namespace Microvision.Scanners
 
         public delegate void PhysicalSizeChangedEventHandler(float width, float height);
 
-        public event PhysicalSizeChangedEventHandler PhysicalSizeChanged;
+        public event PhysicalSizeChangedEventHandler? PhysicalSizeChanged;
 
         // ***************************************************************************************************
 
@@ -36,16 +38,17 @@ namespace Microvision.Scanners
         }
 
 
+        private readonly Semaphore _receiptComplete;
+
         private TWAIN.TW_IDENTITY _id;
-        private TWAIN _dsm;
+        private TWAIN? _dsm;
 
-        private TwainThread _thread;
-        private ITwainImageReceiver _imageReceiver;
-        private Bitmap _imageReceived;
+        private TwainThread? _thread;
+        private ITwainImageReceiver? _imageReceiver;
+        private Bitmap? _imageReceived;
         private bool _receiptCanceled;
-        private Semaphore _receiptComplete;
 
-        private TwainCapabilities _capabilities;
+        private TwainCapabilities? _capabilities;
         private RectangleF _lastFrameSet;
 
 
@@ -64,7 +67,7 @@ namespace Microvision.Scanners
         // Propriétés
         // ----------------------------------------
 
-        public bool HasResolutionRange => _capabilities.HasResolutionRange;
+        public bool HasResolutionRange => ArgumentNullException.Check(_capabilities).HasResolutionRange;
 
         public string ProductName => _id.ProductName.Get();
 
@@ -73,8 +76,10 @@ namespace Microvision.Scanners
         // Méthodes
         // ----------------------------------------
 
-        public bool Acquire(out Bitmap bmp, out bool canceled)
+        public bool Acquire([NotNullWhen(true)] out Bitmap? bmp, out bool canceled)
         {
+            oThrowIfNotOpened();
+
             bmp = null;
             canceled = false;
 
@@ -102,6 +107,8 @@ namespace Microvision.Scanners
 
         public void Close()
         {
+            oThrowIfNotOpened();
+
             _capabilities_Attach(false);
             _capabilities.Dispose();
             _capabilities = null;
@@ -120,21 +127,29 @@ namespace Microvision.Scanners
 
         public RectangleF GetFrame()
         {
+            oThrowIfNotOpened();
+
             return _capabilities.GetFrame();
         }
 
         public float GetPhysicalHeight()
         {
+            oThrowIfNotOpened();
+
             return _capabilities.PhysicalHeight;
         }
 
         public float GetPhysicalWidth()
         {
+            oThrowIfNotOpened();
+
             return _capabilities.PhysicalWidth;
         }
 
         public PixelType GetPixelType()
         {
+            oThrowIfNotOpened();
+
             TWAIN.TWPT pixelType = _capabilities.GetPixelType();
 
             PixelType output = pixelType switch
@@ -148,16 +163,22 @@ namespace Microvision.Scanners
 
         public (float resX, float resY) GetResolution()
         {
+            oThrowIfNotOpened();
+
             return _capabilities.GetResolution();
         }
 
         public (float minX, float maxX, float minY, float maxY) GetResolutionRange()
         {
+            oThrowIfNotOpened();
+
             return _capabilities.GetResolutionRange();
         }
 
         public LightPath GetSupportedLightPaths()
         {
+            oThrowIfNotOpened();
+
             List<TWAIN.TWLP> lightPaths = _capabilities.GetSupportedLightPaths();
 
             LightPath supported = 0;
@@ -169,6 +190,8 @@ namespace Microvision.Scanners
 
         public PixelType GetSupportedPixelTypes()
         {
+            oThrowIfNotOpened();
+
             List<TWAIN.TWPT> pixelTypes = _capabilities.GetSupportedPixelTypes();
 
             PixelType supported = 0;
@@ -195,6 +218,8 @@ namespace Microvision.Scanners
 
         public void SetLightPath(LightPath lightPath)
         {
+            oThrowIfNotOpened();
+
             if (lightPath.HasFlag(LightPath.Reflective)) _capabilities.SetLightPath(TWAIN.TWLP.REFLECTIVE);
             else if (lightPath.HasFlag(LightPath.Transmissive)) _capabilities.SetLightPath(TWAIN.TWLP.TRANSMISSIVE);
 
@@ -210,12 +235,16 @@ namespace Microvision.Scanners
 
         public void SetPixelType(PixelType pixelType)
         {
+            oThrowIfNotOpened();
+
             if (pixelType.HasFlag(PixelType.RGB)) _capabilities.SetPixelType(TWAIN.TWPT.RGB);
             else if (pixelType.HasFlag(PixelType.Gray)) _capabilities.SetPixelType(TWAIN.TWPT.GRAY);
         }
 
         public void SetResolution(float resX, float resY)
         {
+            oThrowIfNotOpened();
+
             _capabilities.SetResolution(resX, resY);
         }
 
@@ -230,11 +259,7 @@ namespace Microvision.Scanners
             _thread = null;
             _dsm = null;
 
-            if (_receiptComplete is not null)
-            {
-                if (isExplicit) _receiptComplete.Dispose();
-                _receiptComplete = null;
-            }
+            if (isExplicit) _receiptComplete.Dispose();
 
             if (_imageReceived is not null)
             {
@@ -254,7 +279,16 @@ namespace Microvision.Scanners
 
         protected float oGetDefaultGamma()
         {
+            oThrowIfNotOpened();
+
             return _capabilities.GetDefaultGamma();
+        }
+
+        [MemberNotNull(nameof(_dsm), nameof(_capabilities), nameof(_imageReceiver), nameof(_thread))]
+        protected void oThrowIfNotOpened()
+        {
+            if (_dsm is null || _capabilities is null || _imageReceiver is null || _thread is null)
+                throw new InvalidOperationException("Appel d'une opération nécessitant l'ouverture préalable.");
         }
 
         protected virtual bool oOpen(TWAIN dsm, TwainThread thread, ITwainImageReceiver imageReceiver)
@@ -305,12 +339,16 @@ namespace Microvision.Scanners
 
         protected void oSetFrame(RectangleF frame)
         {
+            oThrowIfNotOpened();
+
             _lastFrameSet = frame;
             _capabilities.SetFrame(_lastFrameSet);
         }
 
         protected void oSetGamma(float gamma, bool force = false)
         {
+            oThrowIfNotOpened();
+
             _capabilities.SetGamma(gamma, force);
         }
 
@@ -328,11 +366,11 @@ namespace Microvision.Scanners
         {
             if (attach)
             {
-                _capabilities.PhysicalSizeChanged += _capabilities_PhysicalSizeChanged;
+                _capabilities?.PhysicalSizeChanged += _capabilities_PhysicalSizeChanged;
             }
             else
             {
-                _capabilities.PhysicalSizeChanged -= _capabilities_PhysicalSizeChanged;
+                _capabilities?.PhysicalSizeChanged -= _capabilities_PhysicalSizeChanged;
             }
         }
 
@@ -343,6 +381,9 @@ namespace Microvision.Scanners
 
         private void _imageReceiver_Attach(bool attach)
         {
+            ArgumentNullException.Check(_imageReceiver);
+            ArgumentNullException.Check(_thread);
+
             if (attach)
             {
                 _imageReceiver.ImageReceived += _imageReceiver_ImageReceived;
@@ -355,7 +396,7 @@ namespace Microvision.Scanners
             }
         }
 
-        private void _imageReceiver_ImageReceived(Bitmap bmp, bool userCancel)
+        private void _imageReceiver_ImageReceived(Bitmap? bmp, bool userCancel)
         {
             _imageReceived?.Dispose();
             _imageReceived = null;

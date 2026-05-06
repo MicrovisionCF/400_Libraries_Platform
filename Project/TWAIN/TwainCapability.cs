@@ -4,7 +4,7 @@ using TWAINWorkingGroup;
 
 namespace Microvision.Scanners
 {
-    internal class TwainCapability<T> : Citizen
+    internal class TwainCapability<T> : Citizen where T : struct
     {
         // ***************************************************************************************************
         // 13.03.23 : Création
@@ -12,12 +12,12 @@ namespace Microvision.Scanners
 
         internal delegate void ValueChangedEventHandler();
 
-        internal event ValueChangedEventHandler ValueChanged;
+        internal event ValueChangedEventHandler? ValueChanged;
 
         // ***************************************************************************************************
 
-        private TWAIN _dsm;
-        private TWAIN.CAP _cap;
+        private readonly TWAIN _dsm;
+        private readonly TWAIN.CAP _cap;
 
 
         // ----------------------------------------
@@ -156,8 +156,6 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            _dsm = null;
-
             base.oDispose(isExplicit);
         }
 
@@ -217,7 +215,7 @@ namespace Microvision.Scanners
 
     }
 
-    internal class TwainCapabilityEnum<T1, T2> : TwainCapability<T2> where T1 : Enum
+    internal class TwainCapabilityEnum<T1, T2> : TwainCapability<T2> where T1 : Enum where T2 : struct
     {
         // ***************************************************************************************************
         // 15.03.23 : Création
