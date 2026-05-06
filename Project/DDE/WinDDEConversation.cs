@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 
+using Microvision.NativeMethods;
 using Microvision.Types;
 
 namespace Microvision.DDE
@@ -142,7 +143,7 @@ namespace Microvision.DDE
                         {
                             if (_items[i].isLinkRequired && !_items[i].isLinkEtablished)      // -- LinkItem a déjà été appelé, sans succés, donc on réessaie.
                             {
-                                IntPtr h = _lib.ClientTransaction(_hConv, _items[i].hitem, WinDDELibrary.XType.XTYP_ADVSTART);
+                                IntPtr h = _lib.ClientTransaction(_hConv, _items[i].hitem, User32.XType.XTYP_ADVSTART);
                                 if (h != IntPtr.Zero)
                                 {
                                     _items[i] = _items[i].SetLinkEtablished(true);
@@ -176,7 +177,7 @@ namespace Microvision.DDE
                 {
                     if (_items[i].isLinkEtablished)
                     {
-                        if (!fnotify) _lib.ClientTransaction(_hConv, _items[i].hitem, WinDDELibrary.XType.XTYP_ADVSTOP);
+                        if (!fnotify) _lib.ClientTransaction(_hConv, _items[i].hitem, User32.XType.XTYP_ADVSTOP);
                         _items[i] = _items[i].SetLinkEtablished(false);
                         oOnItemLinkStop(_lib.QueryString(_items[i].hitem));
                         // -- 13.09.13 : faut-il libérer h ?
@@ -208,11 +209,11 @@ namespace Microvision.DDE
             _items[itemNo] = _items[itemNo].SetLinkRequired(true);
             if (_hConv != IntPtr.Zero)
             {
-                IntPtr h = _lib.ClientTransaction(_hConv, _items[itemNo].hitem, WinDDELibrary.XType.XTYP_ADVSTART);
+                IntPtr h = _lib.ClientTransaction(_hConv, _items[itemNo].hitem, User32.XType.XTYP_ADVSTART);
                 _items[itemNo] = _items[itemNo].SetLinkEtablished(h != IntPtr.Zero);
                 // -- 13.09.13 : quand faut-il libérer h ?
 
-                WinDDELibrary.DMLERR erc = _lib.GetLastError();  // -- des fois ya des erreurs mais ça marche quand même...
+                User32.DMLERR erc = _lib.GetLastError();  // -- des fois ya des erreurs mais ça marche quand même...
                 if (erc != 0)
                     Debug.Print(_lib.QueryString(_items[itemNo].hitem) + SpecialChars.Tab + h.ToString() + SpecialChars.Tab + erc.ToNameString());
             }
@@ -229,7 +230,7 @@ namespace Microvision.DDE
             IntPtr dataHandle = _lib.CreateDataHandle(_items[itemNo].hitem, bf, 1);
             if (dataHandle != IntPtr.Zero)
             {
-                IntPtr h = _lib.ClientTransactionData(dataHandle, _hConv, _items[itemNo].hitem, WinDDELibrary.XType.XTYP_POKE);
+                IntPtr h = _lib.ClientTransactionData(dataHandle, _hConv, _items[itemNo].hitem, User32.XType.XTYP_POKE);
                 ok = h != IntPtr.Zero;
             }
 
@@ -248,7 +249,7 @@ namespace Microvision.DDE
 
             if (_hConv != IntPtr.Zero)
             {
-                IntPtr h = _lib.ClientTransaction(_hConv, _items[itemNo].hitem, WinDDELibrary.XType.XTYP_REQUEST);
+                IntPtr h = _lib.ClientTransaction(_hConv, _items[itemNo].hitem, User32.XType.XTYP_REQUEST);
                 if (h != IntPtr.Zero)
                 {
                     _lib.GetData(h, out Bytes bts);
@@ -264,10 +265,10 @@ namespace Microvision.DDE
         {
             if (_hConv != IntPtr.Zero)
             {
-                _lib.ClientTransaction(_hConv, _items[itemNo].hitem, WinDDELibrary.XType.XTYP_ADVSTOP); // -- 13.09.13 : faut-il libérer h ?
+                _lib.ClientTransaction(_hConv, _items[itemNo].hitem, User32.XType.XTYP_ADVSTOP); // -- 13.09.13 : faut-il libérer h ?
                 _items[itemNo] = _items[itemNo].SetLinkEtablished(false);
 
-                WinDDELibrary.DMLERR erc = _lib.GetLastError();
+                User32.DMLERR erc = _lib.GetLastError();
                 if (erc != 0)
                     Debug.Print(_lib.QueryString(_items[itemNo].hitem) + SpecialChars.Tab + erc.ToNameString());
             }

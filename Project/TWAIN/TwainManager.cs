@@ -2,6 +2,7 @@
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
+using Microvision.NativeMethods;
 using Microvision.Types;
 
 using TWAINWorkingGroup;
@@ -31,9 +32,6 @@ namespace Microvision.Scanners
         public event ITwainImageReceiver.ImageReceivedEventHandler? ImageReceived;
 
         // ***************************************************************************************************
-
-        [DllImport("kernel32.dll", EntryPoint = "FreeLibrary")] private extern static int zFreeLibrary(IntPtr module);
-        [DllImport("kernel32.dll", EntryPoint = "LoadLibraryW", CharSet = CharSet.Unicode)] private extern static IntPtr zLoadLibrary(string fileName);
 
 
         private const TWAIN.TWCY KCountry = TWAIN.TWCY.USA;
@@ -300,10 +298,10 @@ namespace Microvision.Scanners
 
         private static bool zIsLibraryInstalled()
         {
-            IntPtr module = zLoadLibrary("twaindsm.dll");
+            IntPtr module = Kernel32.LoadLibraryW("twaindsm.dll");
             bool ok = (module != IntPtr.Zero);
 
-            if (ok) zFreeLibrary(module);
+            if (ok) Kernel32.FreeLibrary(module);
 
             return ok;
         }

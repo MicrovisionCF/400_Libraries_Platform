@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 
+using Microvision.NativeMethods;
 using Microvision.Types;
 
 namespace Microvision.DDE
@@ -47,7 +48,7 @@ namespace Microvision.DDE
         private readonly WinDDEConversations _convs;
 
         private WinDDELibrary? _lib;
-        private WinDDELibrary.FNCALLBACK? _callBack;
+        private User32.FNCALLBACK? _callBack;
 
 
         // ----------------------------------------
@@ -251,34 +252,34 @@ namespace Microvision.DDE
         // Privées
         // ----------------------------------------
 
-        private IntPtr zDDECallback(WinDDELibrary.XType wType, int wFmt, IntPtr hConv, IntPtr hsz1, IntPtr hsz2, IntPtr hData, IntPtr dwData1, IntPtr dwData2)
+        private IntPtr zDDECallback(User32.XType wType, int wFmt, IntPtr hConv, IntPtr hsz1, IntPtr hsz2, IntPtr hData, IntPtr dwData1, IntPtr dwData2)
         {
-            WinDDELibrary.DDEStatus output = default;
+            User32.DDEStatus output = default;
 
             switch (wType)       // -- ceux susceptibles d'être reçus par un client
             {
-                case WinDDELibrary.XType.XTYP_ADVDATA:
+                case User32.XType.XTYP_ADVDATA:
                     bool adviseOk = oDDEAdviseData(hConv, hsz2, hData);
-                    output = adviseOk ? WinDDELibrary.DDEStatus.DDE_FACK : WinDDELibrary.DDEStatus.DDE_FNOTPROCESSED;
+                    output = adviseOk ? User32.DDEStatus.DDE_FACK : User32.DDEStatus.DDE_FNOTPROCESSED;
                     break;
 
-                case WinDDELibrary.XType.XTYP_DISCONNECT:// -- pas de réponse
+                case User32.XType.XTYP_DISCONNECT:// -- pas de réponse
                     oDDEDisconnect(hConv, dwData2.ToInt32());
                     break;
 
-                case WinDDELibrary.XType.XTYP_ERROR:// -- pas de réponse
+                case User32.XType.XTYP_ERROR:// -- pas de réponse
                     oDDEError((int)hConv);
                     break;
 
-                case WinDDELibrary.XType.XTYP_REGISTER:// -- pas de réponse
+                case User32.XType.XTYP_REGISTER:// -- pas de réponse
                     oDDERegisterServer(hsz1);
                     break;
 
-                case WinDDELibrary.XType.XTYP_UNREGISTER:// -- pas de réponse
+                case User32.XType.XTYP_UNREGISTER:// -- pas de réponse
                     oDDEUnregisterServer(hsz1);
                     break;
 
-                case WinDDELibrary.XType.XTYP_XACT_COMPLETE:// -- pas de réponse
+                case User32.XType.XTYP_XACT_COMPLETE:// -- pas de réponse
                     oDDEASyncCompleted();
 
                     Debug.Print("==> " + "XTYP_XACT_COMPLETE");
