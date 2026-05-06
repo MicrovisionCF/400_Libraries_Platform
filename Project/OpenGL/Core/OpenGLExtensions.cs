@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
+using Microvision.NativeMethods;
+
 namespace Microvision.OpenGL
 {
     public partial class OpenGLContext
@@ -132,7 +134,7 @@ namespace Microvision.OpenGL
 
             if (!_delegates.ContainsKey(delName))
             {
-                IntPtr delPtr = Win32.wglGetProcAddress(delName);
+                IntPtr delPtr = OpenGl32.wglGetProcAddress(delName);
                 if (delPtr != IntPtr.Zero)
                     _delegates.Add(delName, Marshal.GetDelegateForFunctionPointer(delPtr, delType));
                 else

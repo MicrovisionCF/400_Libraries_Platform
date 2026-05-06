@@ -66,7 +66,7 @@ namespace Microvision.OpenGL
 
         public void MakeNothingCurrent()
         {
-            Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+            OpenGl32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
         }
 
         public void SetDimensions(int width, int height)

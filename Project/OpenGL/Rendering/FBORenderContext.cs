@@ -105,7 +105,7 @@ namespace Microvision.OpenGL
                 _gl.BindFramebuffer(OpenGLConst.GL_FRAMEBUFFER_EXT, _bufferFrameFinal);
                 _gl.ReadBuffer((ReadBufferMode)OpenGLConst.GL_COLOR_ATTACHMENT0_EXT);
                 _gl.ReadPixels(0, 0, _width, _height, PixelFormat.Bgra, PixelType.UnsignedByte, _dibBuffer.Bits);
-                Gdi32.BitBlt(hdc, 0, 0, _width, _height, _dibSectionDeviceContext, 0, 0, Win32.SRCCOPY);
+                Gdi32.BitBlt(hdc, 0, 0, _width, _height, _dibSectionDeviceContext, 0, 0, Gdi32.SRCCOPY);
 
                 _gl.BindFramebuffer(OpenGLConst.GL_FRAMEBUFFER_EXT, _bufferFrameMulti);
             }

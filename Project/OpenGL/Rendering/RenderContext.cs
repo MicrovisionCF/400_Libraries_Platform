@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.NativeMethods;
+using Microvision.Types;
 
 namespace Microvision.OpenGL
 {
@@ -119,7 +120,7 @@ namespace Microvision.OpenGL
         {
             if (_renderContextHandle != IntPtr.Zero)
             {
-                Win32.wglDeleteContext(RenderContextHandle);
+                OpenGl32.wglDeleteContext(RenderContextHandle);
                 _renderContextHandle = IntPtr.Zero;
             }
 
@@ -157,9 +158,9 @@ namespace Microvision.OpenGL
                 else
                 {
                     IntPtr hrc = gl.CreateContextAttribsARB(IntPtr.Zero, attributes);
-                    Win32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
-                    Win32.wglDeleteContext(RenderContextHandle);
-                    Win32.wglMakeCurrent(DeviceContextHandle, hrc);
+                    OpenGl32.wglMakeCurrent(IntPtr.Zero, IntPtr.Zero);
+                    OpenGl32.wglDeleteContext(RenderContextHandle);
+                    OpenGl32.wglMakeCurrent(DeviceContextHandle, hrc);
                     _renderContextHandle = hrc;
                 }
 

@@ -80,7 +80,7 @@ namespace Microvision.OpenGL
             IntPtr hOldObject = Gdi32.SelectObject(_renderContext.DeviceContextHandle, hFont);
             uint listBase = GenLists(1);
 
-            Win32.wglUseFontOutlinesA(_renderContext.DeviceContextHandle, 0U, 255U, listBase, 0, extrusion, (int)fontOutlineFormat, null);
+            OpenGl32.wglUseFontOutlinesA(_renderContext.DeviceContextHandle, 0U, 255U, listBase, 0, extrusion, (int)fontOutlineFormat, null);
             Gdi32.SelectObject(_renderContext.DeviceContextHandle, hOldObject);
             Gdi32.DeleteObject(hFont);
 
@@ -104,7 +104,7 @@ namespace Microvision.OpenGL
 
         private static IntPtr zCreateFont(string fontName)
         {
-            return Gdi32.CreateFontA(10, 0, 0, 0, Win32.FW_DONTCARE, 0, 0, 0, Win32.DEFAULT_CHARSET, Win32.OUT_OUTLINE_PRECIS, Win32.CLIP_DEFAULT_PRECIS, Win32.CLEARTYPE_QUALITY, Win32.VARIABLE_PITCH, fontName);
+            return Gdi32.CreateFontA(10, 0, 0, 0, Gdi32.FW_DONTCARE, 0, 0, 0, Gdi32.DEFAULT_CHARSET, Gdi32.OUT_OUTLINE_PRECIS, Gdi32.CLIP_DEFAULT_PRECIS, Gdi32.CLEARTYPE_QUALITY, Gdi32.VARIABLE_PITCH, fontName);
         }
 
 

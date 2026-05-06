@@ -45,7 +45,7 @@ namespace Microvision.OpenGL
             if (_deviceContextHandle != IntPtr.Zero || _windowHandle != IntPtr.Zero)
             {
                 Gdi32.SwapBuffers(_deviceContextHandle);
-                Gdi32.BitBlt(hdc, 0, 0, _width, _height, _deviceContextHandle, 0, 0, Win32.SRCCOPY);
+                Gdi32.BitBlt(hdc, 0, 0, _width, _height, _deviceContextHandle, 0, 0, Gdi32.SRCCOPY);
             }
         }
 
@@ -82,7 +82,7 @@ namespace Microvision.OpenGL
 
         protected override void oMakeCurrent()
         {
-            if (_renderContextHandle != IntPtr.Zero) Win32.wglMakeCurrent(_deviceContextHandle, _renderContextHandle);
+            if (_renderContextHandle != IntPtr.Zero) OpenGl32.wglMakeCurrent(_deviceContextHandle, _renderContextHandle);
         }
 
         protected override void oSetDimensions(int width, int height)
@@ -122,7 +122,7 @@ namespace Microvision.OpenGL
             int iPixelFormat = Gdi32.ChoosePixelFormat(hdc, pfd);
 
             if (iPixelFormat != 0 && Gdi32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
-                renderHdc = Win32.wglCreateContext(hdc);
+                renderHdc = OpenGl32.wglCreateContext(hdc);
 
             return renderHdc;
         }

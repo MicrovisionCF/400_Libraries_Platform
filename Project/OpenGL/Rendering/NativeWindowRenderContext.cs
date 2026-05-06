@@ -78,7 +78,7 @@ namespace Microvision.OpenGL
         protected override void oMakeCurrent()
         {
             if (_renderContextHandle != IntPtr.Zero)
-                Win32.wglMakeCurrent(_deviceContextHandle, _renderContextHandle);
+                OpenGl32.wglMakeCurrent(_deviceContextHandle, _renderContextHandle);
         }
 
 
@@ -107,7 +107,7 @@ namespace Microvision.OpenGL
             int iPixelFormat = Gdi32.ChoosePixelFormat(hdc, pfd);
 
             if (iPixelFormat != 0 && Gdi32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
-                renderHdc = Win32.wglCreateContext(hdc);
+                renderHdc = OpenGl32.wglCreateContext(hdc);
 
             return renderHdc;
         }
