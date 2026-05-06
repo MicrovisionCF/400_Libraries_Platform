@@ -135,7 +135,7 @@ namespace Microvision.Scanners
                     ushort.Parse(MakinShop.GetAppVersion().Split('.')[1]),
                     false,
                     true,
-                    null,
+                    null, // TODONEXTGEN à résoudre
                     oScanCallback,
                     _thread.RunInUIThread,
                     _hWnd);
