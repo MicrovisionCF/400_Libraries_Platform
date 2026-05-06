@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.NativeMethods;
+using Microvision.Types;
 
 namespace Microvision.OpenGL
 {
@@ -22,7 +23,7 @@ namespace Microvision.OpenGL
 
         public OpenGLContext()
         {
-            _openGLLib = Win32.LoadLibraryA("opengl32.dll");
+            _openGLLib = Kernel32.LoadLibraryA("opengl32.dll");
 
             _fontEntries = [];
         }

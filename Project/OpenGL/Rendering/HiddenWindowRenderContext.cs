@@ -1,4 +1,6 @@
-﻿namespace Microvision.OpenGL
+﻿using Microvision.NativeMethods;
+
+namespace Microvision.OpenGL
 {
     internal class HiddenWindowRenderContext : RenderContext
     {
@@ -11,7 +13,7 @@
 
         protected IntPtr _windowHandle = IntPtr.Zero;
 
-        private Win32.WndProc _procDelegate;
+        private User32.WndProc _procDelegate;
 
 
         // ----------------------------------------
@@ -20,7 +22,7 @@
 
         public HiddenWindowRenderContext()
         {
-            _procDelegate = new Win32.WndProc(Win32.DefWindowProcA);
+            _procDelegate = new User32.WndProc(User32.DefWindowProcA);
         }
 
 
@@ -42,8 +44,8 @@
         {
             if (_deviceContextHandle != IntPtr.Zero || _windowHandle != IntPtr.Zero)
             {
-                Win32.SwapBuffers(_deviceContextHandle);
-                Win32.BitBlt(hdc, 0, 0, _width, _height, _deviceContextHandle, 0, 0, Win32.SRCCOPY);
+                Gdi32.SwapBuffers(_deviceContextHandle);
+                Gdi32.BitBlt(hdc, 0, 0, _width, _height, _deviceContextHandle, 0, 0, Win32.SRCCOPY);
             }
         }
 
@@ -54,9 +56,9 @@
             if (ok)
             {
                 _windowHandle = zCreateWindow(_width, _height, _procDelegate);
-                _deviceContextHandle = Win32.GetDC(_windowHandle);
+                _deviceContextHandle = User32.GetDC(_windowHandle);
 
-                Win32.PIXELFORMATDESCRIPTOR pfd = zCreatePixelFormat(_bitDepth);
+                Gdi32.PIXELFORMATDESCRIPTOR pfd = zCreatePixelFormat(_bitDepth);
                 _renderContextHandle = zCreateRenderHdc(_deviceContextHandle, pfd);
 
                 oMakeCurrent();
@@ -70,8 +72,8 @@
         {
             if (_windowHandle != IntPtr.Zero)
             {
-                Win32.ReleaseDC(_windowHandle, DeviceContextHandle);
-                Win32.DestroyWindow(_windowHandle);
+                User32.ReleaseDC(_windowHandle, DeviceContextHandle);
+                User32.DestroyWindow(_windowHandle);
                 _windowHandle = IntPtr.Zero;
             }
 
@@ -87,11 +89,11 @@
         {
             base.oSetDimensions(width, height);
 
-            Win32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, width, height,
-                Win32.SetWindowPosFlags.SWP_NOACTIVATE |
-                Win32.SetWindowPosFlags.SWP_NOCOPYBITS |
-                Win32.SetWindowPosFlags.SWP_NOMOVE |
-                Win32.SetWindowPosFlags.SWP_NOOWNERZORDER);
+            User32.SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, width, height,
+                User32.SetWindowPosFlags.SWP_NOACTIVATE |
+                User32.SetWindowPosFlags.SWP_NOCOPYBITS |
+                User32.SetWindowPosFlags.SWP_NOMOVE |
+                User32.SetWindowPosFlags.SWP_NOOWNERZORDER);
         }
 
 
@@ -99,39 +101,39 @@
         // Privées
         // ----------------------------------------
 
-        private static Win32.PIXELFORMATDESCRIPTOR zCreatePixelFormat(int bitDepth)
+        private static Gdi32.PIXELFORMATDESCRIPTOR zCreatePixelFormat(int bitDepth)
         {
-            Win32.PIXELFORMATDESCRIPTOR pfd = new Win32.PIXELFORMATDESCRIPTOR();
+            Gdi32.PIXELFORMATDESCRIPTOR pfd = new Gdi32.PIXELFORMATDESCRIPTOR();
             pfd.Init();
             pfd.nVersion = 1;
-            pfd.dwFlags = Win32.PfdFlags.PFD_DRAW_TO_BITMAP | Win32.PfdFlags.PFD_SUPPORT_OPENGL | Win32.PfdFlags.PFD_DOUBLEBUFFER;
-            pfd.iPixelType = Win32.PFDPixelType.PFD_TYPE_RGBA;
+            pfd.dwFlags = Gdi32.PfdFlags.PFD_DRAW_TO_BITMAP | Gdi32.PfdFlags.PFD_SUPPORT_OPENGL | Gdi32.PfdFlags.PFD_DOUBLEBUFFER;
+            pfd.iPixelType = Gdi32.PFDPixelType.PFD_TYPE_RGBA;
             pfd.cColorBits = (byte)bitDepth;
             pfd.cDepthBits = 16;
             pfd.cStencilBits = 8;
-            pfd.iLayerType = Win32.PFDLayerType.PFD_MAIN_PLANE;
+            pfd.iLayerType = Gdi32.PFDLayerType.PFD_MAIN_PLANE;
 
             return pfd;
         }
 
-        private static IntPtr zCreateRenderHdc(IntPtr hdc, Win32.PIXELFORMATDESCRIPTOR pfd)
+        private static IntPtr zCreateRenderHdc(IntPtr hdc, Gdi32.PIXELFORMATDESCRIPTOR pfd)
         {
             IntPtr renderHdc = IntPtr.Zero;
-            int iPixelFormat = Win32.ChoosePixelFormat(hdc, pfd);
+            int iPixelFormat = Gdi32.ChoosePixelFormat(hdc, pfd);
 
-            if (iPixelFormat != 0 && Win32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
+            if (iPixelFormat != 0 && Gdi32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
                 renderHdc = Win32.wglCreateContext(hdc);
 
             return renderHdc;
         }
 
-        private static IntPtr zCreateWindow(int width, int height, Win32.WndProc procDel)
+        private static IntPtr zCreateWindow(int width, int height, User32.WndProc procDel)
         {
             const string KWinName = "GLRenderWindow";
 
-            Win32.WNDCLASSEX wndClass = new Win32.WNDCLASSEX();
+            User32.WNDCLASSEX wndClass = new User32.WNDCLASSEX();
             wndClass.Init();
-            wndClass.style = Win32.ClassStyles.CS_HREDRAW | Win32.ClassStyles.CS_VREDRAW | Win32.ClassStyles.CS_OWNDC;
+            wndClass.style = User32.ClassStyles.CS_HREDRAW | User32.ClassStyles.CS_VREDRAW | User32.ClassStyles.CS_OWNDC;
             wndClass.lpfnWndProc = procDel;
             wndClass.cbClsExtra = 0;
             wndClass.cbWndExtra = 0;
@@ -143,8 +145,8 @@
             wndClass.lpszClassName = KWinName;
             wndClass.hIconSm = IntPtr.Zero;
 
-            Win32.RegisterClassExA(ref wndClass);
-            IntPtr wndHandle = Win32.CreateWindowExA((Win32.WindowStylesEx)0, KWinName, "", Win32.WindowStyles.WS_CLIPCHILDREN | Win32.WindowStyles.WS_CLIPSIBLINGS | Win32.WindowStyles.WS_POPUP, 0, 0, width, height, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            User32.RegisterClassExA(ref wndClass);
+            IntPtr wndHandle = User32.CreateWindowExA((User32.WindowStylesEx)0, KWinName, "", User32.WindowStyles.WS_CLIPCHILDREN | User32.WindowStyles.WS_CLIPSIBLINGS | User32.WindowStyles.WS_POPUP, 0, 0, width, height, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
             return wndHandle;
         }

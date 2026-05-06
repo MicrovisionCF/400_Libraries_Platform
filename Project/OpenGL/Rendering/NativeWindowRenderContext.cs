@@ -1,4 +1,6 @@
-﻿namespace Microvision.OpenGL
+﻿using Microvision.NativeMethods;
+
+namespace Microvision.OpenGL
 {
     internal class NativeWindowRenderContext : RenderContext
     {
@@ -38,7 +40,7 @@
         protected override void oBlit(IntPtr hdc)
         {
             if (_deviceContextHandle != IntPtr.Zero || _windowHandle != IntPtr.Zero)
-                Win32.SwapBuffers(_deviceContextHandle);
+                Gdi32.SwapBuffers(_deviceContextHandle);
         }
 
         protected override bool oCreate(OpenGLVersion openGLVersion, OpenGLContext gl, int width, int height, int bitDepth, object? parameter)
@@ -55,8 +57,8 @@
                 throw new Exception("A valid Window Handle must be provided for the NativeWindowRenderContext");
             }
 
-            _deviceContextHandle = Win32.GetDC(_windowHandle);
-            Win32.PIXELFORMATDESCRIPTOR pfd = zCreatePixelFormat(_bitDepth);
+            _deviceContextHandle = User32.GetDC(_windowHandle);
+            Gdi32.PIXELFORMATDESCRIPTOR pfd = zCreatePixelFormat(_bitDepth);
             _renderContextHandle = zCreateRenderHdc(_deviceContextHandle, pfd);
 
             return _renderContextHandle != IntPtr.Zero;
@@ -66,7 +68,7 @@
         {
             if (_windowHandle != IntPtr.Zero)
             {
-                Win32.ReleaseDC(_windowHandle, _deviceContextHandle);
+                User32.ReleaseDC(_windowHandle, _deviceContextHandle);
                 _windowHandle = IntPtr.Zero;
             }
 
@@ -84,27 +86,27 @@
         // Privées
         // ----------------------------------------
 
-        private static Win32.PIXELFORMATDESCRIPTOR zCreatePixelFormat(int bitDepth)
+        private static Gdi32.PIXELFORMATDESCRIPTOR zCreatePixelFormat(int bitDepth)
         {
-            Win32.PIXELFORMATDESCRIPTOR pfd = new Win32.PIXELFORMATDESCRIPTOR();
+            Gdi32.PIXELFORMATDESCRIPTOR pfd = new Gdi32.PIXELFORMATDESCRIPTOR();
             pfd.Init();
             pfd.nVersion = 1;
-            pfd.dwFlags = Win32.PfdFlags.PFD_DRAW_TO_BITMAP | Win32.PfdFlags.PFD_SUPPORT_OPENGL | Win32.PfdFlags.PFD_DOUBLEBUFFER;
-            pfd.iPixelType = Win32.PFDPixelType.PFD_TYPE_RGBA;
+            pfd.dwFlags = Gdi32.PfdFlags.PFD_DRAW_TO_BITMAP | Gdi32.PfdFlags.PFD_SUPPORT_OPENGL | Gdi32.PfdFlags.PFD_DOUBLEBUFFER;
+            pfd.iPixelType = Gdi32.PFDPixelType.PFD_TYPE_RGBA;
             pfd.cColorBits = (byte)bitDepth;
             pfd.cDepthBits = 16;
             pfd.cStencilBits = 8;
-            pfd.iLayerType = Win32.PFDLayerType.PFD_MAIN_PLANE;
+            pfd.iLayerType = Gdi32.PFDLayerType.PFD_MAIN_PLANE;
 
             return pfd;
         }
 
-        private static IntPtr zCreateRenderHdc(IntPtr hdc, Win32.PIXELFORMATDESCRIPTOR pfd)
+        private static IntPtr zCreateRenderHdc(IntPtr hdc, Gdi32.PIXELFORMATDESCRIPTOR pfd)
         {
             IntPtr renderHdc = IntPtr.Zero;
-            int iPixelFormat = Win32.ChoosePixelFormat(hdc, pfd);
+            int iPixelFormat = Gdi32.ChoosePixelFormat(hdc, pfd);
 
-            if (iPixelFormat != 0 && Win32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
+            if (iPixelFormat != 0 && Gdi32.SetPixelFormat(hdc, iPixelFormat, pfd) != 0)
                 renderHdc = Win32.wglCreateContext(hdc);
 
             return renderHdc;

@@ -1,4 +1,6 @@
-﻿namespace Microvision.OpenGL
+﻿using Microvision.NativeMethods;
+
+namespace Microvision.OpenGL
 {
     internal class FBORenderContext : HiddenWindowRenderContext
     {
@@ -103,7 +105,7 @@
                 _gl.BindFramebuffer(OpenGLConst.GL_FRAMEBUFFER_EXT, _bufferFrameFinal);
                 _gl.ReadBuffer((ReadBufferMode)OpenGLConst.GL_COLOR_ATTACHMENT0_EXT);
                 _gl.ReadPixels(0, 0, _width, _height, PixelFormat.Bgra, PixelType.UnsignedByte, _dibBuffer.Bits);
-                Win32.BitBlt(hdc, 0, 0, _width, _height, _dibSectionDeviceContext, 0, 0, Win32.SRCCOPY);
+                Gdi32.BitBlt(hdc, 0, 0, _width, _height, _dibSectionDeviceContext, 0, 0, Win32.SRCCOPY);
 
                 _gl.BindFramebuffer(OpenGLConst.GL_FRAMEBUFFER_EXT, _bufferFrameMulti);
             }
@@ -117,7 +119,7 @@
             {
                 _gl = gl;
 
-                _dibSectionDeviceContext = Win32.CreateCompatibleDC(_deviceContextHandle);
+                _dibSectionDeviceContext = Gdi32.CreateCompatibleDC(_deviceContextHandle);
                 _dibBuffer.Create(_dibSectionDeviceContext, _width, _height, _bitDepth);
 
                 ok = oAllocBuffers();
@@ -144,7 +146,7 @@
             if (isExplicit) _dibBuffer.Dispose();
 
             oDestroyFramebuffers();
-            Win32.DeleteDC(_dibSectionDeviceContext);
+            Gdi32.DeleteDC(_dibSectionDeviceContext);
 
             base.oDispose(isExplicit);
         }
