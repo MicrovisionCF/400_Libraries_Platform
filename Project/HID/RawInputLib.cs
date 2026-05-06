@@ -149,7 +149,7 @@ namespace Microvision.HID
             return output;
         }
 
-        public static bool RegisterDevice(List<HIDLib.USAGE_AND_PAGE> uups, IntPtr hwnd)
+        public static bool RegisterDevice(List<Hid.USAGE_AND_PAGE> uups, IntPtr hwnd)
         {
             int nb = uups.Count;
             List<User32.RAWINPUTDEVICE> lst = new List<User32.RAWINPUTDEVICE>();

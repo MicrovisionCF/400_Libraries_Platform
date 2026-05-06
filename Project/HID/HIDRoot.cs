@@ -25,7 +25,7 @@ namespace Microvision.HID
         // ***************************************************************************************************
 
         private readonly List<User32.RAWINPUTDEVICELIST> _devices;
-        private readonly List<HIDLib.USAGE_AND_PAGE> _regUUPs;
+        private readonly List<Hid.USAGE_AND_PAGE> _regUUPs;
         private readonly HIDDevices _regDevs;
 
 
@@ -58,9 +58,9 @@ namespace Microvision.HID
             return zFindHdl(hdev, _devices);
         }
 
-        public int Find(HIDLib.SomeUsage us, HIDLib.SomeUsagePage uspg)
+        public int Find(Hid.SomeUsage us, Hid.SomeUsagePage uspg)
         {
-            return zFindUUP(new HIDLib.USAGE_AND_PAGE(us, uspg), _devices);
+            return zFindUUP(new Hid.USAGE_AND_PAGE(us, uspg), _devices);
         }
 
         public int Find(int vendorId, int productId)
@@ -119,9 +119,9 @@ namespace Microvision.HID
             }
         }
 
-        public bool Register(IntPtr hwnd, HIDLib.SomeUsage us, HIDLib.SomeUsagePage uspg)
+        public bool Register(IntPtr hwnd, Hid.SomeUsage us, Hid.SomeUsagePage uspg)
         {
-            _regUUPs.Add(new HIDLib.USAGE_AND_PAGE(us, uspg));
+            _regUUPs.Add(new Hid.USAGE_AND_PAGE(us, uspg));
 
             for (int i = 0; i < _devices.Count; i++)
                 if (_regUUPs.IndexOf(zGetUsageAndPage(_devices[i].dwType, _devices[i].hDevice)) >= 0)
@@ -151,11 +151,11 @@ namespace Microvision.HID
                     break;
 
                 case User32.RIM.RIM_TYPEHIDField:
-                    HIDLib.USAGE_AND_PAGE uup = zGetUsageAndPage(rim, hdev);
+                    Hid.USAGE_AND_PAGE uup = zGetUsageAndPage(rim, hdev);
                     dev = uup.Usage switch
                     {
-                        HIDLib.SomeUsage.Joystick => new HIDJoystick(hdev),
-                        HIDLib.SomeUsage.GamePad => new HIDJoystick(hdev),
+                        Hid.SomeUsage.Joystick => new HIDJoystick(hdev),
+                        Hid.SomeUsage.GamePad => new HIDJoystick(hdev),
                         _ => new HIDOther(hdev),
                     };
                     break;
@@ -238,7 +238,7 @@ namespace Microvision.HID
             return lst.FindIndex(d => hdev == d.hDevice);
         }
 
-        private static int zFindUUP(HIDLib.USAGE_AND_PAGE uup, List<User32.RAWINPUTDEVICELIST> lst)
+        private static int zFindUUP(Hid.USAGE_AND_PAGE uup, List<User32.RAWINPUTDEVICELIST> lst)
         {
             return lst.FindIndex(u => uup == zGetUsageAndPage(u.dwType, u.hDevice));
         }
@@ -248,23 +248,23 @@ namespace Microvision.HID
             return lst.FindIndex(device => zGetVendorIdProductId(device.hDevice) == (vendorId, productId));
         }
 
-        private static HIDLib.USAGE_AND_PAGE zGetUsageAndPage(User32.RIM rim, IntPtr hdev)
+        private static Hid.USAGE_AND_PAGE zGetUsageAndPage(User32.RIM rim, IntPtr hdev)
         {
-            HIDLib.USAGE_AND_PAGE output;
+            Hid.USAGE_AND_PAGE output;
 
             switch (rim)
             {
                 case User32.RIM.RIM_TYPEMOUSEField:
-                    output = new HIDLib.USAGE_AND_PAGE(HIDLib.SomeUsage.Mouse, HIDLib.SomeUsagePage.GenericDesktopControls);
+                    output = new Hid.USAGE_AND_PAGE(Hid.SomeUsage.Mouse, Hid.SomeUsagePage.GenericDesktopControls);
                     break;
 
                 case User32.RIM.RIM_TYPEKEYBOARDField:
-                    output = new HIDLib.USAGE_AND_PAGE(HIDLib.SomeUsage.Keyboard, HIDLib.SomeUsagePage.GenericDesktopControls);
+                    output = new Hid.USAGE_AND_PAGE(Hid.SomeUsage.Keyboard, Hid.SomeUsagePage.GenericDesktopControls);
                     break;
 
                 case User32.RIM.RIM_TYPEHIDField:
                     User32.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).hid();
-                    output = new HIDLib.USAGE_AND_PAGE((HIDLib.SomeUsage)inf.usUsage, (HIDLib.SomeUsagePage)inf.usUsagePage);
+                    output = new Hid.USAGE_AND_PAGE((Hid.SomeUsage)inf.usUsage, (Hid.SomeUsagePage)inf.usUsagePage);
                     break;
 
                 default:

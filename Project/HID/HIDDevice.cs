@@ -24,8 +24,8 @@ namespace Microvision.HID
         protected readonly string _name;
         protected readonly User32.RID_DEVICE_INFO _info;
 
-        protected HIDLib.SomeUsagePage _usagePage;
-        protected HIDLib.SomeUsage _usage;
+        protected Hid.SomeUsagePage _usagePage;
+        protected Hid.SomeUsage _usage;
 
         protected User32.RAWINPUT _lastInput;
 
@@ -52,9 +52,9 @@ namespace Microvision.HID
 
         public string Name => _name;
 
-        public HIDLib.SomeUsage Usage => _usage;
+        public Hid.SomeUsage Usage => _usage;
 
-        public HIDLib.SomeUsagePage UsagePage => _usagePage;
+        public Hid.SomeUsagePage UsagePage => _usagePage;
 
 
         // ----------------------------------------
@@ -107,7 +107,7 @@ namespace Microvision.HID
             return changed;
         }
 
-        protected void oSetUsage(HIDLib.SomeUsagePage uspg, HIDLib.SomeUsage us)
+        protected void oSetUsage(Hid.SomeUsagePage uspg, Hid.SomeUsage us)
         {
             _usagePage = uspg;
             _usage = us;
@@ -175,8 +175,8 @@ namespace Microvision.HID
 
         // ***************************************************************************************************
 
-        private readonly List<HIDLib.HIDP_BUTTON_CAPS> _buttonsCaps;
-        private readonly List<HIDLib.HIDP_VALUE_CAPS> _valuesCaps;
+        private readonly List<Hid.HIDP_BUTTON_CAPS> _buttonsCaps;
+        private readonly List<Hid.HIDP_VALUE_CAPS> _valuesCaps;
         private readonly List<int> _axValues;
 
         private int _buttonsPressed;
@@ -226,9 +226,9 @@ namespace Microvision.HID
         // Méthodes
         // ----------------------------------------
 
-        public HIDLib.SomeUsage GetAxisID(int no)
+        public Hid.SomeUsage GetAxisID(int no)
         {
-            return (HIDLib.SomeUsage)_valuesCaps[no].UsageMin;
+            return (Hid.SomeUsage)_valuesCaps[no].UsageMin;
         }
 
         public int GetAxisMax(int no)
@@ -306,7 +306,7 @@ namespace Microvision.HID
         // Privées
         // ----------------------------------------
 
-        private static int zButtonsCount(HIDLib.HIDP_BUTTON_CAPS bcps)
+        private static int zButtonsCount(Hid.HIDP_BUTTON_CAPS bcps)
         {
             return 1 + bcps.UsageMax - bcps.UsageMin;
         }
@@ -350,7 +350,7 @@ namespace Microvision.HID
 
         public HIDKeyboard(IntPtr hdl) : base(User32.RIM.RIM_TYPEKEYBOARDField, hdl)
         {
-            oSetUsage(HIDLib.SomeUsagePage.GenericDesktopControls, HIDLib.SomeUsage.Keyboard);
+            oSetUsage(Hid.SomeUsagePage.GenericDesktopControls, Hid.SomeUsage.Keyboard);
         }
 
 
@@ -467,7 +467,7 @@ namespace Microvision.HID
 
         public HIDMouse(IntPtr hdl) : base(User32.RIM.RIM_TYPEMOUSEField, hdl)
         {
-            oSetUsage(HIDLib.SomeUsagePage.GenericDesktopControls, HIDLib.SomeUsage.Mouse);
+            oSetUsage(Hid.SomeUsagePage.GenericDesktopControls, Hid.SomeUsage.Mouse);
         }
 
 
@@ -553,7 +553,7 @@ namespace Microvision.HID
         // ***************************************************************************************************
 
         protected Bytes _preparsedData;
-        protected HIDLib.HIDP_CAPS _caps;
+        protected Hid.HIDP_CAPS _caps;
 
 
         // ----------------------------------------
@@ -564,7 +564,7 @@ namespace Microvision.HID
         {
             _preparsedData = RawInputLib.GetPreparsedData(_handle);
             _caps = HIDLib.GetCaps(_preparsedData);
-            oSetUsage((HIDLib.SomeUsagePage)_info.hid().usUsagePage, (HIDLib.SomeUsage)_info.hid().usUsage);
+            oSetUsage((Hid.SomeUsagePage)_info.hid().usUsagePage, (Hid.SomeUsage)_info.hid().usUsage);
         }
 
 
