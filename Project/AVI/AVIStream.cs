@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.NativeMethods;
+using Microvision.Types;
 
 namespace Microvision.Avi
 {
@@ -23,8 +24,8 @@ namespace Microvision.Avi
         private readonly AVILib _lib;
 
         private readonly IntPtr _handle;
-        private AVILib.AVIStreamInfo _info;
-        private AVILib.AVIError _lastError;
+        private Avifil32.AVIStreamInfo _info;
+        private Avifil32.AVIError _lastError;
 
 
         // ----------------------------------------
@@ -38,7 +39,7 @@ namespace Microvision.Avi
             _lastError = _lib.ReadStreamInfo(_handle, ref _info);
         }
 
-        public AVIStream(AVILib avilib, IntPtr hdl, AVILib.AVIStreamInfo stinf) : this(avilib, hdl)
+        public AVIStream(AVILib avilib, IntPtr hdl, Avifil32.AVIStreamInfo stinf) : this(avilib, hdl)
         {
             // -- le stream doit être éditable...
 
@@ -59,7 +60,7 @@ namespace Microvision.Avi
 
         public IntPtr Handle => _handle;
 
-        public AVILib.AVIStreamInfo Info => _info;
+        public Avifil32.AVIStreamInfo Info => _info;
 
         public int LastError => (int)_lastError & 0xFFF;
 
@@ -74,7 +75,7 @@ namespace Microvision.Avi
         // Méthodes
         // ----------------------------------------
 
-        public AVIStream? CreateCompressedStream(AVILib.AviCompressOptions opts)
+        public AVIStream? CreateCompressedStream(Avifil32.AviCompressOptions opts)
         {
             IntPtr hdl = IntPtr.Zero;
 
@@ -82,7 +83,7 @@ namespace Microvision.Avi
 
             _lastError = _lib.CreateCompressedStream(_handle, opts, ref hdl);
 
-            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hdl) : null;
+            AVIStream? output = _lastError == Avifil32.AVIError.AVIERR_OK ? new AVIStream(_lib, hdl) : null;
 
             return output;
         }
@@ -95,7 +96,7 @@ namespace Microvision.Avi
 
             _lastError = _lib.CreateEditableStream(_handle, ref hdl);
 
-            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hdl) : null;
+            AVIStream? output = _lastError == Avifil32.AVIError.AVIERR_OK ? new AVIStream(_lib, hdl) : null;
 
             return output;
         }
@@ -114,7 +115,7 @@ namespace Microvision.Avi
             {
                 case "vids":
                     _lastError = _lib.ReadVideoFormat(_handle, ref bmi);
-                    if (_lastError == AVILib.AVIError.AVIERR_OK) img = new AVIImage(ref bmi);
+                    if (_lastError == Avifil32.AVIError.AVIERR_OK) img = new AVIImage(ref bmi);
                     break;
             }
 
@@ -129,7 +130,7 @@ namespace Microvision.Avi
         public AVIImage? ReadSample(int sampleNo, AVIImage preallocated)
         {
             _lastError = _lib.ReadVideoSample(_handle, sampleNo, preallocated);
-            AVIImage? output = _lastError == AVILib.AVIError.AVIERR_OK ? preallocated : null;
+            AVIImage? output = _lastError == Avifil32.AVIError.AVIERR_OK ? preallocated : null;
 
             return output;
         }
@@ -168,7 +169,7 @@ namespace Microvision.Avi
             return output;
         }
 
-        public bool Save(string fname, AVILib.AVISaveCallback prghdlr, AVILib.AviCompressOptions copt)
+        public bool Save(string fname, Avifil32.AVISaveCallback prghdlr, Avifil32.AviCompressOptions copt)
         {
             bool ok = false;
 
@@ -179,17 +180,17 @@ namespace Microvision.Avi
 
             switch (_lastError)
             {
-                case AVILib.AVIError.AVIERR_OK:
+                case Avifil32.AVIError.AVIERR_OK:
                     ok = true;
                     break;
 
-                case AVILib.AVIError.AVIERR_MEMORY:
+                case Avifil32.AVIError.AVIERR_MEMORY:
                     // -- erreur qui se produit quasi à chaque coup avec certaines caméras,
                     // jamais avec d'autres, et qu'apparemment c'est pas grave d'ignorer.
                     ok = true;
                     break;
 
-                case AVILib.AVIError.AVIERR_FILEREAD:
+                case Avifil32.AVIError.AVIERR_FILEREAD:
                     // -- erreur constatée assez systématiquement avec certaines tailles d'image et 
                     // sans compression, bien que le fichier soit valide.
                     FileInfo info = new FileInfo(fname);
@@ -200,7 +201,7 @@ namespace Microvision.Avi
             return ok;
         }
 
-        public bool SaveOptionsDlg(IWin32Window prnt, ref AVILib.AviCompressOptions opts)
+        public bool SaveOptionsDlg(IWin32Window prnt, ref Avifil32.AviCompressOptions opts)
         {
             return _lib.ShowSaveOptionsDlg(prnt, _handle, ref opts);
         }
@@ -210,7 +211,7 @@ namespace Microvision.Avi
             NativeMethods.Gdi32.BITMAPINFO info = img.Header;
             _lastError = _lib.SetVideoFormat(_handle, ref info);
 
-            return _lastError == AVILib.AVIError.AVIERR_OK;
+            return _lastError == Avifil32.AVIError.AVIERR_OK;
         }
 
         public bool WriteSample(int sampleNo, AVIImage img, bool iskey)
@@ -218,7 +219,7 @@ namespace Microvision.Avi
             // -- Rem : en vidéo, seule l'écriture en fin de stream est possible...
 
             _lastError = _lib.WriteVideoSample(_handle, sampleNo, img, iskey);
-            return _lastError == AVILib.AVIError.AVIERR_OK;
+            return _lastError == Avifil32.AVIError.AVIERR_OK;
         }
 
 

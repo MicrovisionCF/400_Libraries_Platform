@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.NativeMethods;
+using Microvision.Types;
 
 namespace Microvision.Avi
 {
@@ -33,8 +34,8 @@ namespace Microvision.Avi
         private readonly AVILib _lib;
 
         private IntPtr _handle;
-        private AVILib.AVIFileInfo _info;
-        private AVILib.AVIError _lastError;
+        private Avifil32.AVIFileInfo _info;
+        private Avifil32.AVIError _lastError;
 
 
         // ----------------------------------------
@@ -52,7 +53,7 @@ namespace Microvision.Avi
         // Propriétés
         // ----------------------------------------
 
-        public AVILib.AVIFileInfo FileInfo => _info;
+        public Avifil32.AVIFileInfo FileInfo => _info;
 
         public int StreamsCount => _info.StreamsCount;
 
@@ -70,12 +71,12 @@ namespace Microvision.Avi
             }
         }
 
-        public AVIStream? CreateStream(AVILib.AVIStreamInfo info)
+        public AVIStream? CreateStream(Avifil32.AVIStreamInfo info)
         {
             IntPtr hStream = IntPtr.Zero;
             _lastError = _lib.CreateStream(_handle, info, ref hStream);
 
-            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hStream) : null;
+            AVIStream? output = _lastError == Avifil32.AVIError.AVIERR_OK ? new AVIStream(_lib, hStream) : null;
 
             return output;
         }
@@ -85,9 +86,9 @@ namespace Microvision.Avi
             IntPtr hdl = IntPtr.Zero;
             _lastError = _lib.OpenFile(ref hdl, fileName, (int)access);
 
-            if (_lastError == AVILib.AVIError.AVIERR_OK)
+            if (_lastError == Avifil32.AVIError.AVIERR_OK)
             {
-                if (_lib.ReadFileInfo(hdl, out AVILib.AVIFileInfo inf) == AVILib.AVIError.AVIERR_OK)
+                if (_lib.ReadFileInfo(hdl, out Avifil32.AVIFileInfo inf) == Avifil32.AVIError.AVIERR_OK)
                 {
                     _handle = hdl;
                     _info = inf;
@@ -101,12 +102,12 @@ namespace Microvision.Avi
             return _handle != IntPtr.Zero;
         }
 
-        public AVIStream? OpenStream(AVILib.AVIStreamType streamtype, int noInType)
+        public AVIStream? OpenStream(Avifil32.AVIStreamType streamtype, int noInType)
         {
             IntPtr hStream = IntPtr.Zero;
             _lastError = _lib.OpenStream(_handle, streamtype, noInType, ref hStream);
 
-            AVIStream? output = _lastError == AVILib.AVIError.AVIERR_OK ? new AVIStream(_lib, hStream) : null;
+            AVIStream? output = _lastError == Avifil32.AVIError.AVIERR_OK ? new AVIStream(_lib, hStream) : null;
 
             return output;
         }
