@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.NativeMethods;
+using Microvision.Types;
 
 namespace Microvision.HID
 {
@@ -11,29 +12,29 @@ namespace Microvision.HID
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        public delegate void InputChangeEventHandler(HIDDevice sender, RawInputLib.RAWINPUT inpt);
+        public delegate void InputChangeEventHandler(HIDDevice sender, User32.RAWINPUT inpt);
 
         public event InputChangeEventHandler? InputChange;
 
         // ***************************************************************************************************
 
-        protected readonly RawInputLib.RIM _rim;
+        protected readonly User32.RIM _rim;
         protected readonly IntPtr _handle;
 
         protected readonly string _name;
-        protected readonly RawInputLib.RID_DEVICE_INFO _info;
+        protected readonly User32.RID_DEVICE_INFO _info;
 
         protected HIDLib.SomeUsagePage _usagePage;
         protected HIDLib.SomeUsage _usage;
 
-        protected RawInputLib.RAWINPUT _lastInput;
+        protected User32.RAWINPUT _lastInput;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        protected HIDDevice(RawInputLib.RIM rim, IntPtr hdl) : base()
+        protected HIDDevice(User32.RIM rim, IntPtr hdl) : base()
         {
             _rim = rim;
             _handle = hdl;
@@ -87,7 +88,7 @@ namespace Microvision.HID
             base.oDispose(isExplicit);
         }
 
-        protected virtual void oOnInputChange(RawInputLib.RAWINPUT inpt)
+        protected virtual void oOnInputChange(User32.RAWINPUT inpt)
         {
             InputChange?.Invoke(this, inpt);
         }
@@ -95,7 +96,7 @@ namespace Microvision.HID
         protected virtual bool oProcessInput(IntPtr hinput)
         {
             bool changed = false;
-            RawInputLib.RAWINPUT inpt = RawInputLib.GetRawInput(hinput);
+            User32.RAWINPUT inpt = RawInputLib.GetRawInput(hinput);
 
             if (inpt != _lastInput)
             {
@@ -272,7 +273,7 @@ namespace Microvision.HID
             if (base.oProcessInput(hinput) || _processAllButtonInputs)
             {
                 bool buttonChanged = false;
-                RawInputLib.RAWHID hid = _lastInput.hid();
+                User32.RAWHID hid = _lastInput.hid();
                 int btns = HIDLib.GetButtonsPressed(_preparsedData, _buttonsCaps[0], hid.bRawData, hid.dwSizeHid);
                 if ((btns != _buttonsPressed) || _processAllButtonInputs)
                 {
@@ -347,7 +348,7 @@ namespace Microvision.HID
         // Classe
         // ----------------------------------------
 
-        public HIDKeyboard(IntPtr hdl) : base(RawInputLib.RIM.RIM_TYPEKEYBOARDField, hdl)
+        public HIDKeyboard(IntPtr hdl) : base(User32.RIM.RIM_TYPEKEYBOARDField, hdl)
         {
             oSetUsage(HIDLib.SomeUsagePage.GenericDesktopControls, HIDLib.SomeUsage.Keyboard);
         }
@@ -410,14 +411,14 @@ namespace Microvision.HID
 
             if (base.oProcessInput(hinput))
             {
-                RawInputLib.RAWKEYBOARD kb = _lastInput.keyboard();
+                User32.RAWKEYBOARD kb = _lastInput.keyboard();
 
-                switch ((RawInputLib.RawKeyboardMsg)kb.Message)
+                switch ((User32.RawKeyboardMsg)kb.Message)
                 {
-                    case RawInputLib.RawKeyboardMsg.WM_KEYDOWN: oOnKeyDown((Keys)kb.VKey); break;
-                    case RawInputLib.RawKeyboardMsg.WM_KEYUP: oOnKeyUp((Keys)kb.VKey); break;
-                    case RawInputLib.RawKeyboardMsg.WM_SYSKEYDOWN: oOnSysKeyDown((Keys)kb.VKey); break;
-                    case RawInputLib.RawKeyboardMsg.WM_SYSKEYUP: oOnSysKeyUp((Keys)kb.VKey); break;
+                    case User32.RawKeyboardMsg.WM_KEYDOWN: oOnKeyDown((Keys)kb.VKey); break;
+                    case User32.RawKeyboardMsg.WM_KEYUP: oOnKeyUp((Keys)kb.VKey); break;
+                    case User32.RawKeyboardMsg.WM_SYSKEYDOWN: oOnSysKeyDown((Keys)kb.VKey); break;
+                    case User32.RawKeyboardMsg.WM_SYSKEYUP: oOnSysKeyUp((Keys)kb.VKey); break;
                 }
 
                 changed = true;
@@ -452,7 +453,7 @@ namespace Microvision.HID
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        public delegate void MouseChangeEventHandler(HIDMouse sender, RawInputLib.MouseButtonFlags btns, int x, int y, bool fabsolute);
+        public delegate void MouseChangeEventHandler(HIDMouse sender, User32.MouseButtonFlags btns, int x, int y, bool fabsolute);
         public delegate void MouseWheelEventHandler(HIDMouse sender, int dy);
 
         public event MouseChangeEventHandler? MouseChange;
@@ -464,7 +465,7 @@ namespace Microvision.HID
         // Classe
         // ----------------------------------------
 
-        public HIDMouse(IntPtr hdl) : base(RawInputLib.RIM.RIM_TYPEMOUSEField, hdl)
+        public HIDMouse(IntPtr hdl) : base(User32.RIM.RIM_TYPEMOUSEField, hdl)
         {
             oSetUsage(HIDLib.SomeUsagePage.GenericDesktopControls, HIDLib.SomeUsage.Mouse);
         }
@@ -497,7 +498,7 @@ namespace Microvision.HID
             base.oDispose(isExplicit);
         }
 
-        protected virtual void oOnMouseChange(RawInputLib.MouseButtonFlags btns, int x, int y, bool fabs)
+        protected virtual void oOnMouseChange(User32.MouseButtonFlags btns, int x, int y, bool fabs)
         {
             MouseChange?.Invoke(this, btns, x, y, fabs);
         }
@@ -512,13 +513,13 @@ namespace Microvision.HID
             base.oProcessInput(hinput);
 
             // -- je soupçonne qu'il faille traiter tous les messages, même s'ils ne changent pas
-            RawInputLib.RAWMOUSE m = _lastInput.mouse();
-            RawInputLib.MouseButtonFlags btns = (RawInputLib.MouseButtonFlags)(m.usButtonFlags & (int)~RawInputLib.MouseButtonFlags.RI_MOUSE_WHEEL);
+            User32.RAWMOUSE m = _lastInput.mouse();
+            User32.MouseButtonFlags btns = (User32.MouseButtonFlags)(m.usButtonFlags & (int)~User32.MouseButtonFlags.RI_MOUSE_WHEEL);
 
             if (btns != 0 || m.lLastX != 0 || m.lLastY != 0)
-                oOnMouseChange(btns, m.lLastX, m.lLastY, (m.usFlags & (long)RawInputLib.MouseFlags.MOUSE_MOVE_ABSOLUTE) != 0L);
+                oOnMouseChange(btns, m.lLastX, m.lLastY, (m.usFlags & (long)User32.MouseFlags.MOUSE_MOVE_ABSOLUTE) != 0L);
 
-            if ((m.usButtonFlags & (int)RawInputLib.MouseButtonFlags.RI_MOUSE_WHEEL) != 0)
+            if ((m.usButtonFlags & (int)User32.MouseButtonFlags.RI_MOUSE_WHEEL) != 0)
                 oOnMouseWheel(m.usButtonData);
 
             return true;
@@ -559,7 +560,7 @@ namespace Microvision.HID
         // Classe
         // ----------------------------------------
 
-        public HIDOther(IntPtr hdl) : base(RawInputLib.RIM.RIM_TYPEHIDField, hdl)
+        public HIDOther(IntPtr hdl) : base(User32.RIM.RIM_TYPEHIDField, hdl)
         {
             _preparsedData = RawInputLib.GetPreparsedData(_handle);
             _caps = HIDLib.GetCaps(_preparsedData);

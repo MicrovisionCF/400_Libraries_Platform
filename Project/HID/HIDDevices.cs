@@ -1,4 +1,5 @@
 ﻿using Microvision.Collections;
+using Microvision.NativeMethods;
 
 namespace Microvision.HID
 {
@@ -12,7 +13,7 @@ namespace Microvision.HID
         // 13.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        public delegate void InputChangeEventHandler(int no, RawInputLib.RAWINPUT inpt);
+        public delegate void InputChangeEventHandler(int no, User32.RAWINPUT inpt);
 
         public event InputChangeEventHandler? InputChange;
 
@@ -86,7 +87,7 @@ namespace Microvision.HID
         // Evènements
         // ----------------------------------------
 
-        private void _item_InputChange(HIDDevice sender, RawInputLib.RAWINPUT inpt)
+        private void _item_InputChange(HIDDevice sender, User32.RAWINPUT inpt)
         {
             InputChange?.Invoke(_items.IndexOf(sender), inpt);
         }

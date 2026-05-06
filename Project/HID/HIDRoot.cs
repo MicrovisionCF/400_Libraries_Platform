@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.NativeMethods;
+using Microvision.Types;
 
 namespace Microvision.HID
 {
@@ -15,7 +16,7 @@ namespace Microvision.HID
 
         public delegate void DeviceAddEventHandler(IntPtr hdev);
         public delegate void DeviceRemoveEventHandler(IntPtr hdev);
-        public delegate void InputChangeEventHandler(int no, RawInputLib.RAWINPUT inpt);
+        public delegate void InputChangeEventHandler(int no, User32.RAWINPUT inpt);
 
         public event DeviceAddEventHandler? DeviceAdd;
         public event DeviceRemoveEventHandler? DeviceRemove;
@@ -23,7 +24,7 @@ namespace Microvision.HID
 
         // ***************************************************************************************************
 
-        private readonly List<RawInputLib.RAWINPUTDEVICELIST> _devices;
+        private readonly List<User32.RAWINPUTDEVICELIST> _devices;
         private readonly List<HIDLib.USAGE_AND_PAGE> _regUUPs;
         private readonly HIDDevices _regDevs;
 
@@ -82,33 +83,33 @@ namespace Microvision.HID
             return _devices[no].hDevice;
         }
 
-        public RawInputLib.RIM GetType(int no)
+        public User32.RIM GetType(int no)
         {
             return _devices[no].dwType;
         }
 
         public void ProcessMessage(ref Message m)
         {
-            switch ((RawInputLib.RawInputMsg)m.Msg)
+            switch ((User32.RawInputMsg)m.Msg)
             {
-                case RawInputLib.RawInputMsg.WM_INPUT:
+                case User32.RawInputMsg.WM_INPUT:
                     if (oProcessInput(m.LParam))
                         m.Result = IntPtr.Zero;
                     break;
 
-                case RawInputLib.RawInputMsg.WM_INPUT_DEVICE_CHANGE:
+                case User32.RawInputMsg.WM_INPUT_DEVICE_CHANGE:
                     _devices.Clear();
                     _devices.AddRange(RawInputLib.GetDevicesList());
                     IntPtr hdevice = m.LParam;
 
-                    switch ((RawInputLib.DevChgParam)m.WParam)
+                    switch ((User32.DevChgParam)m.WParam)
                     {
-                        case RawInputLib.DevChgParam.GIDC_ARRIVAL:
+                        case User32.DevChgParam.GIDC_ARRIVAL:
                             if (oProcessArrival(hdevice)) oOnDeviceAdd(hdevice);
                             m.Result = IntPtr.Zero;
                             break;
 
-                        case RawInputLib.DevChgParam.GIDC_REMOVAL:
+                        case User32.DevChgParam.GIDC_REMOVAL:
                             if (oProcessRemoval(hdevice)) oOnDeviceRemove(hdevice);
                             m.Result = IntPtr.Zero;
                             break;
@@ -135,21 +136,21 @@ namespace Microvision.HID
         // Semi-privées
         // ----------------------------------------
 
-        protected virtual HIDDevice oCreateDevice(RawInputLib.RIM rim, IntPtr hdev)
+        protected virtual HIDDevice oCreateDevice(User32.RIM rim, IntPtr hdev)
         {
             HIDDevice dev;
 
             switch (rim)
             {
-                case RawInputLib.RIM.RIM_TYPEMOUSEField:
+                case User32.RIM.RIM_TYPEMOUSEField:
                     dev = new HIDMouse(hdev);
                     break;
 
-                case RawInputLib.RIM.RIM_TYPEKEYBOARDField:
+                case User32.RIM.RIM_TYPEKEYBOARDField:
                     dev = new HIDKeyboard(hdev);
                     break;
 
-                case RawInputLib.RIM.RIM_TYPEHIDField:
+                case User32.RIM.RIM_TYPEHIDField:
                     HIDLib.USAGE_AND_PAGE uup = zGetUsageAndPage(rim, hdev);
                     dev = uup.Usage switch
                     {
@@ -188,12 +189,12 @@ namespace Microvision.HID
         {
             bool done = false;
 
-            RawInputLib.RID_DEVICE_INFO inf = RawInputLib.GetDeviceInfo(hdevice);
-            if (_regUUPs.IndexOf(zGetUsageAndPage((RawInputLib.RIM)inf.dwType, hdevice)) >= 0)
+            User32.RID_DEVICE_INFO inf = RawInputLib.GetDeviceInfo(hdevice);
+            if (_regUUPs.IndexOf(zGetUsageAndPage((User32.RIM)inf.dwType, hdevice)) >= 0)
             {
                 if (_regDevs.Find(hdevice) < 0)
                 {
-                    _regDevs.Add(oCreateDevice((RawInputLib.RIM)inf.dwType, hdevice).GiveLife());
+                    _regDevs.Add(oCreateDevice((User32.RIM)inf.dwType, hdevice).GiveLife());
                     done = true;
                 }
             }
@@ -204,7 +205,7 @@ namespace Microvision.HID
         protected bool oProcessInput(IntPtr hinput)
         {
             bool done = false;
-            RawInputLib.RAWINPUTHEADER hdr = RawInputLib.GetRawInputHeader(hinput);
+            User32.RAWINPUTHEADER hdr = RawInputLib.GetRawInputHeader(hinput);
             int no = _regDevs.Find(hdr.hDevice);
 
             if (no >= 0)
@@ -232,37 +233,37 @@ namespace Microvision.HID
         // Privées
         // ----------------------------------------
 
-        private static int zFindHdl(IntPtr hdev, List<RawInputLib.RAWINPUTDEVICELIST> lst)
+        private static int zFindHdl(IntPtr hdev, List<User32.RAWINPUTDEVICELIST> lst)
         {
             return lst.FindIndex(d => hdev == d.hDevice);
         }
 
-        private static int zFindUUP(HIDLib.USAGE_AND_PAGE uup, List<RawInputLib.RAWINPUTDEVICELIST> lst)
+        private static int zFindUUP(HIDLib.USAGE_AND_PAGE uup, List<User32.RAWINPUTDEVICELIST> lst)
         {
             return lst.FindIndex(u => uup == zGetUsageAndPage(u.dwType, u.hDevice));
         }
 
-        private static int zFindVendorIdProductId(int vendorId, int productId, List<RawInputLib.RAWINPUTDEVICELIST> lst)
+        private static int zFindVendorIdProductId(int vendorId, int productId, List<User32.RAWINPUTDEVICELIST> lst)
         {
             return lst.FindIndex(device => zGetVendorIdProductId(device.hDevice) == (vendorId, productId));
         }
 
-        private static HIDLib.USAGE_AND_PAGE zGetUsageAndPage(RawInputLib.RIM rim, IntPtr hdev)
+        private static HIDLib.USAGE_AND_PAGE zGetUsageAndPage(User32.RIM rim, IntPtr hdev)
         {
             HIDLib.USAGE_AND_PAGE output;
 
             switch (rim)
             {
-                case RawInputLib.RIM.RIM_TYPEMOUSEField:
+                case User32.RIM.RIM_TYPEMOUSEField:
                     output = new HIDLib.USAGE_AND_PAGE(HIDLib.SomeUsage.Mouse, HIDLib.SomeUsagePage.GenericDesktopControls);
                     break;
 
-                case RawInputLib.RIM.RIM_TYPEKEYBOARDField:
+                case User32.RIM.RIM_TYPEKEYBOARDField:
                     output = new HIDLib.USAGE_AND_PAGE(HIDLib.SomeUsage.Keyboard, HIDLib.SomeUsagePage.GenericDesktopControls);
                     break;
 
-                case RawInputLib.RIM.RIM_TYPEHIDField:
-                    RawInputLib.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).hid();
+                case User32.RIM.RIM_TYPEHIDField:
+                    User32.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).hid();
                     output = new HIDLib.USAGE_AND_PAGE((HIDLib.SomeUsage)inf.usUsage, (HIDLib.SomeUsagePage)inf.usUsagePage);
                     break;
 
@@ -276,7 +277,7 @@ namespace Microvision.HID
 
         private static (int vendorId, int productId) zGetVendorIdProductId(IntPtr hdev)
         {
-            RawInputLib.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).hid();
+            User32.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).hid();
 
             return (inf.dwVendorId, inf.dwProductId);
         }
@@ -298,7 +299,7 @@ namespace Microvision.HID
             }
         }
 
-        private void _regDevs_InputChange(int no, RawInputLib.RAWINPUT inpt)
+        private void _regDevs_InputChange(int no, User32.RAWINPUT inpt)
         {
             InputChange?.Invoke(zFindHdl(_regDevs.GetHandle(no), _devices), inpt);
         }
