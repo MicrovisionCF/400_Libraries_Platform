@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.Graphic;
+using Microvision.Types;
 
 using TWAINWorkingGroup;
 
@@ -156,9 +157,9 @@ namespace Microvision.Scanners
             return _gamma.GetDefaultOneValue();
         }
 
-        public RectangleF GetFrame()
+        public RectG GetFrame()
         {
-            RectangleF rect = _frame.GetCurrentOneValue();
+            RectG rect = _frame.GetCurrentOneValue();
             rect.X *= KMMPerInch;
             rect.Y *= KMMPerInch;
             rect.Width *= KMMPerInch;
@@ -207,7 +208,7 @@ namespace Microvision.Scanners
             return pixelTypes;
         }
 
-        public void SetFrame(RectangleF frame)
+        public void SetFrame(RectG frame)
         {
             frame.X /= KMMPerInch;
             frame.Y /= KMMPerInch;

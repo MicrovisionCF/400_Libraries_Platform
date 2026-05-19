@@ -38,10 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microvision.Types">
-      <HintPath>C:\Program Files\Microvision Instruments\System\Reference Assemblies\400\Microvision.Types.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System.Data.SQLite">
       <HintPath>lib\System.Data.SQLite.dll</HintPath>
       <Private>False</Private>
@@ -50,6 +46,10 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Microvision.Types\Microvision.Types.csproj" />
   </ItemGroup>
 
 </Project>

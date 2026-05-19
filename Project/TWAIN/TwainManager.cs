@@ -282,7 +282,7 @@ namespace Microvision.Scanners
             // cf. TWAIN 2.5 page 336 / 766.
             if ((xfer.XOffset == 0) && (xfer.Columns == info.ImageWidth))
             {
-                BitmapData data = bmp.LockBits(new Rectangle(0, (int)xfer.YOffset, bmp.Width, (int)xfer.Rows), ImageLockMode.WriteOnly, bmp.PixelFormat);
+                BitmapData data = bmp.LockBits(new RectI(0, (int)xfer.YOffset, bmp.Width, (int)xfer.Rows), ImageLockMode.WriteOnly, bmp.PixelFormat);
 
                 for (int row = 0; row < xfer.Rows; row++)
                 {

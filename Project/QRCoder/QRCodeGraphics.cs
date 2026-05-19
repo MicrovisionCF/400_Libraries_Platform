@@ -137,7 +137,7 @@ namespace Microvision.QRCoder
         // Méthodes
         // ----------------------------------------
 
-        internal Bitmap GenerateBitmap(QRData data, Size maxSize)
+        internal Bitmap GenerateBitmap(QRData data, SizeI maxSize)
         {
             int w = (maxSize.Width / (double)data.Width).ToFloorInt();
             int h = (maxSize.Height / (double)data.Width).ToFloorInt();
@@ -160,7 +160,7 @@ namespace Microvision.QRCoder
             Brush lightBrush = new SolidBrush(_backColor);
             Brush darkBrush;
             if (_withGradient)
-                darkBrush = new LinearGradientBrush(new Point(0, 0), new Point(bmp.Width, bmp.Height), HColor.Darker(_frontColor, 0.2f), HColor.Lighter(_frontColor, 0.2f));
+                darkBrush = new LinearGradientBrush(new PointI(0, 0), new PointI(bmp.Width, bmp.Height), HColor.Darker(_frontColor, 0.2f), HColor.Lighter(_frontColor, 0.2f));
             else
                 darkBrush = new SolidBrush(_frontColor);
 
@@ -170,14 +170,14 @@ namespace Microvision.QRCoder
                 {
                     if (data.GetPixel(y, x))
                     {
-                        Rectangle rect = new Rectangle(x * pixelWidth, y * pixelWidth, pixelWidth, pixelWidth);
+                        RectI rect = new RectI(x * pixelWidth, y * pixelWidth, pixelWidth, pixelWidth);
                         if (_roundedPixels && pixelWidth > 2)
                         {
                             gfx.SmoothingMode = SmoothingMode.AntiAlias;
                             if (pixelWidth >= 6)
-                                rect = Rectangle.Inflate(rect, ((float)pixelWidth / 6).ToRoundInt(), ((float)pixelWidth / 6).ToRoundInt());
+                                rect = RectI.Inflate(rect, ((float)pixelWidth / 6).ToRoundInt(), ((float)pixelWidth / 6).ToRoundInt());
                             else
-                                rect = new Rectangle(rect.X, rect.Y, rect.Width + 1, rect.Height + 1);
+                                rect = new RectI(rect.X, rect.Y, rect.Width + 1, rect.Height + 1);
 
                             gfx.FillEllipse(darkBrush, rect);
                         }
@@ -200,7 +200,7 @@ namespace Microvision.QRCoder
                 if (_iconBorderPercent > 0)
                 {
                     gfx.SmoothingMode = SmoothingMode.AntiAlias;
-                    gfx.FillEllipse(lightBrush, RectangleF.Inflate(new RectangleF(iconX, iconY, iconDestWidth, iconDestHeight), iconDestWidth / 100 * _iconBorderPercent, iconDestHeight / 100 * _iconBorderPercent));
+                    gfx.FillEllipse(lightBrush, RectG.Inflate(new RectG(iconX, iconY, iconDestWidth, iconDestHeight), iconDestWidth / 100 * _iconBorderPercent, iconDestHeight / 100 * _iconBorderPercent));
                 }
 
                 gfx.DrawImage(_icon, iconX, iconY, iconDestWidth, iconDestHeight);

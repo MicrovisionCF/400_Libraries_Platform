@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.Graphic;
+using Microvision.Types;
 
 using TWAINWorkingGroup;
 
@@ -394,12 +395,12 @@ namespace Microvision.Scanners
         // Méthodes
         // ----------------------------------------
 
-        public new RectangleF GetCurrentOneValue()
+        public new RectG GetCurrentOneValue()
         {
             return base.GetCurrentOneValue().Get();
         }
 
-        public void SetOneValue(RectangleF value, bool force = false)
+        public void SetOneValue(RectG value, bool force = false)
         {
             TWAIN.TW_FRAME frame = default;
             frame.Set(value);

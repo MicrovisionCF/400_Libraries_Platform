@@ -1,4 +1,6 @@
-﻿namespace Microvision.QRCoder
+﻿using Microvision.Graphic;
+
+namespace Microvision.QRCoder
 {
     internal static class QRTablesShop
     {
@@ -85,7 +87,7 @@
             Dictionary<QREncodingMode, Dictionary<QRStrength, List<int>>> capacityBaseValues = zCreateCapacityBaseValues();
             List<xQRStrengthInfo> strengthInfos = zCreateStrengthsCapacities();
             Dictionary<QRVersion, int> reminderBits = zCreateReminderBits();
-            Dictionary<QRVersion, List<Point>> alignmentPos = zCreateAlignementPatterns();
+            Dictionary<QRVersion, PointIs> alignmentPos = zCreateAlignementPatterns();
 
             foreach (QRVersion version in Enum.GetValues(typeof(QRVersion)))
             {
@@ -117,46 +119,46 @@
             return capacities;
         }
 
-        public static List<List<Point>> CreateFormatPositions(int width)
+        public static List<PointIs> CreateFormatPositions(int width)
         {
             // Détermine la position de l'écriture du format dans le QRCode. Le format est écrit 2 fois d'où les 2 listes
             // Doc : Page "Format and Version Information", Chapitre "Put the Format String into the QR Code"
 
-            List<List<Point>> pos = new List<List<Point>>();
-
-            pos.Add(new List<Point>());
-            pos[0].Add(new Point(8, 0));
-            pos[0].Add(new Point(8, 1));
-            pos[0].Add(new Point(8, 2));
-            pos[0].Add(new Point(8, 3));
-            pos[0].Add(new Point(8, 4));
-            pos[0].Add(new Point(8, 5));
-            pos[0].Add(new Point(8, 7));
-            pos[0].Add(new Point(8, 8));
-            pos[0].Add(new Point(7, 8));
-            pos[0].Add(new Point(5, 8));
-            pos[0].Add(new Point(4, 8));
-            pos[0].Add(new Point(3, 8));
-            pos[0].Add(new Point(2, 8));
-            pos[0].Add(new Point(1, 8));
-            pos[0].Add(new Point(0, 8));
-
-            pos.Add(new List<Point>());
-            pos[1].Add(new Point(width - 1, 8));
-            pos[1].Add(new Point(width - 2, 8));
-            pos[1].Add(new Point(width - 3, 8));
-            pos[1].Add(new Point(width - 4, 8));
-            pos[1].Add(new Point(width - 5, 8));
-            pos[1].Add(new Point(width - 6, 8));
-            pos[1].Add(new Point(width - 7, 8));
-            pos[1].Add(new Point(width - 8, 8));
-            pos[1].Add(new Point(8, width - 7));
-            pos[1].Add(new Point(8, width - 6));
-            pos[1].Add(new Point(8, width - 5));
-            pos[1].Add(new Point(8, width - 4));
-            pos[1].Add(new Point(8, width - 3));
-            pos[1].Add(new Point(8, width - 2));
-            pos[1].Add(new Point(8, width - 1));
+            List<PointIs> pos = [
+            [
+                (8, 0),
+                (8, 1),
+                (8, 2),
+                (8, 3),
+                (8, 4),
+                (8, 5),
+                (8, 7),
+                (8, 8),
+                (7, 8),
+                (5, 8),
+                (4, 8),
+                (3, 8),
+                (2, 8),
+                (1, 8),
+                (0, 8)
+            ],
+            [
+                (width - 1, 8),
+                (width - 2, 8),
+                (width - 3, 8),
+                (width - 4, 8),
+                (width - 5, 8),
+                (width - 6, 8),
+                (width - 7, 8),
+                (width - 8, 8),
+                (8, width - 7),
+                (8, width - 6),
+                (8, width - 5),
+                (8, width - 4),
+                (8, width - 3),
+                (8, width - 2),
+                (8, width - 1)
+            ]];
 
             return pos;
         }
@@ -181,15 +183,15 @@
         // Privées
         // ----------------------------------------
 
-        private static Dictionary<QRVersion, List<Point>> zCreateAlignementPatterns()
+        private static Dictionary<QRVersion, PointIs> zCreateAlignementPatterns()
         {
             Dictionary<QRVersion, List<int>> positions = zCreateAlignmentCenters();
-            Dictionary<QRVersion, List<Point>> patterns = new Dictionary<QRVersion, List<Point>>();
+            Dictionary<QRVersion, PointIs> patterns = new Dictionary<QRVersion, PointIs>();
 
             foreach (QRVersion version in Enum.GetValues(typeof(QRVersion)))
             {
-                List<Point> points = new List<Point>();
-                positions[version].ForEach(x => positions[version].ForEach(y => points.Add(new Point(x - 2, y - 2))));
+                PointIs points = new PointIs();
+                positions[version].ForEach(x => positions[version].ForEach(y => points.Add(new PointI(x - 2, y - 2))));
                 patterns.Add(version, points);
             }
 

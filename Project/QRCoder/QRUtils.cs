@@ -1,4 +1,6 @@
-﻿namespace Microvision.QRCoder
+﻿using Microvision.Graphic;
+
+namespace Microvision.QRCoder
 {
     internal struct xQRCodewordBlock
     {
@@ -27,7 +29,7 @@
         public QRVersion version;
         public QRStrength strength;
         public int reminderBits;
-        public List<Point> alignementPositions;
+        public PointIs alignementPositions;
         public int wordsPerBlock;
         public int blocksInGroup1;
         public int codewordsInGroup1;

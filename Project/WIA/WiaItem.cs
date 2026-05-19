@@ -127,11 +127,11 @@ namespace Microvision.Scanners
 
         internal WIA.Item Core => _item;
 
-        public RectangleF Extend
+        public RectG Extend
         {
             get
             {
-                RectangleF rct = zGetExtend(_item.Properties);
+                RectG rct = zGetExtend(_item.Properties);
                 ScaleF facs = zCalcMMFacs(zGetResolution(_item.Properties));
 
                 return rct * facs;
@@ -174,7 +174,7 @@ namespace Microvision.Scanners
 
         public int PropertiesCount => _item.Properties.Count;
 
-        public PointF Resolution
+        public PointG Resolution
         {
             get => zGetResolution(_item.Properties);
             set => zSetResolution(_item.Properties, value);
@@ -280,7 +280,7 @@ namespace Microvision.Scanners
         // Privées
         // ----------------------------------------
 
-        private static ScaleF zCalcMMFacs(PointF resol)
+        private static ScaleF zCalcMMFacs(PointG resol)
         {
             return new ScaleF(0, 0, KMMPerInch / resol.X, KMMPerInch / resol.Y);
         }
@@ -325,30 +325,30 @@ namespace Microvision.Scanners
             return prps.FindIndex(p => nam.EqualsWithoutCase(p.Name));
         }
 
-        private static RectangleF zGetExtend(WIA.Properties prps)
+        private static RectG zGetExtend(WIA.Properties prps)
         {
-            return new RectangleF(ConvertShop.ReadFloat(prps[KPropExtendX].get_Value()),
-                                  ConvertShop.ReadFloat(prps[KPropExtendY].get_Value()),
-                                  ConvertShop.ReadFloat(prps[KPropExtendW].get_Value()),
-                                  ConvertShop.ReadFloat(prps[KPropExtendH].get_Value()));
+            return new RectG(ConvertShop.ReadFloat(prps[KPropExtendX].get_Value()),
+                             ConvertShop.ReadFloat(prps[KPropExtendY].get_Value()),
+                             ConvertShop.ReadFloat(prps[KPropExtendW].get_Value()),
+                             ConvertShop.ReadFloat(prps[KPropExtendH].get_Value()));
         }
 
-        private static PointF zGetResolution(WIA.Properties prps)
+        private static PointG zGetResolution(WIA.Properties prps)
         {
-            return new PointF(ConvertShop.ReadFloat(prps[KPropResolX].get_Value()), ConvertShop.ReadFloat(prps[KPropResolY].get_Value()));
+            return new PointG(ConvertShop.ReadFloat(prps[KPropResolX].get_Value()), ConvertShop.ReadFloat(prps[KPropResolY].get_Value()));
         }
 
-        private static void zSetExtend(WIA.Properties prps, RectangleF rct)
+        private static void zSetExtend(WIA.Properties prps, RectG rct)
         {
-            rct = Rectangle.Truncate(rct);       // -- 31.07.14
+            RectI truncate = new RectI((int)rct.X, (int)rct.Y, (int)rct.Width, (int)rct.Height);       // -- 31.07.14
 
-            prps[KPropExtendX].set_Value(rct.X);
-            prps[KPropExtendY].set_Value(rct.Y);
-            prps[KPropExtendW].set_Value(rct.Width);
-            prps[KPropExtendH].set_Value(rct.Height);
+            prps[KPropExtendX].set_Value(truncate.X);
+            prps[KPropExtendY].set_Value(truncate.Y);
+            prps[KPropExtendW].set_Value(truncate.Width);
+            prps[KPropExtendH].set_Value(truncate.Height);
         }
 
-        private static void zSetResolution(WIA.Properties prps, PointF res)
+        private static void zSetResolution(WIA.Properties prps, PointG res)
         {
             prps[KPropResolX].set_Value(res.X);
             prps[KPropResolY].set_Value(res.Y);

@@ -1,4 +1,5 @@
-﻿using Microvision.NativeMethods;
+﻿using Microvision.Graphic;
+using Microvision.NativeMethods;
 using Microvision.Types;
 
 namespace Microvision.Avi
@@ -51,7 +52,7 @@ namespace Microvision.Avi
             return ok;
         }
 
-        public bool BeginDraw(Graphics gf, ref NativeMethods.Gdi32.BITMAPINFO bmi, Size siz)
+        public bool BeginDraw(Graphics gf, ref NativeMethods.Gdi32.BITMAPINFO bmi, SizeI siz)
         {
             _hDC = gf.GetHdc();
 
@@ -62,7 +63,7 @@ namespace Microvision.Avi
             return ok;
         }
 
-        public bool Draw(ref NativeMethods.Gdi32.BITMAPINFO bmi, Bytes bts, Point p)
+        public bool Draw(ref NativeMethods.Gdi32.BITMAPINFO bmi, Bytes bts, PointI p)
         {
             bool ok = false;
 
@@ -79,7 +80,7 @@ namespace Microvision.Avi
             return ok;
         }
 
-        public bool Draw(ref NativeMethods.Gdi32.BITMAPINFO bmi, Bytes bts, Rectangle rct)
+        public bool Draw(ref NativeMethods.Gdi32.BITMAPINFO bmi, Bytes bts, RectI rct)
         {
             bool ok = false;
 

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 
+using Microvision.Graphic;
 using Microvision.Types;
 
 namespace Microvision.Avi
@@ -59,13 +60,13 @@ namespace Microvision.Avi
         // Méthodes
         // ----------------------------------------
 
-        public void Draw(Point p)
+        public void Draw(PointI p)
         {
             // DDF_SAME_DRAW incompatible avec zoom
             _drawDib?.Draw(ref _infos, _bytes, p);
         }
 
-        public void Draw(Rectangle rct)
+        public void Draw(RectI rct)
         {
             // DDF_SAME_DRAW incompatible avec zoom
             _drawDib?.Draw(ref _infos, _bytes, rct);
@@ -77,7 +78,7 @@ namespace Microvision.Avi
             _drawDib.BeginDraw(gf, ref _infos);
         }
 
-        public void DrawBegin(Graphics gf, Size siz)
+        public void DrawBegin(Graphics gf, SizeI siz)
         {
             _drawDib = new DrawDibDC();
             _drawDib.BeginDraw(gf, ref _infos, siz);

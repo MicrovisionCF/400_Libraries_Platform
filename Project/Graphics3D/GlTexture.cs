@@ -87,7 +87,7 @@ namespace Microvision.Graphics3D
         {
             if (_gl is not null)
             {
-                BitmapData bmpData = img.LockBits(new Rectangle(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                BitmapData bmpData = img.LockBits(new RectI(0, 0, img.Width, img.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 _gl.BindTexture(BindTextureTarget.Texture2D, _glTextureID);
                 _gl.TexImage2D(TextureImageTarget.Texture2D, 0, (uint)OpenGL.PixelFormat.Rgba, bmpData.Width, bmpData.Height, 0, (uint)OpenGL.PixelFormat.Bgra, (uint)DataType.UnsignedByte, bmpData.Scan0);
                 img.UnlockBits(bmpData);

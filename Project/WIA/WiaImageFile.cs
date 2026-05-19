@@ -1,6 +1,7 @@
 ﻿using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
+using Microvision.Graphic;
 using Microvision.Types;
 
 namespace Microvision.Scanners
@@ -36,9 +37,9 @@ namespace Microvision.Scanners
 
         public int PropertiesCount => _imgFile.Properties.Count;
 
-        public PointF Resolution => new PointF((float)_imgFile.HorizontalResolution, (float)_imgFile.VerticalResolution); // dpi
+        public PointG Resolution => new PointG((float)_imgFile.HorizontalResolution, (float)_imgFile.VerticalResolution); // dpi
 
-        public Size Size => new Size(_imgFile.Width, _imgFile.Height);
+        public SizeI Size => new SizeI(_imgFile.Width, _imgFile.Height);
 
 
         // ----------------------------------------
@@ -102,7 +103,7 @@ namespace Microvision.Scanners
         // Privées
         // ----------------------------------------
 
-        private static Bitmap zCreateCoreBitmap(Size sz, PixelFormat fmt, ColorPalette pal)
+        private static Bitmap zCreateCoreBitmap(SizeI sz, PixelFormat fmt, ColorPalette pal)
         {
             // -- fonction pompée sur BasicDibMng
 
@@ -140,7 +141,7 @@ namespace Microvision.Scanners
         {
             // -- fonction inspirée de BasicDibMng
 
-            BitmapData dt = bmp.LockBits(new Rectangle(new Point(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
+            BitmapData dt = bmp.LockBits(new RectI(new PointI(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
 
             int cnt = Math.Abs(dt.Stride) * dt.Height;
             MarshShop.PointerToBuffer(dt.Scan0, cnt, bf, bfpos);
@@ -152,7 +153,7 @@ namespace Microvision.Scanners
 
         private static int zGetDataBytesCount(Bitmap bmp)
         {
-            BitmapData dt = bmp.LockBits(new Rectangle(new Point(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
+            BitmapData dt = bmp.LockBits(new RectI(new PointI(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
 
             int cnt = Math.Abs(dt.Stride) * dt.Height;
 
@@ -165,7 +166,7 @@ namespace Microvision.Scanners
         {
             // -- fonction inspirée de BasicDibMng
 
-            BitmapData dt = bmp.LockBits(new Rectangle(new Point(), bmp.Size), ImageLockMode.ReadWrite, bmp.PixelFormat);
+            BitmapData dt = bmp.LockBits(new RectI(new PointI(), bmp.Size), ImageLockMode.ReadWrite, bmp.PixelFormat);
 
             int cnt = Math.Abs(dt.Stride) * dt.Height;
             MarshShop.BufferToPointer(bf, bfpos, cnt, dt.Scan0);

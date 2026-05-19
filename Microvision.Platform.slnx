@@ -2,6 +2,12 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
+  <Project Path="../Microvision.Files/Microvision.Files.csproj">
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="../Microvision.Types/Microvision.Types.csproj">
+    <Platform Project="x64" />
+  </Project>
   <Project Path="Microvision.Platform.csproj">
     <Platform Project="x64" />
   </Project>

@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
+using Microvision.Graphic;
 using Microvision.Types;
 
 namespace Microvision.Scanners
@@ -107,12 +108,12 @@ namespace Microvision.Scanners
         // Propriétés
         // ----------------------------------------
 
-        public SizeF BedSize // mm
+        public SizeG BedSize // mm
         {
             get
             {
-                return new SizeF(ConvertShop.ReadFloat(_device.Properties[KPropBedSizeX].get_Value()) * KMMPerBedUnit,
-                                ConvertShop.ReadFloat(_device.Properties[KPropBedSizeY].get_Value()) * KMMPerBedUnit);
+                return new SizeG(ConvertShop.ReadFloat(_device.Properties[KPropBedSizeX].get_Value()) * KMMPerBedUnit,
+                                 ConvertShop.ReadFloat(_device.Properties[KPropBedSizeY].get_Value()) * KMMPerBedUnit);
             }
         }
 
@@ -130,7 +131,7 @@ namespace Microvision.Scanners
 
         public string Name => _device.Properties[KPropName].get_Value().ToString();
 
-        public PointF OpticalResolution => new PointF(ConvertShop.ReadFloat(_device.Properties[KPropOptResolX].get_Value()), ConvertShop.ReadFloat(_device.Properties[KPropOptResolY].get_Value()));
+        public PointG OpticalResolution => new PointG(ConvertShop.ReadFloat(_device.Properties[KPropOptResolX].get_Value()), ConvertShop.ReadFloat(_device.Properties[KPropOptResolY].get_Value()));
 
         public bool PreviewMode
         {

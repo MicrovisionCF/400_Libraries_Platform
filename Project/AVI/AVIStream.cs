@@ -1,4 +1,5 @@
-﻿using Microvision.NativeMethods;
+﻿using Microvision.Graphic;
+using Microvision.NativeMethods;
 using Microvision.Types;
 
 namespace Microvision.Avi
@@ -66,7 +67,7 @@ namespace Microvision.Avi
 
         public int SamplesCount => _lib.GetStreamLength(_handle);
 
-        public Size SampleSize => _info.Size;
+        public SizeI SampleSize => _info.Size;
 
         public int SampleStart => _lib.GetStreamStart(_handle);
 

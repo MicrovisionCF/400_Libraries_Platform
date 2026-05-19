@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+using Microvision.Graphic;
 using Microvision.Types;
 
 using TWAINWorkingGroup;
@@ -49,7 +50,7 @@ namespace Microvision.Scanners
         private bool _receiptCanceled;
 
         private TwainCapabilities? _capabilities;
-        private RectangleF _lastFrameSet;
+        private RectG _lastFrameSet;
 
 
         // ----------------------------------------
@@ -125,7 +126,7 @@ namespace Microvision.Scanners
             return oGetDefaultGamma();
         }
 
-        public RectangleF GetFrame()
+        public RectG GetFrame()
         {
             oThrowIfNotOpened();
 
@@ -206,7 +207,7 @@ namespace Microvision.Scanners
             return oOpen(dsm, thread, imageReceiver);
         }
 
-        public void SetFrame(RectangleF frame)
+        public void SetFrame(RectG frame)
         {
             oSetFrame(frame);
         }
@@ -337,7 +338,7 @@ namespace Microvision.Scanners
             return ok;
         }
 
-        protected void oSetFrame(RectangleF frame)
+        protected void oSetFrame(RectG frame)
         {
             oThrowIfNotOpened();
 

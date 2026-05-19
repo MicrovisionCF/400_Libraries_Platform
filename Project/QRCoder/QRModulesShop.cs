@@ -1,5 +1,7 @@
 ﻿using System.Text;
 
+using Microvision.Graphic;
+
 namespace Microvision.QRCoder
 {
     internal static class QRModulesShop
@@ -28,9 +30,9 @@ namespace Microvision.QRCoder
         {
             // Doc : Page "Module Placement in Matrix", Step 3
 
-            foreach (Point loc in qrCode.AlignmentPositions)
+            foreach (PointI loc in qrCode.AlignmentPositions)
             {
-                Rectangle alignmentPatternRect = new Rectangle(loc.X, loc.Y, 5, 5);
+                RectI alignmentPatternRect = new RectI(loc.X, loc.Y, 5, 5);
                 bool blocked = zIsBlocked(alignmentPatternRect, qrCode);
                 if (!blocked)
                 {
@@ -88,9 +90,14 @@ namespace Microvision.QRCoder
             // Doc : Page "Module Placement in Matrix", Step 1
 
             int size = qrCode.Width;
-            List<Point> locations = new List<Point> { new Point(0, 0), new Point(size - 7, 0), new Point(0, size - 7) };
+            PointIs locations = 
+            [
+                (0, 0),
+                (size - 7, 0),
+                (0, size - 7)
+            ];
 
-            foreach (Point loc in locations)
+            foreach (PointI loc in locations)
                 zPlaceFinder(qrCode, loc);
         }
 
@@ -99,9 +106,9 @@ namespace Microvision.QRCoder
             int size = qrCode.Width;
             string fStr = zReverseString(formatStr);
 
-            List<List<Point>> positions = QRTablesShop.CreateFormatPositions(size);
+            List<PointIs> positions = QRTablesShop.CreateFormatPositions(size);
 
-            foreach (List<Point> pos in positions)
+            foreach (PointIs pos in positions)
                 for (int i = 0; i <= 15 - 1; i++)
                     qrCode.SetPixel(pos[i].Y, pos[i].X, fStr[i] == '1');
         }
@@ -110,10 +117,12 @@ namespace Microvision.QRCoder
         {
             // Doc : Page "Module Placment Matrix", Step 2
 
-            List<Point> locations = new List<Point> {
-                new Point(-1, -1),
-                new Point(qrCode.Width - 8, -1),
-                new Point(-1, qrCode.Width - 8) };
+            PointIs locations = 
+            [
+                (-1, -1),
+                (qrCode.Width - 8, -1),
+                (-1, qrCode.Width - 8)
+            ];
 
             zPlaceSeparator(qrCode, locations[0]);
             zPlaceSeparator(qrCode, locations[1]);
@@ -231,7 +240,7 @@ namespace Microvision.QRCoder
             return s;
         }
 
-        private static bool zIsBlocked(Rectangle rct, QRData qrCode)
+        private static bool zIsBlocked(RectI rct, QRData qrCode)
         {
             bool blocked = false;
 
@@ -242,7 +251,7 @@ namespace Microvision.QRCoder
             return blocked;
         }
 
-        private static void zPlaceAlignment(QRData qrCode, Point pos)
+        private static void zPlaceAlignment(QRData qrCode, PointI pos)
         {
             // # # # # # Carré de 5 noir
             // #       # Carré de 3 blanc
@@ -250,12 +259,12 @@ namespace Microvision.QRCoder
             // #       #
             // # # # # #
 
-            zzPlaceSquare(qrCode, new Point(pos.X + 0, pos.Y + 0), 5, true);
-            zzPlaceSquare(qrCode, new Point(pos.X + 1, pos.Y + 1), 3, false);
-            zzPlaceSquare(qrCode, new Point(pos.X + 2, pos.Y + 2), 1, true);
+            zzPlaceSquare(qrCode, new PointI(pos.X + 0, pos.Y + 0), 5, true);
+            zzPlaceSquare(qrCode, new PointI(pos.X + 1, pos.Y + 1), 3, false);
+            zzPlaceSquare(qrCode, new PointI(pos.X + 2, pos.Y + 2), 1, true);
         }
 
-        private static void zPlaceFinder(QRData qrCode, Point pos)
+        private static void zPlaceFinder(QRData qrCode, PointI pos)
         {
             // # # # # # # #  Carré de 7 noir
             // #           #  Carré de 5 blanc
@@ -265,16 +274,16 @@ namespace Microvision.QRCoder
             // #           # 
             // # # # # # # # 
 
-            zzPlaceSquare(qrCode, new Point(pos.X + 0, pos.Y + 0), 7, true);
-            zzPlaceSquare(qrCode, new Point(pos.X + 1, pos.Y + 1), 5, false);
-            zzPlaceSquare(qrCode, new Point(pos.X + 2, pos.Y + 2), 3, true);
-            zzPlaceSquare(qrCode, new Point(pos.X + 3, pos.Y + 3), 1, true);
+            zzPlaceSquare(qrCode, new PointI(pos.X + 0, pos.Y + 0), 7, true);
+            zzPlaceSquare(qrCode, new PointI(pos.X + 1, pos.Y + 1), 5, false);
+            zzPlaceSquare(qrCode, new PointI(pos.X + 2, pos.Y + 2), 3, true);
+            zzPlaceSquare(qrCode, new PointI(pos.X + 3, pos.Y + 3), 1, true);
         }
 
-        private static void zPlaceSeparator(QRData qrCode, Point pos)
+        private static void zPlaceSeparator(QRData qrCode, PointI pos)
         {
             // Carré blanc de 9 autour des finder
-            zzPlaceSquare(qrCode, new Point(pos.X, pos.Y), 9, false);
+            zzPlaceSquare(qrCode, new PointI(pos.X, pos.Y), 9, false);
         }
 
         private static string zReverseString(string inp)
@@ -282,7 +291,7 @@ namespace Microvision.QRCoder
             return new string(inp.Reverse().ToArray());
         }
 
-        private static void zzPlaceSquare(QRData qrCode, Point pos, int size, bool mark)
+        private static void zzPlaceSquare(QRData qrCode, PointI pos, int size, bool mark)
         {
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)

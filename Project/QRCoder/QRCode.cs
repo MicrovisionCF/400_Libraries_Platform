@@ -1,4 +1,5 @@
-﻿using Microvision.Types;
+﻿using Microvision.Graphic;
+using Microvision.Types;
 
 namespace Microvision.QRCoder
 {
@@ -34,7 +35,7 @@ namespace Microvision.QRCoder
         // Méthodes
         // ----------------------------------------
 
-        public Bitmap GetBitmap(Size maxSize, QRCodeGraphics? customGraphics = null)
+        public Bitmap GetBitmap(SizeI maxSize, QRCodeGraphics? customGraphics = null)
         {
             if (customGraphics is null)
                 customGraphics = zCreateDefaultGraphics();

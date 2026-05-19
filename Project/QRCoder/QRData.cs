@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Text;
 
+using Microvision.Graphic;
 using Microvision.Types;
 
 namespace Microvision.QRCoder
@@ -52,7 +53,7 @@ namespace Microvision.QRCoder
         // Propriétés
         // ----------------------------------------
 
-        public List<Point> AlignmentPositions => _info.alignementPositions;
+        public PointIs AlignmentPositions => _info.alignementPositions;
 
         public xQRConfigInfos Infos => _info;
 
