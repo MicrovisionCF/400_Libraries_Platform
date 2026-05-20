@@ -1,4 +1,9 @@
-﻿using Microvision.Collections;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+
+using Microvision.Collections;
 using Microvision.Geometry;
 using Microvision.Graphic;
 using Microvision.OpenGL;

@@ -1,4 +1,6 @@
-﻿using Microvision.Geometry;
+﻿using System;
+
+using Microvision.Geometry;
 using Microvision.OpenGL;
 using Microvision.Types;
 

@@ -1,4 +1,6 @@
-﻿using Microvision.NativeMethods;
+﻿using System;
+
+using Microvision.NativeMethods;
 
 namespace Microvision.OpenGL
 {

@@ -1,4 +1,6 @@
-﻿using Microvision.Types;
+﻿using System;
+
+using Microvision.Types;
 
 namespace Microvision.DDE
 {

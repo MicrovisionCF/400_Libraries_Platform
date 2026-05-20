@@ -1,4 +1,8 @@
-﻿using Microvision.NativeMethods;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+using Microvision.NativeMethods;
 using Microvision.Types;
 
 namespace Microvision.HID

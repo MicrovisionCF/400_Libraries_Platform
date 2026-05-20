@@ -1,4 +1,8 @@
-﻿using Microvision.Geometry;
+﻿using System;
+using System.IO;
+using System.Windows.Forms;
+
+using Microvision.Geometry;
 using Microvision.NativeMethods;
 using Microvision.Types;
 

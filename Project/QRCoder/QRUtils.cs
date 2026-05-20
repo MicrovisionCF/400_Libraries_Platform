@@ -1,4 +1,6 @@
-﻿using Microvision.Geometry;
+﻿using System.Collections.Generic;
+
+using Microvision.Geometry;
 
 namespace Microvision.QRCoder
 {

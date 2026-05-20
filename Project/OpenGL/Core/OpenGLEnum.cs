@@ -1,4 +1,5 @@
-﻿namespace Microvision.OpenGL
+﻿using System;
+namespace Microvision.OpenGL
 {
     internal enum AccumOperation : uint
     {

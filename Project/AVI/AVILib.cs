@@ -1,4 +1,7 @@
-﻿using Microvision.NativeMethods;
+﻿using System;
+using System.Windows.Forms;
+
+using Microvision.NativeMethods;
 using Microvision.Types;
 
 namespace Microvision.Avi

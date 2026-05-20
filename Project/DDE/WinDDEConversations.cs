@@ -1,4 +1,7 @@
-﻿using Microvision.Collections;
+﻿using System;
+using System.Collections.Generic;
+
+using Microvision.Collections;
 
 namespace Microvision.DDE
 {

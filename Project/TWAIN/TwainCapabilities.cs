@@ -1,4 +1,7 @@
-﻿using Microvision.Geometry;
+﻿using System;
+using System.Collections.Generic;
+
+using Microvision.Geometry;
 using Microvision.Types;
 
 using TWAINWorkingGroup;

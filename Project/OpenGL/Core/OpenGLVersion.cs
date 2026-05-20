@@ -1,4 +1,6 @@
-﻿namespace Microvision.OpenGL
+﻿using System;
+using System.Linq;
+namespace Microvision.OpenGL
 {
     internal enum OpenGLVersion
     {
