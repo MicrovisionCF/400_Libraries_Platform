@@ -14,7 +14,7 @@ namespace Microvision.OpenGL
 
         protected readonly int _antialiasing;
         protected readonly DIBContext _dibBuffer;
-        
+
         protected OpenGLContext? _gl;
         protected IntPtr _dibSectionDeviceContext;
 

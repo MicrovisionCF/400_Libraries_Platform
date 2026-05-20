@@ -1,6 +1,6 @@
 ﻿using System.Timers;
 
-using Microvision.Graphic;
+using Microvision.Geometry;
 
 namespace Microvision.Graphics3D
 {

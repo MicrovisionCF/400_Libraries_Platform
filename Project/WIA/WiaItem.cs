@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-using Microvision.Graphic;
+using Microvision.Geometry;
 using Microvision.Types;
 
 namespace Microvision.Scanners

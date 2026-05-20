@@ -1,4 +1,4 @@
-﻿using Microvision.Graphic;
+﻿using Microvision.Geometry;
 using Microvision.NativeMethods;
 using Microvision.Types;
 

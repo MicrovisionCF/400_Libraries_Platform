@@ -72,7 +72,7 @@ namespace Microvision.Graphics3D
         protected override void oDispose(bool isExplicit)
         {
             if (isExplicit) _children.ForEach(o => o.Dispose());
-            
+
             base.oDispose(isExplicit);
         }
 

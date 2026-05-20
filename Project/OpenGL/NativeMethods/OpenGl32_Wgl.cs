@@ -15,7 +15,7 @@ namespace Microvision.NativeMethods
             public float x;
             public float y;
         }
-        
+
         public struct GLYPHMETRICSFLOAT
         {
             public GLYPHMETRICSFLOAT(float gmfBlackBoxX, float gmfBlackBoxY, POINTFLOAT gmfptGlyphOrigin, float gmfCellIncX, float gmfCellIncY)
@@ -34,28 +34,28 @@ namespace Microvision.NativeMethods
             public float gmfCellIncY;
         }
 
-        [DllImport(nameof(OpenGl32))] 
+        [DllImport(nameof(OpenGl32))]
         public static extern IntPtr wglGetCurrentContext();
-        
-        [DllImport(nameof(OpenGl32))] 
+
+        [DllImport(nameof(OpenGl32))]
         public static extern int wglMakeCurrent(IntPtr hdc, IntPtr hrc);
-        
-        [DllImport(nameof(OpenGl32))] 
+
+        [DllImport(nameof(OpenGl32))]
         public static extern IntPtr wglCreateContext(IntPtr hdc);
-        
-        [DllImport(nameof(OpenGl32))] 
+
+        [DllImport(nameof(OpenGl32))]
         public static extern int wglDeleteContext(IntPtr hrc);
-        
-        [DllImport(nameof(OpenGl32))] 
+
+        [DllImport(nameof(OpenGl32))]
         public static extern IntPtr wglGetProcAddress(string name);
-        
-        [DllImport(nameof(OpenGl32))] 
+
+        [DllImport(nameof(OpenGl32))]
         public static extern bool wglUseFontBitmaps(IntPtr hDC, uint first, uint count, uint listBase);
-        
-        [DllImport(nameof(OpenGl32))] 
+
+        [DllImport(nameof(OpenGl32))]
         public static extern bool wglUseFontOutlinesA(IntPtr hDC, uint first, uint count, uint listBase, float deviation, float extrusion, int format, GLYPHMETRICSFLOAT[]? lpgmf);
-        
-        [DllImport(nameof(OpenGl32))] 
+
+        [DllImport(nameof(OpenGl32))]
         public static extern bool wglShareLists(IntPtr hrc1, IntPtr hrc2);
 
     }

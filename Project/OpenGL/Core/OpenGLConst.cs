@@ -1,5 +1,4 @@
-﻿
-namespace Microvision.OpenGL
+﻿namespace Microvision.OpenGL
 {
     internal static class OpenGLConst
     {

@@ -1,4 +1,4 @@
-﻿using Microvision.Graphic;
+﻿using Microvision.Geometry;
 using Microvision.OpenGL;
 
 namespace Microvision.Graphics3D

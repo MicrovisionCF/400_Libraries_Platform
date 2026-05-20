@@ -2,6 +2,7 @@
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
+using Microvision.Geometry;
 using Microvision.NativeMethods;
 using Microvision.Types;
 

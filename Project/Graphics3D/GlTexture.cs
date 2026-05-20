@@ -1,6 +1,6 @@
 ﻿using System.Drawing.Imaging;
 
-using Microvision.Graphic;
+using Microvision.Geometry;
 using Microvision.OpenGL;
 using Microvision.Types;
 

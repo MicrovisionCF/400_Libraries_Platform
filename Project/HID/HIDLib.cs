@@ -1,5 +1,5 @@
-﻿using Microvision.Types;
-using Microvision.NativeMethods;
+﻿using Microvision.NativeMethods;
+using Microvision.Types;
 
 namespace Microvision.HID
 {

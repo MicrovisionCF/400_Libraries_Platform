@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-using Microvision.Graphic;
+using Microvision.Geometry;
 
 namespace Microvision.QRCoder
 {
@@ -90,7 +90,7 @@ namespace Microvision.QRCoder
             // Doc : Page "Module Placement in Matrix", Step 1
 
             int size = qrCode.Width;
-            PointIs locations = 
+            PointIs locations =
             [
                 (0, 0),
                 (size - 7, 0),
@@ -117,7 +117,7 @@ namespace Microvision.QRCoder
         {
             // Doc : Page "Module Placment Matrix", Step 2
 
-            PointIs locations = 
+            PointIs locations =
             [
                 (-1, -1),
                 (qrCode.Width - 8, -1),

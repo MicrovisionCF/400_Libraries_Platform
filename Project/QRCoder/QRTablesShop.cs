@@ -1,4 +1,4 @@
-﻿using Microvision.Graphic;
+﻿using Microvision.Geometry;
 
 namespace Microvision.QRCoder
 {

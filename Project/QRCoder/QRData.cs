@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Text;
 
-using Microvision.Graphic;
+using Microvision.Geometry;
 using Microvision.Types;
 
 namespace Microvision.QRCoder

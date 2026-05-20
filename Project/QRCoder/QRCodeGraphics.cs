@@ -1,5 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 
+using Microvision.Geometry;
 using Microvision.Graphic;
 using Microvision.Types;
 

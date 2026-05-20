@@ -1,4 +1,5 @@
-﻿using Microvision.Graphic;
+﻿using Microvision.Geometry;
+using Microvision.Graphic;
 using Microvision.OpenGL;
 using Microvision.Types;
 
@@ -22,7 +23,7 @@ namespace Microvision.Graphics3D
 
         private SizeI _size;
         private GlCamera _camera;
-        
+
         private HColor _backColor;
         private float _nearestDistance, _farestDistance;
 

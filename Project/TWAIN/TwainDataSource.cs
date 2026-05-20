@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-using Microvision.Graphic;
+using Microvision.Geometry;
 using Microvision.Types;
 
 using TWAINWorkingGroup;

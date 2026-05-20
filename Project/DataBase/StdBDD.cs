@@ -253,7 +253,7 @@ namespace Microvision.DataBase
             base.oDispose(isExplicit);
         }
 
-        [MemberNotNull (nameof(_fileName), nameof(_password), nameof(_tables))]
+        [MemberNotNull(nameof(_fileName), nameof(_password), nameof(_tables))]
         protected void oThrowIfNotOpen()
         {
             ArgumentNullException.Check(_fileName);

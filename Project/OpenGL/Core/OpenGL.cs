@@ -13,7 +13,7 @@ namespace Microvision.OpenGL
         // ***************************************************************************************************
 
         private readonly IntPtr _openGLLib;
-        
+
         private RenderContext? _renderContext;
 
 
