@@ -278,7 +278,7 @@ namespace Microvision.HID
             if (base.oProcessInput(hinput) || _processAllButtonInputs)
             {
                 bool buttonChanged = false;
-                User32.RAWHID hid = _lastInput.hid();
+                User32.RAWHID hid = _lastInput.Hid();
                 int btns = HIDLib.GetButtonsPressed(_preparsedData, _buttonsCaps[0], hid.bRawData, hid.dwSizeHid);
                 if ((btns != _buttonsPressed) || _processAllButtonInputs)
                 {
@@ -363,17 +363,17 @@ namespace Microvision.HID
         // Propriétés
         // ----------------------------------------
 
-        public int KeyboardMode => _info.keyboard().dwKeyboardMode;
+        public int KeyboardMode => _info.Keyboard().dwKeyboardMode;
 
-        public int NumberOfFunctionKeys => _info.keyboard().dwNumberOfFunctionKeys;
+        public int NumberOfFunctionKeys => _info.Keyboard().dwNumberOfFunctionKeys;
 
-        public int NumberOfIndicators => _info.keyboard().dwNumberOfIndicators;
+        public int NumberOfIndicators => _info.Keyboard().dwNumberOfIndicators;
 
-        public int NumberOfKeysTotal => _info.keyboard().dwNumberOfKeysTotal;
+        public int NumberOfKeysTotal => _info.Keyboard().dwNumberOfKeysTotal;
 
-        public int SubType => _info.keyboard().dwSubType;
+        public int SubType => _info.Keyboard().dwSubType;
 
-        public int Type => _info.keyboard().dwType;
+        public int Type => _info.Keyboard().dwType;
 
 
         // ----------------------------------------
@@ -416,7 +416,7 @@ namespace Microvision.HID
 
             if (base.oProcessInput(hinput))
             {
-                User32.RAWKEYBOARD kb = _lastInput.keyboard();
+                User32.RAWKEYBOARD kb = _lastInput.Keyboard();
 
                 switch ((User32.RawKeyboardMsg)kb.Message)
                 {
@@ -480,13 +480,13 @@ namespace Microvision.HID
         // Propriétés
         // ----------------------------------------
 
-        public bool HasHorizontalWheel => _info.mouse().fHasHorizontalWheel != 0;
+        public bool HasHorizontalWheel => _info.Mouse().fHasHorizontalWheel != 0;
 
-        public int Id => _info.mouse().dwId;
+        public int Id => _info.Mouse().dwId;
 
-        public int NumberOfButtons => _info.mouse().dwNumberOfButtons;
+        public int NumberOfButtons => _info.Mouse().dwNumberOfButtons;
 
-        public int SampleRate => _info.mouse().dwSampleRate;
+        public int SampleRate => _info.Mouse().dwSampleRate;
 
 
         // ----------------------------------------
@@ -518,7 +518,7 @@ namespace Microvision.HID
             base.oProcessInput(hinput);
 
             // -- je soupçonne qu'il faille traiter tous les messages, même s'ils ne changent pas
-            User32.RAWMOUSE m = _lastInput.mouse();
+            User32.RAWMOUSE m = _lastInput.Mouse();
             User32.MouseButtonFlags btns = (User32.MouseButtonFlags)(m.usButtonFlags & (int)~User32.MouseButtonFlags.RI_MOUSE_WHEEL);
 
             if (btns != 0 || m.lLastX != 0 || m.lLastY != 0)
@@ -569,7 +569,7 @@ namespace Microvision.HID
         {
             _preparsedData = RawInputLib.GetPreparsedData(_handle);
             _caps = HIDLib.GetCaps(_preparsedData);
-            oSetUsage((Hid.SomeUsagePage)_info.hid().usUsagePage, (Hid.SomeUsage)_info.hid().usUsage);
+            oSetUsage((Hid.SomeUsagePage)_info.Hid().usUsagePage, (Hid.SomeUsage)_info.Hid().usUsage);
         }
 
 
@@ -577,11 +577,11 @@ namespace Microvision.HID
         // Propriétés
         // ----------------------------------------
 
-        public int ProductId => _info.hid().dwProductId;
+        public int ProductId => _info.Hid().dwProductId;
 
-        public int VendorId => _info.hid().dwVendorId;
+        public int VendorId => _info.Hid().dwVendorId;
 
-        public int VersionNumber => _info.hid().dwVersionNumber;
+        public int VersionNumber => _info.Hid().dwVersionNumber;
 
 
         // ----------------------------------------

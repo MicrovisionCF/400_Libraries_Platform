@@ -267,7 +267,7 @@ namespace Microvision.HID
                     break;
 
                 case User32.RIM.RIM_TYPEHIDField:
-                    User32.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).hid();
+                    User32.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).Hid();
                     output = new Hid.USAGE_AND_PAGE((Hid.SomeUsage)inf.usUsage, (Hid.SomeUsagePage)inf.usUsagePage);
                     break;
 
@@ -281,7 +281,7 @@ namespace Microvision.HID
 
         private static (int vendorId, int productId) zGetVendorIdProductId(IntPtr hdev)
         {
-            User32.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).hid();
+            User32.RID_DEVICE_INFO_HID inf = RawInputLib.GetDeviceInfo(hdev).Hid();
 
             return (inf.dwVendorId, inf.dwProductId);
         }
