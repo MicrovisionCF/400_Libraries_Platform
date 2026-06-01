@@ -29,8 +29,6 @@ namespace Microvision.Authenticode
 
         public static bool IsSigned(string filePath)
         {
-            ArgumentNullException.ThrowIfNull(filePath);
-
             Wintrust.WINTRUST_FILE_INFO file = new Wintrust.WINTRUST_FILE_INFO();
             file.cbStruct = Marshal.SizeOf(typeof(Wintrust.WINTRUST_FILE_INFO));
             file.pcwszFilePath = filePath;

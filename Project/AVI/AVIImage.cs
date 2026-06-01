@@ -88,7 +88,7 @@ namespace Microvision.Avi
 
         public void DrawEnd(Graphics gf)
         {
-            ArgumentNullException.ThrowIfNull(_drawDib);
+            _drawDib.ThrowIfNull();
 
             _drawDib.EndDraw(gf);
             _drawDib.Dispose();

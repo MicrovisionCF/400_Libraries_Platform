@@ -97,7 +97,7 @@ namespace Microvision.DataBase
 
         protected void oEnableForeignKeyConstrains(bool enable)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             zExecute(_sqlCon, "END");
             SQLiteCommand cmd = new SQLiteCommand(_sqlCon);
@@ -440,7 +440,7 @@ namespace Microvision.DataBase
 
         protected bool oTryCreate(string filnam, string? sqlScript)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             bool success;
 
@@ -554,7 +554,7 @@ namespace Microvision.DataBase
 
         bool IBDDCreator.CreateTable(string tableName, string? indexName, string indexField)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             zSQLCreate(_sqlCon, tableName, new[] { indexField }.ToList(), new[] { DbType.Int64 }.ToList(), new[] { true }.ToList());
 
@@ -574,7 +574,7 @@ namespace Microvision.DataBase
 
         void IBDDCreator.KillField(string tableName, string fieldName)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             oEnableForeignKeyConstrains(false);
 
@@ -609,7 +609,7 @@ namespace Microvision.DataBase
 
         void IBDDCreator.RenameField(string tableName, string fieldName, string newFieldName)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             string oldName = tableName + "_old";
             (List<string> oldColsName, List<DbType> colsType, List<bool> colsKey) = zSQLFieldsList(_sqlCon, tableName, "");
@@ -654,7 +654,7 @@ namespace Microvision.DataBase
 
         int IBDDEngine.AddRecord(string tableName, string indexFieldName)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             zSQLInsertID(_sqlCon, tableName, indexFieldName);
             return zSQLLastInsertedID(_sqlCon);
@@ -664,14 +664,14 @@ namespace Microvision.DataBase
 
         string IBDDEngine.BaseVersion()
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             return _sqlCon.ServerVersion;
         }
 
         void IBDDEngine.CloseBase()
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             zExecute(_sqlCon, "END"); // Mets fin à la transaction
 
@@ -684,7 +684,7 @@ namespace Microvision.DataBase
 
         void IBDDEngine.Flush()
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             // TODO : le fonctionnement avait été calqué sur la classe historique BDDAce12, mais ça serait bien mieux de gérer efficacement
             // avec des COMMIT par exemple...
@@ -695,14 +695,14 @@ namespace Microvision.DataBase
 
         List<int> IBDDEngine.GetRecordIds(string tabOrSql, List<object>? parameters)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             return zSQLIDsWhere(_sqlCon, tabOrSql, parameters);
         }
 
         bool IBDDEngine.KillRecord(string tableName, string indexName, int recordId)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             return zSQLDeleteRow(_sqlCon, tableName, indexName, recordId) == 1;
         }
@@ -711,7 +711,7 @@ namespace Microvision.DataBase
 
         bool IBDDEngine.NewPassword(string oldPassword, string newPassword)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             _sqlCon.ChangePassword(newPassword);
 
@@ -741,7 +741,7 @@ namespace Microvision.DataBase
 
         (List<string> fieldsName, List<DbType> fieldsType) IBDDEngine.ReadFields(string tableName, string indexName)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             (List<string> fieldsName, List<DbType> fieldsType, _) = zSQLFieldsList(_sqlCon, tableName, indexName);
             return (fieldsName, fieldsType);
@@ -749,27 +749,27 @@ namespace Microvision.DataBase
 
         List<object> IBDDEngine.ReadRecord(string tableName, string indexName, int recordId, List<string> fieldsName)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             return zSQLReadRecord(_sqlCon, tableName, indexName, recordId, fieldsName);
         }
 
         List<string> IBDDEngine.ReadTables()
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             return zSQLTablesList(_sqlCon);
         }
 
         int IBDDEngine.RecordsCount(string tableName)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
             return zSQLCount(_sqlCon, tableName);
         }
 
         int IBDDEngine.UserVersion()
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             SQLiteCommand cmd = new SQLiteCommand(_sqlCon);
             cmd.CommandType = CommandType.Text;
@@ -787,7 +787,7 @@ namespace Microvision.DataBase
 
         void IBDDEngine.WriteRecord(string tableName, string indexName, int recordId, List<string> fieldsName, List<object> fieldsValue)
         {
-            ArgumentNullException.ThrowIfNull(_sqlCon);
+            _sqlCon.ThrowIfNull();
 
             zSQLUpdateRow(_sqlCon, tableName, indexName, recordId, fieldsName, fieldsValue);
         }
