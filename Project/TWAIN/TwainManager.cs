@@ -75,7 +75,7 @@ namespace Microvision.Scanners
 
         public void CloseDSM()
         {
-            ArgumentNullException.Check(_dsm);
+            _dsm.ThrowIfNull();
 
             _dsm.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDSM, ref _hWnd);
 
@@ -85,7 +85,7 @@ namespace Microvision.Scanners
 
         public void EnumerateDS()
         {
-            ArgumentNullException.Check(_dsm);
+            _dsm.ThrowIfNull();
 
             _dataSources.Clear();
 
@@ -112,7 +112,7 @@ namespace Microvision.Scanners
 
         public TwainDataSource? OpenDS(int no)
         {
-            ArgumentNullException.Check(_dsm);
+            _dsm.ThrowIfNull();
 
             return _dataSources.Open(no, _dsm, _thread, this);
         }
@@ -192,7 +192,7 @@ namespace Microvision.Scanners
 
         protected TWAIN.STS oScanCallback(bool closing)
         {
-            ArgumentNullException.Check(_dsm);
+            _dsm.ThrowIfNull();
 
             bool ok = true;
             bool userCancel = false;
@@ -364,7 +364,7 @@ namespace Microvision.Scanners
         // As IMessageFilter
         // ####################################
 
-        bool IMessageFilter.PreFilterMessage(ref Message m) => ArgumentNullException.Check(_dsm).PreFilterMessage(m.HWnd, m.Msg, m.WParam, m.LParam);
+        bool IMessageFilter.PreFilterMessage(ref Message m) => _dsm.ThrowIfNull().PreFilterMessage(m.HWnd, m.Msg, m.WParam, m.LParam);
 
 
     }

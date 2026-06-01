@@ -71,11 +71,11 @@ namespace Microvision.DDE
 
         public string LinkTopic => _item.topic;
 
-        public string LongName => ArgumentNullException.Check(_longName);
+        public string LongName => _longName.ThrowIfNull();
 
-        public string ShortName => ArgumentNullException.Check(_shortName);
+        public string ShortName => _shortName.ThrowIfNull();
 
-        public string Unit => ArgumentNullException.Check(_unit);
+        public string Unit => _unit.ThrowIfNull();
 
 
         // ----------------------------------------
@@ -84,7 +84,7 @@ namespace Microvision.DDE
 
         public float? GetValue()
         {
-            ArgumentNullException.Check(_ddeManager);
+            _ddeManager.ThrowIfNull();
 
             if (!_linked)
             {
@@ -121,7 +121,7 @@ namespace Microvision.DDE
 
         public bool SetValue(float value)
         {
-            ArgumentNullException.Check(_ddeManager);
+            _ddeManager.ThrowIfNull();
 
             bool ok = false;
 
@@ -151,7 +151,7 @@ namespace Microvision.DDE
 
         public void StopConnection()
         {
-            ArgumentNullException.Check(_ddeManager);
+            _ddeManager.ThrowIfNull();
 
             _valid = false;
 
@@ -223,7 +223,7 @@ namespace Microvision.DDE
 
         private void _ddeManager_Attach(bool attach)
         {
-            ArgumentNullException.Check(_ddeManager);
+            _ddeManager.ThrowIfNull();
 
             if (attach)
             {
@@ -264,7 +264,7 @@ namespace Microvision.DDE
 
         private void _ddeManager_ItemLinkStart(WinDDEManager.xDDEItem item)
         {
-            ArgumentNullException.Check(_ddeManager);
+            _ddeManager.ThrowIfNull();
 
             if (item == _item && !_linked)
             {

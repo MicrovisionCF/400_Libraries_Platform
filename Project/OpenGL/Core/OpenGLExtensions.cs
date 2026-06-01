@@ -64,7 +64,7 @@ namespace Microvision.OpenGL
 
         internal IntPtr CreateContextAttribsARB(IntPtr hShareContext, int[] attribList)
         {
-            ArgumentNullException.Check(_renderContext);
+            _renderContext.ThrowIfNull();
 
             return oGetDelegateFor<wglCreateContextAttribsARB>()(_renderContext.DeviceContextHandle, hShareContext, attribList);
         }

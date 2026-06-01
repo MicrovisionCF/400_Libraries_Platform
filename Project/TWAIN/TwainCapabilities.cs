@@ -155,7 +155,7 @@ namespace Microvision.Scanners
 
         public float GetDefaultGamma()
         {
-            ArgumentNullException.Check(_gamma);
+            _gamma.ThrowIfNull();
 
             return _gamma.GetDefaultOneValue();
         }
@@ -223,14 +223,14 @@ namespace Microvision.Scanners
 
         public void SetGamma(float gamma, bool force = false)
         {
-            ArgumentNullException.Check(_gamma);
+            _gamma.ThrowIfNull();
 
             _gamma.SetOneValue(gamma, force);
         }
 
         public void SetLightPath(TWAIN.TWLP lightPath)
         {
-            ArgumentNullException.Check(_lightPath);
+            _lightPath.ThrowIfNull();
 
             _lightPath.SetOneValue(lightPath);
         }
@@ -321,7 +321,7 @@ namespace Microvision.Scanners
 
         private void _lightPath_Attach(bool attach)
         {
-            ArgumentNullException.Check(_lightPath);
+            _lightPath.ThrowIfNull();
 
             if (attach)
             {

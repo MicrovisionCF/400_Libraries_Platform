@@ -45,20 +45,19 @@ namespace Microvision.DataBase
 
         public bool CanManage => _engine is IBDDCreator;
 
-        public string DataSourceName => ArgumentNullException.Check(_fileName);
+        public string DataSourceName => _fileName.ThrowIfNull();
 
         public IBDDEngine Engine => _engine;
 
         public int LastError => _engine.LastError();
 
-        public string Password => ArgumentNullException.Check(_password);
+        public string Password => _password.ThrowIfNull();
 
-        public string Provider => ArgumentNullException.Check(_provider);
+        public string Provider => _provider.ThrowIfNull();
 
-        public int TablesCount => ArgumentNullException.Check(_tables).Count;
+        public int TablesCount => _tables.ThrowIfNull().Count;
 
-        public string Version => ArgumentNullException.Check(_version);
-
+        public string Version => _version.ThrowIfNull();
 
         // ----------------------------------------
         // Méthodes
@@ -258,9 +257,9 @@ namespace Microvision.DataBase
         [MemberNotNull(nameof(_fileName), nameof(_password), nameof(_tables))]
         protected void oThrowIfNotOpen()
         {
-            ArgumentNullException.Check(_fileName);
-            ArgumentNullException.Check(_password);
-            ArgumentNullException.Check(_tables);
+            _fileName.ThrowIfNull();
+            _password.ThrowIfNull();
+            _tables.ThrowIfNull();
         }
 
 

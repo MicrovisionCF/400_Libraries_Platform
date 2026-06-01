@@ -221,7 +221,7 @@ namespace Microvision.Graphics3D
 
         private void _timer_Attach(bool attach)
         {
-            ArgumentNullException.Check(_timer);
+            _timer.ThrowIfNull();
 
             if (attach)
             {

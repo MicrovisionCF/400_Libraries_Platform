@@ -90,11 +90,11 @@ namespace Microvision.DataBase
         // Propriétés
         // ----------------------------------------
 
-        public string DataSourceName => ArgumentNullException.Check(_fileName);
+        public string DataSourceName => _fileName.ThrowIfNull();
 
-        public IBDDEngine Engine => ArgumentNullException.Check(_engine);
+        public IBDDEngine Engine => _engine.ThrowIfNull();
 
-        public int FieldsCount => ArgumentNullException.Check(_fieldsName).Count;
+        public int FieldsCount => _fieldsName.ThrowIfNull().Count;
 
         public string IDFieldName => _idFieldName;
 
@@ -102,7 +102,7 @@ namespace Microvision.DataBase
 
         public string Name
         {
-            get => ArgumentNullException.Check(_name);
+            get => _name.ThrowIfNull();
 
             internal set
             {
@@ -115,7 +115,7 @@ namespace Microvision.DataBase
 
         public string Password
         {
-            get => ArgumentNullException.Check(_password);
+            get => _password.ThrowIfNull();
 
             set
             {
@@ -135,12 +135,12 @@ namespace Microvision.DataBase
         [MemberNotNull(nameof(_fileName), nameof(_password), nameof(_name), nameof(_fieldsName), nameof(_fieldsType), nameof(_engine))]
         protected void oThrowIfNotOpen()
         {
-            ArgumentNullException.Check(_engine);
-            ArgumentNullException.Check(_fileName);
-            ArgumentNullException.Check(_password);
-            ArgumentNullException.Check(_name);
-            ArgumentNullException.Check(_fieldsName);
-            ArgumentNullException.Check(_fieldsType);
+            _engine.ThrowIfNull();
+            _fileName.ThrowIfNull();
+            _password.ThrowIfNull();
+            _name.ThrowIfNull();
+            _fieldsName.ThrowIfNull();
+            _fieldsType.ThrowIfNull();
         }
 
 

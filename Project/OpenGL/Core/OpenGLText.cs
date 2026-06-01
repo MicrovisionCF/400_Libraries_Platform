@@ -50,7 +50,7 @@ namespace Microvision.OpenGL
 
         public void DrawText(string text, string fontName, float extrusion, bool fill)
         {
-            ArgumentNullException.Check(_renderContext);
+            _renderContext.ThrowIfNull();
 
             FontOutlineFormat outline = fill ? FontOutlineFormat.Polygons : FontOutlineFormat.Lines;
 
@@ -74,7 +74,7 @@ namespace Microvision.OpenGL
 
         protected int oAddFontOutlineEntry(string fontName, float extrusion, FontOutlineFormat fontOutlineFormat)
         {
-            ArgumentNullException.Check(_renderContext);
+            _renderContext.ThrowIfNull();
 
             this.MakeCurrent();
 

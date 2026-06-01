@@ -81,7 +81,7 @@ namespace Microvision.Scanners
 
         protected void oRunInUIThread(Action action)
         {
-            ArgumentNullException.Check(_sync);
+            _sync.ThrowIfNull();
 
             if (_sync.InvokeRequired) _sync.Invoke(action, null);
             else action();
@@ -94,7 +94,7 @@ namespace Microvision.Scanners
 
         private void zThreadCallback(object? arg)
         {
-            Semaphore locker = ArgumentNullException.Check(arg as Semaphore);
+            Semaphore locker = (arg as Semaphore).ThrowIfNull();
 
             using ApplicationContext appContext = new ApplicationContext();
             using Form form = new Form();

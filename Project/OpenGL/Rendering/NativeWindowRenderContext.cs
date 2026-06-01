@@ -51,7 +51,7 @@ namespace Microvision.OpenGL
 
             try
             {
-                ArgumentNullException.Check(parameter);
+                parameter.ThrowIfNull();
                 _windowHandle = (IntPtr)parameter;
             }
             catch

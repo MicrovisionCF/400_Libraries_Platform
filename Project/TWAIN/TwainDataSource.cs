@@ -72,7 +72,7 @@ namespace Microvision.Scanners
         // Propriétés
         // ----------------------------------------
 
-        public bool HasResolutionRange => ArgumentNullException.Check(_capabilities).HasResolutionRange;
+        public bool HasResolutionRange => _capabilities.ThrowIfNull().HasResolutionRange;
 
         public string ProductName => _id.ProductName.Get();
 
@@ -386,8 +386,8 @@ namespace Microvision.Scanners
 
         private void _imageReceiver_Attach(bool attach)
         {
-            ArgumentNullException.Check(_imageReceiver);
-            ArgumentNullException.Check(_thread);
+            _imageReceiver.ThrowIfNull();
+            _thread.ThrowIfNull();
 
             if (attach)
             {

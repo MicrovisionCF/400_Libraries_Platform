@@ -56,7 +56,7 @@ namespace Microvision.OpenGL
 
         protected bool oAllocBuffers()
         {
-            ArgumentNullException.Check(_gl);
+            _gl.ThrowIfNull();
 
             bool ok;
 
@@ -91,7 +91,7 @@ namespace Microvision.OpenGL
 
         protected override void oBlit(IntPtr hdc)
         {
-            ArgumentNullException.Check(_gl);
+            _gl.ThrowIfNull();
 
             if (_deviceContextHandle != IntPtr.Zero)
             {
@@ -132,7 +132,7 @@ namespace Microvision.OpenGL
 
         protected void oDestroyFramebuffers()
         {
-            ArgumentNullException.Check(_gl);
+            _gl.ThrowIfNull();
 
             if (_bufferColorMulti != 0) _gl.DeleteRenderbuffers([_bufferColorMulti, _bufferDepthMulti, _bufferColorFinal]);
             if (_bufferFrameMulti != 0) _gl.DeleteFramebuffers([_bufferFrameMulti, _bufferFrameFinal]);

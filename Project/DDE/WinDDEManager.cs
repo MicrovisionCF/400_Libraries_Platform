@@ -109,7 +109,7 @@ namespace Microvision.DDE
 
         public xDDEItem RegisterItem(string serverName, string topic, string itemName)
         {
-            ArgumentNullException.Check(_lib);
+            _lib.ThrowIfNull();
 
             xDDEItem item = new xDDEItem(serverName, topic, itemName);
 
@@ -132,7 +132,7 @@ namespace Microvision.DDE
 
         public void Terminate()
         {
-            ArgumentNullException.Check(_lib);
+            _lib.ThrowIfNull();
 
             _lib.Uninitialize();
             _lib.Dispose();
@@ -204,7 +204,7 @@ namespace Microvision.DDE
 
         protected void oDDERegisterServer(IntPtr hsrvnam)
         {
-            ArgumentNullException.Check(_lib);
+            _lib.ThrowIfNull();
 
             string srvnam = _lib.QueryString(hsrvnam);
             Debug.Print("==> " + "XTYP_REGISTER" + SpecialChars.Tab + srvnam);
@@ -220,7 +220,7 @@ namespace Microvision.DDE
 
         protected void oDDEUnregisterServer(IntPtr hsrvnam)
         {
-            ArgumentNullException.Check(_lib);
+            _lib.ThrowIfNull();
 
             Debug.Print("==> " + "XTYP_UNREGISTER" + SpecialChars.Tab + _lib.QueryString(hsrvnam));
         }

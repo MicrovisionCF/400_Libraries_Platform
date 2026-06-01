@@ -81,7 +81,7 @@ namespace Microvision.DDE
 
         public bool Connect(int no)
         {
-            ArgumentNullException.Check(_dde);
+            _dde.ThrowIfNull();
 
             return _links.StartConnection(no, _dde);
         }
@@ -171,7 +171,7 @@ namespace Microvision.DDE
 
         public void StopManager()
         {
-            ArgumentNullException.Check(_dde);
+            _dde.ThrowIfNull();
 
             for (int i = 0; i < _links.Count; i++)
                 if (_links.IsConnected(i))
