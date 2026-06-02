@@ -128,8 +128,8 @@ namespace Microvision.HID
                 output = new User32.RAWINPUT((int)lng);
 
                 int bfpos = 0;
-                bfpos = (bfpos + MarshShop.BufferToStruct(bf, bfpos, out output.header));
-                bfpos = (bfpos + MarshShop.BufferToBytes(bf, bfpos, output.datalen, output.data));
+                bfpos += MarshShop.BufferToStruct(bf, bfpos, out output.header);
+                bfpos += MarshShop.BufferToBytes(bf, bfpos, output.datalen, output.data);
             }
 
             return output;
@@ -154,7 +154,7 @@ namespace Microvision.HID
         public static bool RegisterDevice(List<Hid.USAGE_AND_PAGE> uups, IntPtr hwnd)
         {
             int nb = uups.Count;
-            List<User32.RAWINPUTDEVICE> lst = new List<User32.RAWINPUTDEVICE>();
+            List<User32.RAWINPUTDEVICE> lst = [];
             for (int i = 0; i < nb; i++)
                 lst.Add(new User32.RAWINPUTDEVICE((ushort)uups[i].UsagePage, (ushort)uups[i].Usage, hwnd));
 

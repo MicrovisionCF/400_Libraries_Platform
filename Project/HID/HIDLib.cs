@@ -74,7 +74,7 @@ namespace Microvision.HID
 
             if (erc == Hid.HIDP_STATUS.SUCCESS)
                 for (int i = 0; i < usgnb; i++)
-                    btns = (btns | ((int)Math.Pow(2, usgs[i] - bcaps.UsageMin)));
+                    btns |= ((int)Math.Pow(2, usgs[i] - bcaps.UsageMin));
 
             return btns;
         }

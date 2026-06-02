@@ -35,13 +35,13 @@ namespace Microvision.NativeMethods
             // Propriétés
             // ---------------------------------------------------
 
-            public string Compressor => zStringizeLong((int)fccHandler);
+            public readonly string Compressor => zStringizeLong((int)fccHandler);
 
-            public bool IsDefined => fccHandler != 0;
+            public readonly bool IsDefined => fccHandler != 0;
 
             public int KeyFramePeriod
             {
-                get => (int)dwKeyFrameEvery;
+                readonly get => (int)dwKeyFrameEvery;
 
                 set
                 {
@@ -51,7 +51,7 @@ namespace Microvision.NativeMethods
 
             public int Quality
             {
-                get => (int)(dwQuality / 100);
+                readonly get => (int)(dwQuality / 100);
 
                 set
                 {
@@ -61,14 +61,14 @@ namespace Microvision.NativeMethods
 
             public bool UseKeyFrames
             {
-                get => (dwFlags & (long)AVICompressFlags.AVICOMPRESSF_KEYFRAMES) != 0;
+                readonly get => (dwFlags & (long)AVICompressFlags.AVICOMPRESSF_KEYFRAMES) != 0;
 
                 set
                 {
                     if (value)
-                        dwFlags = (dwFlags | (uint)AVICompressFlags.AVICOMPRESSF_KEYFRAMES);
+                        dwFlags |= (uint)AVICompressFlags.AVICOMPRESSF_KEYFRAMES;
                     else
-                        dwFlags = (dwFlags & ~(uint)AVICompressFlags.AVICOMPRESSF_KEYFRAMES);
+                        dwFlags &= ~(uint)AVICompressFlags.AVICOMPRESSF_KEYFRAMES;
                 }
             }
 
@@ -207,15 +207,15 @@ namespace Microvision.NativeMethods
             // Propriétés
             // ---------------------------------------------------
 
-            public bool AllKeyFrames => (dwCaps & (int)AVIFileCaps.AVIFILECAPS_ALLKEYFRAMES) != 0;
+            public readonly bool AllKeyFrames => (dwCaps & (int)AVIFileCaps.AVIFILECAPS_ALLKEYFRAMES) != 0;
 
-            public string FileType => new string(szFileType);
+            public readonly string FileType => new string(szFileType);
 
-            public string Flags => dwFlags.ToString("X") + ", " + dwCaps.ToString("X");
+            public readonly string Flags => dwFlags.ToString("X") + ", " + dwCaps.ToString("X");
 
-            public int StreamsCount => dwStreams;
+            public readonly int StreamsCount => dwStreams;
 
-            public bool UseCompression => !((dwCaps & (int)AVIFileCaps.AVIFILECAPS_NOCOMPRESSION) != 0);
+            public readonly bool UseCompression => !((dwCaps & (int)AVIFileCaps.AVIFILECAPS_NOCOMPRESSION) != 0);
 
             // ---------------------------------------------------
             // Shared
@@ -292,11 +292,11 @@ namespace Microvision.NativeMethods
             // Propriétés
             // ---------------------------------------------------
 
-            public string Compressor => zStringizeLong(fccHandler);
+            public readonly string Compressor => zStringizeLong(fccHandler);
 
             public string FCCTypeString
             {
-                get => zStringizeLong(FCCType);
+                readonly get => zStringizeLong(FCCType);
 
                 set
                 {
@@ -306,7 +306,7 @@ namespace Microvision.NativeMethods
 
             public float Frequency
             {
-                get => (dwRate / (float)dwScale);
+                readonly get => (dwRate / (float)dwScale);
 
                 set
                 {
@@ -315,11 +315,11 @@ namespace Microvision.NativeMethods
                 }
             }
 
-            public string Name => new string(szName);
+            public readonly string Name => new string(szName);
 
             public int SampleCount
             {
-                get => dwLength;
+                readonly get => dwLength;
 
                 set
                 {
@@ -332,7 +332,7 @@ namespace Microvision.NativeMethods
 
             public int SampleStart
             {
-                get => dwStart;
+                readonly get => dwStart;
 
                 set
                 {
@@ -345,7 +345,7 @@ namespace Microvision.NativeMethods
 
             public Size Size
             {
-                get => new Size(rcFrame.Right - rcFrame.Left, rcFrame.Bottom - rcFrame.Top);
+                readonly get => new Size(rcFrame.Right - rcFrame.Left, rcFrame.Bottom - rcFrame.Top);
 
                 set
                 {

@@ -94,7 +94,7 @@ namespace Microvision.Scanners
             TWAIN.TW_IDENTITY id = default;
             for (TWAIN.STS sts = _dataSourceManager.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.GETFIRST, ref id); sts == TWAIN.STS.SUCCESS; sts = _dataSourceManager.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.GETNEXT, ref id))
             {
-                TwainDataSource ds = new TwainDataSource(id);
+                using TwainDataSource ds = new TwainDataSource(id);
 
                 if (ds.Open(_dataSourceManager, _thread, this))
                 {
@@ -102,8 +102,6 @@ namespace Microvision.Scanners
 
                     ds.Close();
                 }
-
-                ds.Dispose();
             }
         }
 

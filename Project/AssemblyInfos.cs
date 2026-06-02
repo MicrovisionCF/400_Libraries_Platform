@@ -9,7 +9,7 @@ namespace Microvision.Platform
         // 05.01.22 : Création, encapsulation des informations de l'assembly
         // ***************************************************************************************************
 
-        private Assembly _assembly;
+        private readonly Assembly _assembly;
 
 
         // ----------------------------------------

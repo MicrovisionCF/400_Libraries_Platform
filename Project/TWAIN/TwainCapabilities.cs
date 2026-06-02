@@ -89,9 +89,8 @@ namespace Microvision.Scanners
             // Les lignes ci-dessous indiquent à ces scanners que l'application ne gère qu'une seule frame par page.
             if (zQuerySupport(_dataSourceManager, TWAIN.CAP.ICAP_MAXFRAMES, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
             {
-                TwainCapability<ushort> maxFrames = new TwainCapability<ushort>(_dataSourceManager, TWAIN.CAP.ICAP_MAXFRAMES);  // TWAIN 2.5 page 602/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE
+                using TwainCapability<ushort> maxFrames = new TwainCapability<ushort>(_dataSourceManager, TWAIN.CAP.ICAP_MAXFRAMES);  // TWAIN 2.5 page 602/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE
                 maxFrames.SetOneValue(1);
-                maxFrames.Dispose();
             }
 
             // Les capabilities ICAP_XSCALING et ICAP_YSCALING influent sur la résolution réelle.
@@ -99,16 +98,14 @@ namespace Microvision.Scanners
             // cf. § Resolution sur: https://www.epsondevelopers.com/twain-programming-guide-epson-scan/epson-twain-driver/
             if (zQuerySupport(_dataSourceManager, TWAIN.CAP.ICAP_XSCALING, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
             {
-                TwainCapabilityFloat xScaling = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_XSCALING);
+                using TwainCapabilityFloat xScaling = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_XSCALING);
                 xScaling.SetOneValue(1);
-                xScaling.Dispose();
             }
 
             if (zQuerySupport(_dataSourceManager, TWAIN.CAP.ICAP_YSCALING, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
             {
-                TwainCapabilityFloat yScaling = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_YSCALING);
+                using TwainCapabilityFloat yScaling = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_YSCALING);
                 yScaling.SetOneValue(1);
-                yScaling.Dispose();
             }
         }
 
