@@ -28,6 +28,7 @@ namespace Microvision.DataBase
         //            Ajout de valeurs par défaut à l'ajout de nouvelle colonne
         // 22.05.23 : Renommage de la table de test car "test" est un nom réellement utilisé et qui entre en conflit
         // 14.11.23 : Les patterns sont gérés (SQLite utilise _ pour 1 caractère et % pour n caractères)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public enum SQLiteError
@@ -211,20 +212,20 @@ namespace Microvision.DataBase
             return output;
         }
 
-        private static void zSQLCopyTable(SQLiteConnection con, string tbSrc, List<string> colsSrc, string tbDst, List<string> colsDst)
+        private static void zSQLCopyTable(SQLiteConnection con, string srcTable, List<string> srcColumns, string dstTable, List<string> dstColumns)
         {
             string src = "";
             string dst = "";
 
-            for (int i = 0; i < colsSrc.Count; i++)
+            for (int i = 0; i < srcColumns.Count; i++)
             {
-                src += zSQLQuote(colsSrc[i]);
-                src += i < colsSrc.Count - 1 ? ", " : "";
-                dst += zSQLQuote(colsDst[i]);
-                dst += i < colsDst.Count - 1 ? ", " : "";
+                src += zSQLQuote(srcColumns[i]);
+                src += i < srcColumns.Count - 1 ? ", " : "";
+                dst += zSQLQuote(dstColumns[i]);
+                dst += i < dstColumns.Count - 1 ? ", " : "";
             }
 
-            string query = "INSERT INTO " + zSQLQuote(tbDst) + " (" + dst + ") SELECT " + src + " FROM " + zSQLQuote(tbSrc) + ";";
+            string query = "INSERT INTO " + zSQLQuote(dstTable) + " (" + dst + ") SELECT " + src + " FROM " + zSQLQuote(srcTable) + ";";
 
             SQLiteCommand cmd = new SQLiteCommand(con);
             cmd.CommandType = CommandType.Text;
@@ -233,27 +234,27 @@ namespace Microvision.DataBase
             cmd.Dispose();
         }
 
-        private static int zSQLCount(SQLiteConnection con, string tbnam)
+        private static int zSQLCount(SQLiteConnection con, string tableName)
         {
             SQLiteCommand cmd = new SQLiteCommand(con);
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT COUNT(*) FROM " + zSQLQuote(tbnam);
+            cmd.CommandText = "SELECT COUNT(*) FROM " + zSQLQuote(tableName);
             int count = ConvertShop.ReadInt(cmd.ExecuteScalar());
             cmd.Dispose();
 
             return count;
         }
 
-        private static void zSQLCreate(SQLiteConnection con, string tbnam, List<string> colsName, List<DbType> colsType, List<bool> colsKey)
+        private static void zSQLCreate(SQLiteConnection con, string tableName, List<string> columnsName, List<DbType> columnsType, List<bool> columnsKey)
         {
-            string query = "CREATE TABLE " + zSQLQuote(tbnam) + " (";
-            for (int i = 0; i < colsName.Count; i++)
+            string query = "CREATE TABLE " + zSQLQuote(tableName) + " (";
+            for (int i = 0; i < columnsName.Count; i++)
             {
-                query += zSQLQuote(colsName[i]) + " ";
-                query += zGetSQLiteType(colsType[i]);
-                if (colsKey[i])
+                query += zSQLQuote(columnsName[i]) + " ";
+                query += zGetSQLiteType(columnsType[i]);
+                if (columnsKey[i])
                     query += " PRIMARY KEY AUTOINCREMENT UNIQUE";
-                query += i < colsName.Count - 1 ? "," + SpecialChars.NewLine : ");";
+                query += i < columnsName.Count - 1 ? "," + SpecialChars.NewLine : ");";
             }
 
             SQLiteCommand cmd = new SQLiteCommand(con);
@@ -263,23 +264,23 @@ namespace Microvision.DataBase
             cmd.Dispose();
         }
 
-        private static int zSQLDeleteRow(SQLiteConnection con, string tbnam, string idnam, int idval)
+        private static int zSQLDeleteRow(SQLiteConnection con, string tableName, string idName, int idValueue)
         {
             SQLiteCommand cmd = new SQLiteCommand(con);
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "DELETE FROM " + zSQLQuote(tbnam) + " WHERE " + zSQLQuote(idnam) + " = ?";
-            cmd.Parameters.AddWithValue("", idval);
+            cmd.CommandText = "DELETE FROM " + zSQLQuote(tableName) + " WHERE " + zSQLQuote(idName) + " = ?";
+            cmd.Parameters.AddWithValue("", idValueue);
             int deletedCount = cmd.ExecuteNonQuery();
             cmd.Dispose();
 
             return deletedCount;
         }
 
-        private (List<string> names, List<DbType> types, List<bool> isKey) zSQLFieldsList(SQLiteConnection con, string tbnam, string idnam)
+        private (List<string> names, List<DbType> types, List<bool> isKey) zSQLFieldsList(SQLiteConnection con, string tableName, string idName)
         {
             SQLiteCommand cmd = new SQLiteCommand(con);
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "PRAGMA table_info(" + zSQLQuote(tbnam) + ");";
+            cmd.CommandText = "PRAGMA table_info(" + zSQLQuote(tableName) + ");";
             SQLiteDataReader reader = cmd.ExecuteReader();
 
             List<string> nams = new List<string>();
@@ -289,7 +290,7 @@ namespace Microvision.DataBase
             while (reader.Read())
             {
                 string nam = reader.GetString(1);
-                if (!nam.Equals(idnam))
+                if (!nam.Equals(idName))
                 {
                     nams.Add(nam);
                     types.Add(zGetDbType(reader.GetString(2)));
@@ -331,11 +332,11 @@ namespace Microvision.DataBase
             return ids;
         }
 
-        private static void zSQLInsertID(SQLiteConnection con, string tbnam, string idnam)
+        private static void zSQLInsertID(SQLiteConnection con, string tableName, string idName)
         {
             SQLiteCommand cmd = new SQLiteCommand(con);
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "INSERT INTO " + zSQLQuote(tbnam) + " (" + zSQLQuote(idnam) + ") VALUES(NULL)";
+            cmd.CommandText = "INSERT INTO " + zSQLQuote(tableName) + " (" + zSQLQuote(idName) + ") VALUES(NULL)";
             cmd.ExecuteNonQuery();
             cmd.Dispose();
         }
@@ -363,24 +364,24 @@ namespace Microvision.DataBase
             return output;
         }
 
-        private static List<object> zSQLReadRecord(SQLiteConnection con, string tbnam, string idnam, int recid, List<string> flds)
+        private static List<object> zSQLReadRecord(SQLiteConnection con, string tableName, string idName, int recordId, List<string> fieldsName)
         {
             StringBuilder req = new StringBuilder("SELECT ");
 
-            flds.ForEach(f => req.Append(zSQLQuote(f) + ", "));
+            fieldsName.ForEach(f => req.Append(zSQLQuote(f) + ", "));
             req.Remove(req.Length - 2, 2);
 
-            req.Append(" FROM " + zSQLQuote(tbnam));
-            req.Append(" WHERE " + zSQLQuote(idnam) + " = ?");
+            req.Append(" FROM " + zSQLQuote(tableName));
+            req.Append(" WHERE " + zSQLQuote(idName) + " = ?");
 
             SQLiteCommand cmd = new SQLiteCommand(con);
             cmd.CommandType = CommandType.Text;
             cmd.CommandText = req.ToString();
-            cmd.Parameters.AddWithValue("", recid);
+            cmd.Parameters.AddWithValue("", recordId);
 
             SQLiteDataReader reader = cmd.ExecuteReader();
             reader.Read();
-            object[] vals = new object[flds.Count];
+            object[] vals = new object[fieldsName.Count];
             reader.GetValues(vals);
 
             reader.Close();
@@ -409,14 +410,14 @@ namespace Microvision.DataBase
             return tables;
         }
 
-        private static void zSQLUpdateRow(SQLiteConnection con, string tbnam, string idnam, int idval, List<string> flds, List<object> values)
+        private static void zSQLUpdateRow(SQLiteConnection con, string tableName, string idName, int idValue, List<string> fieldsName, List<object> values)
         {
-            if (flds.Count > 0)
+            if (fieldsName.Count > 0)
             {
-                StringBuilder qry = new StringBuilder("UPDATE " + zSQLQuote(tbnam) + " SET ");
-                flds.ForEach(f => qry.Append(zSQLQuote(f) + " = ?, "));
+                StringBuilder qry = new StringBuilder("UPDATE " + zSQLQuote(tableName) + " SET ");
+                fieldsName.ForEach(f => qry.Append(zSQLQuote(f) + " = ?, "));
                 qry.Remove(qry.Length - 2, 2);
-                qry.Append(" WHERE " + zSQLQuote(idnam) + " = " + idval);
+                qry.Append(" WHERE " + zSQLQuote(idName) + " = " + idValue);
 
                 SQLiteCommand cmd = new SQLiteCommand(con);
                 cmd.CommandType = CommandType.Text;
@@ -583,16 +584,16 @@ namespace Microvision.DataBase
 
             zzRemoveColumn(fieldName, colsName, colsType, colsKey);
 
-            // Renommer la table en tbnam_old
+            // Renommer la table en tableName_old
             ((IBDDCreator)this).RenameTable(tableName, oldName);
 
-            // Créer la table tbnam depuis les infos de structure sans fldnam
+            // Créer la table tableName depuis les infos de structure sans fldnam
             zSQLCreate(_sqlCon, tableName, colsName, colsType, colsKey);
 
-            // Copier tbnam_old dans tbnam
+            // Copier tableName_old dans tableName
             zSQLCopyTable(_sqlCon, oldName, colsName, tableName, colsName);
 
-            // Supprimer tbnam_old
+            // Supprimer tableName_old
             ((IBDDCreator)this).KillTable(oldName);
 
             oEnableForeignKeyConstrains(true);
@@ -617,16 +618,16 @@ namespace Microvision.DataBase
             List<string> newColsName = new List<string>(oldColsName);
             newColsName[newColsName.IndexOf(fieldName)] = newFieldName;
 
-            // Renommer la table en tbnam_old
+            // Renommer la table en tableName_old
             ((IBDDCreator)this).RenameTable(tableName, oldName);
 
-            // Créer la table tbnam depuis les infos de structure sans fldnam
+            // Créer la table tableName depuis les infos de structure sans fldnam
             zSQLCreate(_sqlCon, tableName, newColsName, colsType, colsKey);
 
-            // Copier tbnam_old dans tbnam
+            // Copier tableName_old dans tableName
             zSQLCopyTable(_sqlCon, oldName, oldColsName, tableName, newColsName);
 
-            // Supprimer tbnam_old
+            // Supprimer tableName_old
             ((IBDDCreator)this).KillTable(oldName);
         }
 

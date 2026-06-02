@@ -24,6 +24,7 @@ namespace Microvision.Avi
         // 21.11.19 : (libs 2.2)
         // 25.01.21 : Correction d'un pointeur en int
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly AVILib _lib;

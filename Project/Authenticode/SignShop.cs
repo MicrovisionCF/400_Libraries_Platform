@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 using Microvision.NativeMethods;
 
@@ -41,7 +40,7 @@ namespace Microvision.Authenticode
             data.pFile = Marshal.AllocHGlobal(file.cbStruct);
             Marshal.StructureToPtr(file, data.pFile, false);
 
-            int hr;
+            int hr = -1;
 
             try
             {

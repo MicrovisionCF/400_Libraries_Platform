@@ -5,6 +5,10 @@ namespace Microvision.NativeMethods
 {
     internal class Wintrust
     {
+        // ***************************************************************************************************
+        // 02.06.26 : Création avec les fonctions déjà utilisées
+        // ***************************************************************************************************
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct WINTRUST_FILE_INFO
         {

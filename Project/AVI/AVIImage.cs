@@ -20,6 +20,7 @@ namespace Microvision.Avi
         // 12.05.17 : (libs 2.1) ImportDibHeader et ImportDibData supprimés car commentés depuis 2.0
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private DrawDibDC? _drawDib;

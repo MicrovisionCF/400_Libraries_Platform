@@ -18,6 +18,7 @@ namespace Microvision.Avi
         // 21.11.19 : (libs 2.2)
         // 26.08.20 : Correction des déclarations en C (types de retour incorrects)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
 

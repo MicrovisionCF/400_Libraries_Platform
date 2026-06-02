@@ -18,9 +18,11 @@ namespace Microvision.DataBase
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
         // 22.05.23 : Correction renommage table
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly IBDDEngine _engine;
+
         private string? _fileName;
         private string? _password;
 
@@ -73,9 +75,9 @@ namespace Microvision.DataBase
             _version = null;
         }
 
-        public void CloseTable(StdBDDTable tb)
+        public void CloseTable(StdBDDTable table)
         {
-            tb.Close();
+            table.Close();
         }
 
         public List<int>? GetRecordIds(string sql)
@@ -224,11 +226,11 @@ namespace Microvision.DataBase
             return nb;
         }
 
-        public void RenameTable(StdBDDTable tb, string newName)
+        public void RenameTable(StdBDDTable table, string newName)
         {
             oThrowIfNotOpen();
 
-            string oldnam = tb.Name;
+            string oldnam = table.Name;
 
             if (newName != oldnam)
             {
@@ -236,7 +238,7 @@ namespace Microvision.DataBase
                 {
                     eng.RenameTable(oldnam, newName);
                     _engine.CloseBase();
-                    tb.Name = newName;
+                    table.Name = newName;
                     _tables[_tables.IndexOf(oldnam)] = newName;
                 }
             }

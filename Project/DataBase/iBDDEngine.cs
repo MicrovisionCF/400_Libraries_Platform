@@ -42,6 +42,7 @@ namespace Microvision.DataBase
         // 24.11.20 : Ajout de CreateBase avec un script
         // 13.04.22 : (libs 3.0)
         // 23.03.23 : Ajout de la version utilisateur
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         bool AddField(string tableName, string fieldName, DbType fieldType, bool isAutoIncrement = false);
@@ -69,6 +70,7 @@ namespace Microvision.DataBase
         // 10.11.20 : Ajout de Flush
         // 13.04.22 : (libs 3.0)
         // 23.03.23 : Ajout de la version utilisateur
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         int AddRecord(string tableName, string indexName);
@@ -79,7 +81,7 @@ namespace Microvision.DataBase
         List<int> GetRecordIds(string tabOrSql, List<object>? parameters);
         bool KillRecord(string tableName, string idName, int id);
         int LastError();
-        bool NewPassword(string oldPasswork, string newPassword);
+        bool NewPassword(string oldPassword, string newPassword);
         bool OpenBase(string baseName, string password, bool isExclusive = false);
         (List<string> fieldsName, List<DbType> fieldsType) ReadFields(string tableName, string indexName);
         List<object> ReadRecord(string tableName, string indexName, int id, List<string> fields);

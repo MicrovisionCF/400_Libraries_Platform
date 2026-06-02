@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 using Microvision.Types;
 
@@ -194,6 +195,19 @@ namespace Microvision.DataBase
             _fieldsType = null;
         }
 
+        public void DeleteField(int no)
+        {
+            oThrowIfNotOpen();
+
+            if (_engine is IBDDCreator eng && _engine.OpenBase(_fileName, _password))
+            {
+                eng.KillField(_name, _fieldsName[no]);
+                _engine.CloseBase();
+                _fieldsName.RemoveAt(no);
+                _fieldsType.RemoveAt(no);
+            }
+        }
+
         public int FindField(string fieldName)
         {
             oThrowIfNotOpen();
@@ -383,17 +397,10 @@ namespace Microvision.DataBase
             return _fieldsName.IndexOf(fieldName) >= 0;
         }
 
+        [Obsolete("[4.0] Utiliser DeleteField")]
         public void KillField(int no)
         {
-            oThrowIfNotOpen();
-
-            if (_engine is IBDDCreator eng && _engine.OpenBase(_fileName, _password))
-            {
-                eng.KillField(_name, _fieldsName[no]);
-                _engine.CloseBase();
-                _fieldsName.RemoveAt(no);
-                _fieldsType.RemoveAt(no);
-            }
+            this.DeleteField(no);
         }
 
         public void KillRecord(int id)
@@ -487,78 +494,84 @@ namespace Microvision.DataBase
 
         private static string zSQLFindAll(string tableName, string indexName, string orderByField)
         {
-            string sql = "SELECT [¤TAB]." + indexName;
-            sql += " FROM [¤TAB]";
+            StringBuilder sql = new StringBuilder();
+
+            sql.Append("SELECT [¤TAB].").Append(indexName);
+            sql.Append(" FROM [¤TAB]");
 
             if (orderByField != "")
-                sql += " ORDER BY [¤TAB].[¤ORD];";
+                sql.Append(" ORDER BY [¤TAB].[¤ORD];");
             else
-                sql += ";";
+                sql.Append(";");
 
             sql = sql.Replace("¤TAB", tableName);
 
             if (orderByField != "") sql = sql.Replace("¤ORD", orderByField);
 
-            return sql;
+            return sql.ToString();
         }
 
         private static string zSQLFindDate(string tableName, string indexName, string fieldName, bool hasDateFrom, bool hasDateTo)
         {
-            string sql = "SELECT [¤TAB]." + indexName + ", [¤TAB].[¤FLD]";
-            sql += " FROM [¤TAB]";
+            StringBuilder sql = new StringBuilder();
+
+            sql.Append($"SELECT [¤TAB].{indexName}, [¤TAB].[¤FLD]");
+            sql.Append(" FROM [¤TAB]");
 
             if (!hasDateTo)
-                sql += " WHERE (([¤TAB].[¤FLD] >= ?))";
+                sql.Append(" WHERE (([¤TAB].[¤FLD] >= ?))");
             else if (!hasDateFrom)
-                sql += " WHERE (([¤TAB].[¤FLD] < ?))";
+                sql.Append(" WHERE (([¤TAB].[¤FLD] < ?))");
             else
-                sql += " WHERE (([¤TAB].[¤FLD] >= ? And [¤TAB].[¤FLD] < ?))";
+                sql.Append(" WHERE (([¤TAB].[¤FLD] >= ? And [¤TAB].[¤FLD] < ?))");
 
-            sql += " ORDER BY [¤TAB].[¤FLD];";
+            sql.Append(" ORDER BY [¤TAB].[¤FLD];");
             sql = sql.Replace("¤TAB", tableName);
             sql = sql.Replace("¤FLD", fieldName);
 
-            return sql;
+            return sql.ToString();
         }
 
         private static string zSQLFindWord(string tableName, string indexName, string fieldName, string orderByField)
         {
-            string sql = "SELECT [¤TAB]." + indexName + ", [¤TAB].[¤FLD]";
-            sql += " FROM [¤TAB]";
-            sql += " WHERE (([¤TAB].[¤FLD] Like ?))";
+            StringBuilder sql = new StringBuilder();
+            sql.Append($"SELECT [¤TAB].{indexName}, [¤TAB].[¤FLD]");
+            sql.Append(" FROM [¤TAB]");
+            sql.Append(" WHERE (([¤TAB].[¤FLD] Like ?))");
 
             if (orderByField != "")
-                sql += " ORDER BY [¤TAB].[¤ORD];";
+                sql.Append(" ORDER BY [¤TAB].[¤ORD];");
             else
-                sql += ";";
+                sql.Append(';');
 
             sql = sql.Replace("¤TAB", tableName);
             sql = sql.Replace("¤FLD", fieldName);
             if (orderByField != "") sql = sql.Replace("¤ORD", orderByField);
 
-            return sql;
+            return sql.ToString();
         }
-
+        
         private static string zSQLGeneric(string tableName, string indexName, string where, string orderByField)
         {
-            string sql = "SELECT [¤TAB]." + indexName;
-            sql += " FROM [¤TAB]";
-            sql += " WHERE (" + where + ")";
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT [¤TAB].").Append(indexName);
+            sql.Append(" FROM [¤TAB]");
+            sql.Append(" WHERE (" + where + ")");
 
             if (orderByField != "")
-                sql += " ORDER BY [¤TAB].[¤ORD];";
+                sql.Append(" ORDER BY [¤TAB].[¤ORD];");
             else
-                sql += ";";
+                sql.Append(';');
 
             sql = sql.Replace("¤TAB", tableName);
             if (orderByField != "") sql = sql.Replace("¤ORD", orderByField);
 
-            return sql;
+            return sql.ToString();
         }
 
         private static string zSQLOneLine(string fieldName, string oper)
         {
-            return "[¤TAB].[" + fieldName + "] " + oper + " ?";
+            return $"[¤TAB].[{fieldName}] {oper} ?";
         }
 
 
