@@ -29,11 +29,11 @@ namespace Microvision.Authenticode
         public static bool IsSigned(string filePath)
         {
             Wintrust.WINTRUST_FILE_INFO file = new Wintrust.WINTRUST_FILE_INFO();
-            file.cbStruct = Marshal.SizeOf(typeof(Wintrust.WINTRUST_FILE_INFO));
+            file.cbStruct = Marshal.SizeOf<Wintrust.WINTRUST_FILE_INFO>();
             file.pcwszFilePath = filePath;
 
             Wintrust.WINTRUST_DATA data = new Wintrust.WINTRUST_DATA();
-            data.cbStruct = Marshal.SizeOf(typeof(Wintrust.WINTRUST_DATA));
+            data.cbStruct = Marshal.SizeOf<Wintrust.WINTRUST_DATA>();
             data.dwUIChoice = Wintrust.WTD_UI_NONE;
             data.dwUnionChoice = Wintrust.WTD_CHOICE_FILE;
             data.fdwRevocationChecks = Wintrust.WTD_REVOKE_NONE;
