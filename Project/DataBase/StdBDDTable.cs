@@ -239,7 +239,7 @@ namespace Microvision.DataBase
             oThrowIfNotOpen();
 
             List<int> ids;
-            List<object> vals = new List<object>();
+            List<object> vals = [];
 
             if (fromDate is not null) vals.Add(fromDate);
             if (toDate is not null) vals.Add((TimeSpan)toDate + new TimeSpan(1, 0, 0, 0));
@@ -266,7 +266,7 @@ namespace Microvision.DataBase
             if (_engine.OpenBase(_fileName, _password))
             {
                 word = word.Replace("'", "''").Surround("%");
-                ids = _engine.GetRecordIds(zSQLFindWord(_name, _idFieldName, field, orderByField), new List<object> { word });
+                ids = _engine.GetRecordIds(zSQLFindWord(_name, _idFieldName, field, orderByField), [word]);
                 _engine.CloseBase();
             }
             else
@@ -286,7 +286,7 @@ namespace Microvision.DataBase
 
             if (_engine.OpenBase(_fileName, _password))
             {
-                ids = _engine.GetRecordIds(zSQLGeneric(_name, _idFieldName, where, orderByField), new List<object> { value });
+                ids = _engine.GetRecordIds(zSQLGeneric(_name, _idFieldName, where, orderByField), [value]);
                 _engine.CloseBase();
             }
             else
@@ -365,11 +365,9 @@ namespace Microvision.DataBase
             return output;
         }
 
-        public bool GetRecords(List<int> ids, List<IBDDRecord> records)
+        public void GetRecords(List<int> ids, List<IBDDRecord> records)
         {
             oThrowIfNotOpen();
-
-            bool ok = false;
 
             if (_engine.OpenBase(_fileName, _password))
             {
@@ -380,14 +378,11 @@ namespace Microvision.DataBase
                 }
 
                 _engine.CloseBase();
-                ok = true;
             }
             else
             {
                 throw new InvalidOperationException($"Fail to open database {_fileName}");
             }
-
-            return ok;
         }
 
         public bool HasField(string fieldName)
@@ -502,7 +497,7 @@ namespace Microvision.DataBase
             if (orderByField != "")
                 sql.Append(" ORDER BY [¤TAB].[¤ORD];");
             else
-                sql.Append(";");
+                sql.Append(';');
 
             sql = sql.Replace("¤TAB", tableName);
 
