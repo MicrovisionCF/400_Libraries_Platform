@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public sealed class GlLineShop
     {
@@ -13,6 +12,7 @@ namespace Microvision.Graphics3D
         // 24.04.19 : Création, utile au cas où on veuille tracer plein de lignes facilement
         // 21.11.19 : (libs 2.2) NotInheritable
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------

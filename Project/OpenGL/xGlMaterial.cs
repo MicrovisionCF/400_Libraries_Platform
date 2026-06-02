@@ -1,7 +1,6 @@
 ﻿using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public struct xGlMaterial
     {
@@ -43,15 +42,15 @@ namespace Microvision.Graphics3D
         // Propriétés
         // ----------------------------------------
 
-        public bool IsTransparent => color.Alpha < 255;
+        public readonly bool IsTransparent => color.Alpha < 255;
 
-        public bool IsValid => valid;
+        public readonly bool IsValid => valid;
 
         // ----------------------------------------
         // Méthodes
         // ----------------------------------------
 
-        public void Apply(OpenGLContext gl)
+        public readonly void Apply(OpenGLContext gl)
         {
             gl.MaterialGlobal(color, ambientRatio, diffuseRatio, emissionRatio, specularRatio, specularIntensity);
         }

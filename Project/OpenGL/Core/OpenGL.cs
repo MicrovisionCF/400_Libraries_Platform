@@ -12,6 +12,7 @@ namespace Microvision.OpenGL
         // 21.11.19 : (libs 2.2)
         // 13.10.20 : Test réussite création
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly IntPtr _openGLLib;

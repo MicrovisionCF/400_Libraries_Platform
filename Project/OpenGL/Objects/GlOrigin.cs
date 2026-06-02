@@ -4,9 +4,8 @@ using System.Linq;
 
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlOrigin : GlObject
     {
@@ -14,6 +13,7 @@ namespace Microvision.Graphics3D
         // 24.04.19 : Création, objet représentant l'axe XYZ en 3D du repère OpenGL
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private Vect3D _size;
@@ -23,9 +23,9 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
-        public GlOrigin(float sz)
+        public GlOrigin(float size)
         {
-            _size = new Vect3D(sz, sz, sz);
+            _size = new Vect3D(size, size, size);
         }
 
         public GlOrigin(Vect3D sz)
@@ -104,12 +104,11 @@ namespace Microvision.Graphics3D
             gl.Translate(size / 50, size / 28, size / 10);
             gl.Rotate(90, -135, 0);
 
-            GlText text = new GlText(letter, new Point3D(), "Courier New", size / 10, FontStyle.Regular);
+            using GlText text = new GlText(letter, new Point3D(), "Courier New", size / 10, FontStyle.Regular);
             text.Material = new xGlMaterial(color, 0.2f, 0.6f, 0, 1, 0.2f);
             text.LinesVisible = true;
             text.Extrusion = 0.1f;
             text.Render(gl);
-            text.Dispose();
 
             gl.PopMatrix();
             gl.DeleteQuadric(obj);

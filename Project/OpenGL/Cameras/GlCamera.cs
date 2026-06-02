@@ -1,10 +1,9 @@
 ﻿using System;
 
 using Microvision.Geometry;
-using Microvision.OpenGL;
 using Microvision.Types;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlCamera : Citizen
     {
@@ -13,6 +12,7 @@ namespace Microvision.Graphics3D
         // 21.11.19 : (libs 2.2)
         // 13.10.20 : Test contexte existant
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         protected Point3D _position;

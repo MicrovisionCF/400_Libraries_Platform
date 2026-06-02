@@ -1,43 +1,35 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 using Microvision.Geometry;
-using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
-    public class GlCone : GlObjectLineable
+    public class GlText : GlObjectLineable
     {
         // ***************************************************************************************************
-        // 29.04.19 : Création, objet 3D conique
+        // 17.06.19 : Création, un texte en 3D
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private Point3D _spikePosition;
-        private float _diameter;
-        private float _height;
-        private int _resolution;
-        private bool _closed;
+        private readonly string _text;
+        private readonly Font _font;
+        private readonly Point3D _position;
+
+        private float _extrusion;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public GlCone(Point3D spikePosition, float diameter, float height, bool closed) : this(spikePosition, diameter, height, closed, Color.WhiteSmoke)
+        public GlText(string text, Point3D pos, string fontName, float fontSize, FontStyle fontStyle)
         {
-        }
-
-        public GlCone(Point3D spikePosition, float diameter, float height, bool closed, HColor color) : base(color)
-        {
-            _spikePosition = spikePosition;
-            _diameter = diameter;
-            _height = height;
-
-            _resolution = 15;
-            _closed = closed;
+            _font = new Font(fontName, fontSize, fontStyle);
+            _text = text;
+            _position = pos;
+            _extrusion = 0.2f;
         }
 
 
@@ -45,17 +37,15 @@ namespace Microvision.Graphics3D
         // Propriétés
         // ----------------------------------------
 
-        public Point3D Center => new Point3D(_spikePosition.X, _spikePosition.Y, _spikePosition.Z - _height / 2);
-
-        public int Resolution
+        public float Extrusion
         {
-            get => _resolution;
+            get => _extrusion;
 
             set
             {
-                if (_resolution != value)
+                if (_extrusion != value)
                 {
-                    _resolution = value;
+                    _extrusion = value;
                 }
             }
         }
@@ -73,38 +63,30 @@ namespace Microvision.Graphics3D
         protected override void oBeginRender(OpenGLContext gl)
         {
             base.oBeginRender(gl);
-            gl.Translate(_spikePosition);
+            gl.Translate(_position);
+
+            // C'est bien plus efficace de faire un scale que de changer de taille de police :
+            // - Déjà les tailles de police ça a pas l'air de bien marcher à toutes les échelles (police taille 800 ?!)...
+            // - Ca evite de créer des pointeurs sur des polices pour chaque taille de police qu'on veut utiliser
+            // - On ne maitrise la dispo/pas dispo de chaque taille pour chaque police
+            gl.Scale(_font.Size * 1.6f, _font.Size * 1.6f, _font.Size * 1.6f);
         }
 
         protected override void oDispose(bool isExplicit)
         {
+            if (isExplicit) _font.Dispose();
+
             base.oDispose(isExplicit);
         }
 
         protected override void oRender(OpenGLContext gl)
         {
-            IntPtr obj = gl.NewQuadric();
-            gl.QuadricDrawStyle(obj, QuadricDrawStyle.Fill);
-
-            gl.Cylinder(obj, 0, _diameter / 2, _height, _resolution, 1);
-
-            if (_closed && _diameter > 0)
-            {
-                gl.Translate(0, 0, _height);
-                gl.Disk(obj, 0, _diameter / 2, _resolution, 1);
-            }
-
-            gl.DeleteQuadric(obj);
+            gl.DrawText(_text, _font.Name, _extrusion, true);
         }
 
         protected override void oRenderLines(OpenGLContext gl)
         {
-            IntPtr obj = gl.NewQuadric();
-            gl.QuadricDrawStyle(obj, QuadricDrawStyle.Silhouette);
-
-            gl.Cylinder(obj, 0, _diameter / 2, _height, _resolution, 1);
-
-            gl.DeleteQuadric(obj);
+            gl.DrawText(_text, _font.Name, _extrusion, false);
         }
 
 

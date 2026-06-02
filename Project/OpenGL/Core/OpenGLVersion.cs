@@ -45,10 +45,11 @@ namespace Microvision.OpenGL
         // 15.05.19 : Création, représente une version d'OpenGL
         // 21.11.19 : (libs 2.2) Correction Minor et Major (qui bouclaient...)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private int _major;
-        private int _minor;
+        private readonly int _major;
+        private readonly int _minor;
 
 
         // ----------------------------------------

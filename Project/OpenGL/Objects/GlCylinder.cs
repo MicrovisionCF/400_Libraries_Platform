@@ -3,71 +3,50 @@ using System.Drawing;
 
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
-    public class GlSphere : GlObjectLineable
+    public class GlCylinder : GlObjectLineable
     {
         // ***************************************************************************************************
-        // 29.04.19 : Création, une sphère 3D
+        // 29.04.19 : Création, un cylindre 3D
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
+        private readonly float _height;
+        private readonly float _baseDiameter;
+        private readonly float _topDiameter;
+        private readonly Point3D _baseCenter;
+        private readonly bool _closed;
+
         private int _resolution;
-        private float _diameter;
-        private Point3D _position;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public GlSphere(Point3D position, float diameter) : this(position, diameter, Color.WhiteSmoke)
+        public GlCylinder(Point3D baseCenter, float baseDiameter, float topDiameter, float height, bool closed) : this(baseCenter, baseDiameter, topDiameter, height, closed, Color.WhiteSmoke)
         {
         }
 
-        public GlSphere(Point3D position, float diameter, HColor col)
+        public GlCylinder(Point3D baseCenter, float baseDiameter, float topDiameter, float height, bool closed, HColor col) : base(col)
         {
-            _diameter = diameter;
-            _position = position;
+            _baseCenter = baseCenter;
+            _baseDiameter = baseDiameter;
+            _topDiameter = topDiameter;
+            _height = height;
+            _closed = closed;
 
-            _resolution = 20;
-
-            _material = new xGlMaterial(col);
+            _resolution = 15;
         }
 
 
         // ----------------------------------------
         // Propriétés
         // ----------------------------------------
-
-        public Point3D Center
-        {
-            get => _position;
-
-            set
-            {
-                if (_position != value)
-                {
-                    _position = value;
-                }
-            }
-        }
-
-        public float Diameter
-        {
-            get => _diameter;
-
-            set
-            {
-                if (_diameter != value)
-                {
-                    _diameter = value;
-                }
-            }
-        }
 
         public int Resolution
         {
@@ -95,7 +74,8 @@ namespace Microvision.Graphics3D
         protected override void oBeginRender(OpenGLContext gl)
         {
             base.oBeginRender(gl);
-            gl.Translate(_position);
+
+            gl.Translate(_baseCenter);
         }
 
         protected override void oDispose(bool isExplicit)
@@ -108,7 +88,25 @@ namespace Microvision.Graphics3D
             IntPtr obj = gl.NewQuadric();
             gl.QuadricDrawStyle(obj, QuadricDrawStyle.Fill);
 
-            gl.Sphere(obj, _diameter / 2, _resolution, _resolution / 2);
+            gl.Cylinder(obj, _baseDiameter / 2, _topDiameter / 2, _height, _resolution, 1);
+
+            if (_closed)
+            {
+                if (_baseDiameter > 0)
+                {
+                    // Rotation pour avoir la normale dans le bon sens. Je ne sais pas pourquoi ça ne fonctionne pas avec glQuadricsNormal
+                    // TODO : Attention ça ne fonctionne pas avec une resolution impaire...
+                    gl.Rotate(180, 1, 0, 0);
+                    gl.Disk(obj, 0, _baseDiameter / 2, _resolution, 1);
+                    gl.Rotate(-180, 1, 0, 0);
+                }
+
+                if (_topDiameter > 0)
+                {
+                    gl.Translate(0, 0, _height);
+                    gl.Disk(obj, 0, _topDiameter / 2, _resolution, 1);
+                }
+            }
 
             gl.DeleteQuadric(obj);
         }
@@ -118,7 +116,7 @@ namespace Microvision.Graphics3D
             IntPtr obj = gl.NewQuadric();
             gl.QuadricDrawStyle(obj, QuadricDrawStyle.Silhouette);
 
-            gl.Sphere(obj, _diameter / 2, _resolution, _resolution / 2);
+            gl.Cylinder(obj, _baseDiameter / 2, _topDiameter / 2, _height, _resolution, 1);
 
             gl.DeleteQuadric(obj);
         }

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Microvision.Geometry;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlFace : GlObjectLineable
     {
@@ -13,6 +12,7 @@ namespace Microvision.Graphics3D
         // 24.04.19 : Création, plan à 4 sommets avec une texture associée (permet de projeter une image dans une scène)
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly List<Point3D> _points;
@@ -25,11 +25,11 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
-        public GlFace(List<Point3D> pts) : base(new xGlMaterial(Color.White, 1, 1, 0, 0, 0))
+        public GlFace(List<Point3D> fourPoints) : base(new xGlMaterial(Color.White, 1, 1, 0, 0, 0))
         {
-            if (pts.Count != 4) throw new InvalidOperationException("Une face doit être constituée de 4 points");
+            if (fourPoints.Count != 4) throw new InvalidOperationException("Une face doit être constituée de 4 points");
 
-            _points = pts;
+            _points = fourPoints;
         }
 
 

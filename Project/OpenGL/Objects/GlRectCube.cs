@@ -4,9 +4,8 @@ using System.Drawing;
 
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlRectCube : GlObjectLineable
     {
@@ -14,12 +13,13 @@ namespace Microvision.Graphics3D
         // 29.04.19 : Création, un objet parallélépipède rectangle (un pavé...)
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private Rect3D _bounds;
+        private readonly Rect3D _bounds;
 
-        private List<Point3D> _corners;
-        private List<Point3D> _vertices;
+        private readonly List<Point3D> _corners;
+        private readonly List<Point3D> _vertices;
 
 
         // ----------------------------------------
@@ -67,7 +67,7 @@ namespace Microvision.Graphics3D
             for (int i = 0; i < _vertices.Count; i += 4)
             {
                 gl.Normal(zCalcNormal(_vertices[i], _vertices[i + 1], _vertices[i + 2]));
-                gl.Vertices(_vertices.GetRange(i, 4).ToArray());
+                gl.Vertices([.. _vertices.GetRange(i, 4)]);
             }
 
             gl.End();
@@ -98,14 +98,14 @@ namespace Microvision.Graphics3D
 
         private static List<Point3D> zCalcCorners(Rect3D r)
         {
-            return new List<Point3D> { new Point3D(r.X, r.Y, r.Z),
-                                       new Point3D(r.X + r.Width, r.Y, r.Z),
-                                       new Point3D(r.X, r.Y + r.Height, r.Z),
-                                       new Point3D(r.X + r.Width, r.Y + r.Height, r.Z),
-                                       new Point3D(r.X, r.Y, r.Z + r.Depth),
-                                       new Point3D(r.X + r.Width, r.Y, r.Z + r.Depth),
-                                       new Point3D(r.X, r.Y + r.Height, r.Z + r.Depth),
-                                       new Point3D(r.X + r.Width, r.Y + r.Height, r.Z + r.Depth) };
+            return [new Point3D(r.X, r.Y, r.Z),
+                    new Point3D(r.X + r.Width, r.Y, r.Z),
+                    new Point3D(r.X, r.Y + r.Height, r.Z),
+                    new Point3D(r.X + r.Width, r.Y + r.Height, r.Z),
+                    new Point3D(r.X, r.Y, r.Z + r.Depth),
+                    new Point3D(r.X + r.Width, r.Y, r.Z + r.Depth),
+                    new Point3D(r.X, r.Y + r.Height, r.Z + r.Depth),
+                    new Point3D(r.X + r.Width, r.Y + r.Height, r.Z + r.Depth) ];
         }
 
         private static Vect3D zCalcNormal(Point3D p1, Point3D p2, Point3D p3)
@@ -115,62 +115,63 @@ namespace Microvision.Graphics3D
 
         private static List<Point3D> zCalcVertices(List<Point3D> corners)
         {
-            List<Point3D> v = new List<Point3D>();
+            List<Point3D> v =
+            [
+                corners[2],
+                corners[3],
+                corners[1],
+                corners[0],
 
-            v.Add(corners[2]);
-            v.Add(corners[3]);
-            v.Add(corners[1]);
-            v.Add(corners[0]);
-
-            v.Add(corners[4]);
-            v.Add(corners[6]);
-            v.Add(corners[2]);
-            v.Add(corners[0]);
-
-            v.Add(corners[1]);
-            v.Add(corners[5]);
-            v.Add(corners[4]);
-            v.Add(corners[0]);
-
-            v.Add(corners[5]);
-            v.Add(corners[7]);
-            v.Add(corners[6]);
-            v.Add(corners[4]);
-
-            v.Add(corners[3]);
-            v.Add(corners[7]);
-            v.Add(corners[5]);
-            v.Add(corners[1]);
-
-            v.Add(corners[6]);
-            v.Add(corners[7]);
-            v.Add(corners[3]);
-            v.Add(corners[2]);
+                corners[4],
+                corners[6],
+                corners[2],
+                corners[0],
+                
+                corners[1],
+                corners[5],
+                corners[4],
+                corners[0],
+                
+                corners[5],
+                corners[7],
+                corners[6],
+                corners[4],
+                
+                corners[3],
+                corners[7],
+                corners[5],
+                corners[1],
+                
+                corners[6],
+                corners[7],
+                corners[3],
+                corners[2],
+            ];
 
             return v;
         }
 
-        private static Rect3D zNormalizeBound(Rect3D bnds)
+        private static Rect3D zNormalizeBound(Rect3D bounds)
         {
-            if (bnds.Width < 0)
+            if (bounds.Width < 0)
             {
-                bnds.Width = Math.Abs(bnds.Width);
-                bnds.X -= bnds.Width;
+                bounds.Width = Math.Abs(bounds.Width);
+                bounds.X -= bounds.Width;
             }
 
-            if (bnds.Height < 0)
+            if (bounds.Height < 0)
             {
-                bnds.Height = Math.Abs(bnds.Height);
-                bnds.Y -= bnds.Height;
+                bounds.Height = Math.Abs(bounds.Height);
+                bounds.Y -= bounds.Height;
             }
 
-            if (bnds.Depth < 0)
+            if (bounds.Depth < 0)
             {
-                bnds.Depth = Math.Abs(bnds.Depth);
-                bnds.Z -= bnds.Depth;
+                bounds.Depth = Math.Abs(bounds.Depth);
+                bounds.Z -= bounds.Depth;
             }
 
-            return bnds;
+            return bounds;
         }
 
 

@@ -13,6 +13,7 @@ namespace Microvision.OpenGL
         // 14.05.19 : Création, importation des fonctions d'extensions openGL32.dll qui nous sont utiles
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private delegate void glBindFramebufferEXT(uint target, uint framebuffer);
@@ -30,7 +31,7 @@ namespace Microvision.OpenGL
 
         // ***************************************************************************************************
 
-        private Dictionary<string, Delegate> _delegates = new Dictionary<string, Delegate>();
+        private readonly Dictionary<string, Delegate> _delegates = [];
 
 
         // ----------------------------------------
@@ -71,12 +72,12 @@ namespace Microvision.OpenGL
 
         internal void DeleteFramebuffers(IEnumerable<uint> framebuffers)
         {
-            oGetDelegateFor<glDeleteFramebuffersEXT>()((uint)framebuffers.Count(), framebuffers.ToArray());
+            oGetDelegateFor<glDeleteFramebuffersEXT>()((uint)framebuffers.Count(), [.. framebuffers]);
         }
 
         internal void DeleteRenderbuffers(IEnumerable<uint> renderbuffers)
         {
-            oGetDelegateFor<glDeleteRenderbuffersEXT>()((uint)renderbuffers.Count(), renderbuffers.ToArray());
+            oGetDelegateFor<glDeleteRenderbuffersEXT>()((uint)renderbuffers.Count(), [.. renderbuffers]);
         }
 
         internal void FramebufferRenderbuffer(uint target, uint attachment, uint renderbuffertarget, uint renderbuffer)

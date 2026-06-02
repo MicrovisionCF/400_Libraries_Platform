@@ -15,6 +15,7 @@ namespace Microvision.OpenGL
         // 15.05.19 : Création, importation des fonctions d'opengl32.dll qui nous sont utiles
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
@@ -48,7 +49,7 @@ namespace Microvision.OpenGL
 
         internal void CallLists(DataType dataType, int cnt, IEnumerable<byte> lists)
         {
-            OpenGl32.glCallLists(cnt, (uint)dataType, lists.ToArray());
+            OpenGl32.glCallLists(cnt, (uint)dataType, [.. lists]);
         }
 
         internal void Clear(uint mask)
@@ -88,14 +89,14 @@ namespace Microvision.OpenGL
 
         internal void DeleteTexture(uint texture)
         {
-            DeleteTextures(new[] { texture });
+            DeleteTextures([texture]);
         }
 
         internal void DeleteTextures(IEnumerable<uint> textures)
         {
             try
             {
-                OpenGl32.glDeleteTextures(textures.Count(), textures.ToArray());
+                OpenGl32.glDeleteTextures(textures.Count(), [.. textures]);
             }
             catch (Exception ex)
             {
@@ -178,7 +179,7 @@ namespace Microvision.OpenGL
 
         internal float GetFloatValue(GetTarget pname)
         {
-            float[] v = new float[] { 0 };
+            float[] v = [0];
             OpenGl32.glGetFloatv((uint)pname, v);
 
             return v[0];
@@ -191,7 +192,7 @@ namespace Microvision.OpenGL
 
         internal int GetIntegerValue(GetTarget pname)
         {
-            int[] v = new[] { 0 };
+            int[] v = [0];
             OpenGl32.glGetIntegerv((uint)pname, v);
 
             return v[0];
@@ -264,10 +265,10 @@ namespace Microvision.OpenGL
             float b = col.Blue / 255.0f;
             float a = col.Alpha / 255.0f;
 
-            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Ambient, new[] { r * ambient, g * ambient, b * ambient, a });
-            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Diffuse, new[] { r * diffuse, g * diffuse, b * diffuse, a });
-            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Emission, new[] { r * emission, g * emission, b * emission, a });
-            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Specular, new[] { specular, specular, specular, a }); // Je veux toujours un reflet spéculaire de la couleur de la lumière
+            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Ambient, [r * ambient, g * ambient, b * ambient, a]);
+            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Diffuse, [r * diffuse, g * diffuse, b * diffuse, a]);
+            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Emission, [r * emission, g * emission, b * emission, a]);
+            OpenGl32.glMaterialfv((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Specular, [specular, specular, specular, a]); // Je veux toujours un reflet spéculaire de la couleur de la lumière
             OpenGl32.glMaterialf((uint)FaceMode.FrontAndBack, (uint)MaterialParameter.Shininess, 100 - specularIntensity * 100);
         }
 

@@ -4,10 +4,9 @@ using System.Linq;
 
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 using Microvision.Types;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlLight : Citizen
     {
@@ -16,9 +15,10 @@ namespace Microvision.Graphics3D
         // 21.11.19 : (libs 2.2)
         // 13.10.20 : Test contexte existant
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private static List<int> _availableLights;
+        private static readonly List<int> _availableLights;
 
 
         private Point3D _position;
@@ -28,7 +28,7 @@ namespace Microvision.Graphics3D
         private bool _sunVisible;
         private float _sunDiameter;
 
-        private LightName _lightNo;
+        private readonly LightName _lightNo;
 
         private float _ambientCompo, _diffuseCompo, _specularCompo;
 
@@ -39,7 +39,7 @@ namespace Microvision.Graphics3D
 
         static GlLight()
         {
-            _availableLights = Enumerable.Range((int)LightName.Light0, 8).ToList();
+            _availableLights = [.. Enumerable.Range((int)LightName.Light0, 8)];
         }
 
         public GlLight()
@@ -180,7 +180,7 @@ namespace Microvision.Graphics3D
         // Méthodes
         // ----------------------------------------
 
-        public void Render(OpenGLContext gl, HColor col)
+        public void Render(OpenGLContext gl, HColor color)
         {
             if (gl is not null && _sunVisible)
             {
@@ -191,7 +191,7 @@ namespace Microvision.Graphics3D
 
                 gl.PushMatrix();
                 gl.Translate(_position.X, _position.Y, _position.Z);
-                gl.MaterialGlobal(col, 0, 0, 1, 0, 0);
+                gl.MaterialGlobal(color, 0, 0, 1, 0, 0);
 
                 IntPtr obj = gl.NewQuadric();
                 gl.Sphere(obj, _sunDiameter / 2, 20, 20);
@@ -238,15 +238,15 @@ namespace Microvision.Graphics3D
             if (gl is not null)
             {
                 gl.Enable((EnableTarget)_lightNo);
-                gl.Light(_lightNo, LightParameter.Position, new[] { _position.X, _position.Y, _position.Z, _ponctual ? 1 : 0 });
+                gl.Light(_lightNo, LightParameter.Position, [_position.X, _position.Y, _position.Z, _ponctual ? 1 : 0]);
 
                 float r = _color.Red / 255f;
                 float g = _color.Green / 255f;
                 float b = _color.Blue / 255f;
 
-                gl.Light(_lightNo, LightParameter.Ambient, new[] { _ambientCompo * r, _ambientCompo * g, _ambientCompo * b, 1 });
-                gl.Light(_lightNo, LightParameter.Diffuse, new[] { _diffuseCompo * r, _diffuseCompo * g, _diffuseCompo * b, 1 });
-                gl.Light(_lightNo, LightParameter.Specular, new[] { _specularCompo * r, _specularCompo * g, _specularCompo * b, 1 });
+                gl.Light(_lightNo, LightParameter.Ambient, [_ambientCompo * r, _ambientCompo * g, _ambientCompo * b, 1]);
+                gl.Light(_lightNo, LightParameter.Diffuse, [_diffuseCompo * r, _diffuseCompo * g, _diffuseCompo * b, 1]);
+                gl.Light(_lightNo, LightParameter.Specular, [_specularCompo * r, _specularCompo * g, _specularCompo * b, 1]);
             }
         }
 

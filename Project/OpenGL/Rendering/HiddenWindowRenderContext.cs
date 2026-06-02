@@ -13,9 +13,9 @@ namespace Microvision.OpenGL
         // 14.04.22 : (libs 3.0)
         // ***************************************************************************************************
 
-        protected IntPtr _windowHandle = IntPtr.Zero;
+        private readonly User32.WndProc _procDelegate;
 
-        private User32.WndProc _procDelegate;
+        protected IntPtr _windowHandle = IntPtr.Zero;
 
 
         // ----------------------------------------

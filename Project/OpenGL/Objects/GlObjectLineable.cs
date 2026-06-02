@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public abstract class GlObjectLineable : GlObject
     {
@@ -11,6 +10,7 @@ namespace Microvision.Graphics3D
         // 02.05.19 : Création, objet 3D de base mais dont on peut afficher les contours
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         protected bool _isFill;

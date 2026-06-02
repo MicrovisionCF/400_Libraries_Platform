@@ -3,43 +3,39 @@ using System.Drawing;
 
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
-    public class GlDisk : GlObjectLineable
+    public class GlSphere : GlObjectLineable
     {
         // ***************************************************************************************************
-        // 29.04.19 : Création, un disque 3D, potentiellement partiellement ouvert
-        // 21.11.19 : (libs 2.2)(libs 3.0)
+        // 29.04.19 : Création, une sphère 3D
+        // 21.11.19 : (libs 2.2)
+        // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private Point3D _center;
-        private float _innerDiameter, _outerDiameter;
-
         private int _resolution;
-
-        private float _partialAngleStart, _partialAngle;
+        private float _diameter;
+        private Point3D _position;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public GlDisk(Point3D center, float outerDiameter) : this(center, outerDiameter, Color.WhiteSmoke)
+        public GlSphere(Point3D position, float diameter) : this(position, diameter, Color.WhiteSmoke)
         {
         }
 
-        public GlDisk(Point3D center, float outerDiameter, HColor col) : base(col)
+        public GlSphere(Point3D position, float diameter, HColor color)
         {
-            _center = center;
-            _outerDiameter = outerDiameter;
+            _diameter = diameter;
+            _position = position;
 
-            _innerDiameter = 0;
-            _resolution = 15;
+            _resolution = 20;
 
-            _partialAngleStart = 0;
-            _partialAngle = 360;
+            _material = new xGlMaterial(color);
         }
 
 
@@ -49,52 +45,26 @@ namespace Microvision.Graphics3D
 
         public Point3D Center
         {
-            get => _center;
+            get => _position;
 
             set
             {
-                if (_center != value)
+                if (_position != value)
                 {
-                    _center = value;
+                    _position = value;
                 }
             }
         }
 
-        public float InnerDiameter
+        public float Diameter
         {
-            get => _innerDiameter;
+            get => _diameter;
 
             set
             {
-                if (_innerDiameter != value)
+                if (_diameter != value)
                 {
-                    _innerDiameter = value;
-                }
-            }
-        }
-
-        public float PartialAngle
-        {
-            get => _partialAngle;
-
-            set
-            {
-                if (_partialAngle != value)
-                {
-                    _partialAngle = value;
-                }
-            }
-        }
-
-        public float PartialAngleStart
-        {
-            get => _partialAngleStart;
-
-            set
-            {
-                if (_partialAngleStart != value)
-                {
-                    _partialAngleStart = value;
+                    _diameter = value;
                 }
             }
         }
@@ -125,7 +95,7 @@ namespace Microvision.Graphics3D
         protected override void oBeginRender(OpenGLContext gl)
         {
             base.oBeginRender(gl);
-            gl.Translate(_center);
+            gl.Translate(_position);
         }
 
         protected override void oDispose(bool isExplicit)
@@ -138,10 +108,7 @@ namespace Microvision.Graphics3D
             IntPtr obj = gl.NewQuadric();
             gl.QuadricDrawStyle(obj, QuadricDrawStyle.Fill);
 
-            if (_partialAngle < 360)
-                gl.PartialDisk(obj, _innerDiameter / 2, _outerDiameter / 2, ((float)_resolution / 360 * _partialAngle).ToRoundInt(), 1, _partialAngleStart, _partialAngle);
-            else
-                gl.Disk(obj, _innerDiameter / 2, _outerDiameter / 2, _resolution, 1);
+            gl.Sphere(obj, _diameter / 2, _resolution, _resolution / 2);
 
             gl.DeleteQuadric(obj);
         }
@@ -149,13 +116,9 @@ namespace Microvision.Graphics3D
         protected override void oRenderLines(OpenGLContext gl)
         {
             IntPtr obj = gl.NewQuadric();
+            gl.QuadricDrawStyle(obj, QuadricDrawStyle.Silhouette);
 
-            gl.QuadricDrawStyle(obj, QuadricDrawStyle.Line);
-
-            if (_partialAngle < 360)
-                gl.PartialDisk(obj, _innerDiameter / 2, _outerDiameter / 2, ((float)_resolution / 360 * _partialAngle).ToRoundInt(), 1, _partialAngleStart, _partialAngle);
-            else
-                gl.Disk(obj, _innerDiameter / 2, _outerDiameter / 2, _resolution, 1);
+            gl.Sphere(obj, _diameter / 2, _resolution, _resolution / 2);
 
             gl.DeleteQuadric(obj);
         }

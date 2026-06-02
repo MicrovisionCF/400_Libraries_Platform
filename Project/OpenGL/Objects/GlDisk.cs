@@ -3,21 +3,25 @@ using System.Drawing;
 
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
-    public class GlCylinder : GlObjectLineable
+    public class GlDisk : GlObjectLineable
     {
         // ***************************************************************************************************
-        // 29.04.19 : Création, un cylindre 3D
+        // 29.04.19 : Création, un disque 3D, potentiellement partiellement ouvert
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private float _height, _baseDiameter, _topDiameter;
-        private Point3D _baseCenter;
-        private bool _closed;
+        private readonly Point3D _center;
+        
+        private readonly float _innerDiameter;
+        private readonly float _outerDiameter;
+        
+        private readonly float _partialAngleStart;
+        private readonly float _partialAngle;
 
         private int _resolution;
 
@@ -26,19 +30,20 @@ namespace Microvision.Graphics3D
         // Classe
         // ----------------------------------------
 
-        public GlCylinder(Point3D baseCenter, float baseDiameter, float topDiameter, float height, bool closed) : this(baseCenter, baseDiameter, topDiameter, height, closed, Color.WhiteSmoke)
+        public GlDisk(Point3D center, float outerDiameter) : this(center, outerDiameter, Color.WhiteSmoke)
         {
         }
 
-        public GlCylinder(Point3D baseCenter, float baseDiameter, float topDiameter, float height, bool closed, HColor col) : base(col)
+        public GlDisk(Point3D center, float outerDiameter, HColor color) : base(color)
         {
-            _baseCenter = baseCenter;
-            _baseDiameter = baseDiameter;
-            _topDiameter = topDiameter;
-            _height = height;
-            _closed = closed;
+            _center = center;
+            _outerDiameter = outerDiameter;
 
+            _innerDiameter = 0;
             _resolution = 15;
+
+            _partialAngleStart = 0;
+            _partialAngle = 360;
         }
 
 
@@ -72,8 +77,7 @@ namespace Microvision.Graphics3D
         protected override void oBeginRender(OpenGLContext gl)
         {
             base.oBeginRender(gl);
-
-            gl.Translate(_baseCenter);
+            gl.Translate(_center);
         }
 
         protected override void oDispose(bool isExplicit)
@@ -86,25 +90,10 @@ namespace Microvision.Graphics3D
             IntPtr obj = gl.NewQuadric();
             gl.QuadricDrawStyle(obj, QuadricDrawStyle.Fill);
 
-            gl.Cylinder(obj, _baseDiameter / 2, _topDiameter / 2, _height, _resolution, 1);
-
-            if (_closed)
-            {
-                if (_baseDiameter > 0)
-                {
-                    // Rotation pour avoir la normale dans le bon sens. Je ne sais pas pourquoi ça ne fonctionne pas avec glQuadricsNormal
-                    // TODO : Attention ça ne fonctionne pas avec une resolution impaire...
-                    gl.Rotate(180, 1, 0, 0);
-                    gl.Disk(obj, 0, _baseDiameter / 2, _resolution, 1);
-                    gl.Rotate(-180, 1, 0, 0);
-                }
-
-                if (_topDiameter > 0)
-                {
-                    gl.Translate(0, 0, _height);
-                    gl.Disk(obj, 0, _topDiameter / 2, _resolution, 1);
-                }
-            }
+            if (_partialAngle < 360)
+                gl.PartialDisk(obj, _innerDiameter / 2, _outerDiameter / 2, ((float)_resolution / 360 * _partialAngle).ToRoundInt(), 1, _partialAngleStart, _partialAngle);
+            else
+                gl.Disk(obj, _innerDiameter / 2, _outerDiameter / 2, _resolution, 1);
 
             gl.DeleteQuadric(obj);
         }
@@ -112,9 +101,13 @@ namespace Microvision.Graphics3D
         protected override void oRenderLines(OpenGLContext gl)
         {
             IntPtr obj = gl.NewQuadric();
-            gl.QuadricDrawStyle(obj, QuadricDrawStyle.Silhouette);
 
-            gl.Cylinder(obj, _baseDiameter / 2, _topDiameter / 2, _height, _resolution, 1);
+            gl.QuadricDrawStyle(obj, QuadricDrawStyle.Line);
+
+            if (_partialAngle < 360)
+                gl.PartialDisk(obj, _innerDiameter / 2, _outerDiameter / 2, ((float)_resolution / 360 * _partialAngle).ToRoundInt(), 1, _partialAngleStart, _partialAngle);
+            else
+                gl.Disk(obj, _innerDiameter / 2, _outerDiameter / 2, _resolution, 1);
 
             gl.DeleteQuadric(obj);
         }

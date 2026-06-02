@@ -3,7 +3,7 @@ using System.Timers;
 
 using Microvision.Geometry;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlCameraSphere : GlCamera
     {
@@ -11,6 +11,7 @@ namespace Microvision.Graphics3D
         // 24.04.19 : Création, camera regardant un point fixe et pouvant tourner autour
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public delegate void PositionChangedEventHandler();
@@ -25,7 +26,7 @@ namespace Microvision.Graphics3D
         protected int _animInterval;
         protected float _animThetaX;
         protected float _animThetaY;
-        private System.Timers.Timer? _timer;
+        private Timer? _timer;
 
 
         // ----------------------------------------
@@ -169,7 +170,7 @@ namespace Microvision.Graphics3D
             while (_thetaX < 0)
                 _thetaX += MathF.PI * 2;
 
-            _thetaX = _thetaX % (MathF.PI * 2);
+            _thetaX %= (MathF.PI * 2);
         }
 
         protected void oSetThetaY(float thetaY)
@@ -179,7 +180,7 @@ namespace Microvision.Graphics3D
             while (_thetaY < 0)
                 _thetaY += MathF.PI * 2;
 
-            _thetaY = _thetaY % (MathF.PI * 2);
+            _thetaY %= (MathF.PI * 2);
         }
 
 

@@ -11,6 +11,7 @@ namespace Microvision.OpenGL
         // 15.05.19 : Création, mécanismes bas niveau pour objets textes 3D
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         internal struct xFontEntry

@@ -6,6 +6,7 @@
         // 14.05.19 : Création, importation brute des constantes OpenGL
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // OpenGL Version Identifier

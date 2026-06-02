@@ -6,16 +6,19 @@ using System.Linq;
 using Microvision.Collections;
 using Microvision.Geometry;
 using Microvision.Graphic;
-using Microvision.OpenGL;
 
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlMesh : GlObjectLineable
     {
         // ***************************************************************************************************
         // 24.04.19 : Création, représentation d'une surface quadrillée dont chaque point a une altitude différente
         // 21.11.19 : (libs 2.2)
+        // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
+
+        private static readonly bool KShowNormals = false;
 
         private GlTexture? _texture;
 
@@ -34,7 +37,6 @@ namespace Microvision.Graphics3D
         private List<float>? _xPositions;
         private List<float>? _yPositions;
         private float _zFactor;
-        private bool _showNormals;
 
         private float _colorOpacity;
         private float _colorFade;
@@ -50,7 +52,6 @@ namespace Microvision.Graphics3D
             _depth = new Array2D<float>(0, 0);
             _zFactor = 1;
             _origin = new Point3D();
-            _showNormals = false;
 
             _colorOpacity = 0;
             _colorFade = 0;
@@ -245,7 +246,7 @@ namespace Microvision.Graphics3D
                     gl.Flush();
                 }
 
-                if (_showNormals)
+                if (KShowNormals)
                 {
                     gl.Begin(BeginMode.Lines);
 

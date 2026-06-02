@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using Microvision.OpenGL;
-
-namespace Microvision.Graphics3D
+namespace Microvision.OpenGL
 {
     public class GlContainer : GlObject
     {
@@ -10,6 +8,7 @@ namespace Microvision.Graphics3D
         // 29.04.19 : Création, objet 3D encapsuleur d'une collection d'objets 3D
         // 21.11.19 : (libs 2.2)
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly List<GlObject> _children;
@@ -58,7 +57,7 @@ namespace Microvision.Graphics3D
         {
             obj.AddLife();
 
-            if (_children.Count > 0 && _children[_children.Count - 1].IsTransparent)
+            if (_children.Count > 0 && _children[^1].IsTransparent)
                 _children.Insert(_children.Count - 1, obj);
             else
                 _children.Add(obj);
