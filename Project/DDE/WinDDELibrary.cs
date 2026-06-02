@@ -17,6 +17,7 @@ namespace Microvision.DDE
         // 18.03.21 : Identifiant en Integer et pas en IntPtr, Ajout d'envoi de valeur par Poke
         // 13.04.22 : (libs 3.0)
         // 23.11.22 : Utilisation de StringBuilder pour relire les chaines en mémoire (non fonctionnel en string)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private static int KCodePage = User32.CP_WINANSI; // -- pas encore décidé...
@@ -43,21 +44,21 @@ namespace Microvision.DDE
         // Méthodes
         // ----------------------------------------
 
-        public IntPtr ClientTransaction(IntPtr hconv, IntPtr hitem, User32.XType typ)
+        public IntPtr ClientTransaction(IntPtr handleConnection, IntPtr hitem, User32.XType typ)
         {
             int pdwResult = 0;
-            return User32.DdeClientTransaction(IntPtr.Zero, 0, hconv, hitem, 1, (uint)typ, 1000, ref pdwResult);
+            return User32.DdeClientTransaction(IntPtr.Zero, 0, handleConnection, hitem, 1, (uint)typ, 1000, ref pdwResult);
         }
 
-        public IntPtr ClientTransactionData(IntPtr dataHandle, IntPtr hconv, IntPtr hitem, User32.XType typ)
+        public IntPtr ClientTransactionData(IntPtr dataHandle, IntPtr handleConnection, IntPtr hitem, User32.XType typ)
         {
             int pdwResult = 0;
-            return User32.DdeClientTransaction(dataHandle, -1, hconv, hitem, 1, (uint)typ, 1000, ref pdwResult);
+            return User32.DdeClientTransaction(dataHandle, -1, handleConnection, hitem, 1, (uint)typ, 1000, ref pdwResult);
         }
 
-        public IntPtr Connect(IntPtr hsrv, IntPtr htopic)
+        public IntPtr Connect(IntPtr handleStringServer, IntPtr handleStringTopic)
         {
-            return User32.DdeConnect(_identifier, hsrv, htopic, IntPtr.Zero);
+            return User32.DdeConnect(_identifier, handleStringServer, handleStringTopic, IntPtr.Zero);
         }
 
         public IntPtr CreateDataHandle(IntPtr hitem, Bytes data, int format)
@@ -84,9 +85,9 @@ namespace Microvision.DDE
             return output;
         }
 
-        public void Disconnect(IntPtr hconv)
+        public void Disconnect(IntPtr handleConnection)
         {
-            User32.DdeDisconnect(hconv);
+            User32.DdeDisconnect(handleConnection);
         }
 
         public void FreeDataHandle(IntPtr hdata)
@@ -94,17 +95,17 @@ namespace Microvision.DDE
             User32.DdeFreeDataHandle(hdata);
         }
 
-        public void FreeStringHandle(IntPtr hsz)
+        public void FreeStringHandle(IntPtr handleString)
         {
-            User32.DdeFreeStringHandle(_identifier, hsz);
+            User32.DdeFreeStringHandle(_identifier, handleString);
         }
 
-        public bool GetData(IntPtr hdata, out Bytes bf)
+        public bool GetData(IntPtr hdata, out Bytes bytes)
         {
             int lg = User32.DdeGetData(hdata, IntPtr.Zero, 0, 0);
 
-            bf = new Bytes(lg);
-            LockTable<byte> hbts = new LockTable<byte>(bf.Array, bf.Length);
+            bytes = new Bytes(lg);
+            LockTable<byte> hbts = new LockTable<byte>(bytes.Array, bytes.Length);
             lg = User32.DdeGetData(hdata, hbts.Address(0), lg, 0); // TODOC# A tester... Réécrit car la traduction VB était louche (ref sur un octet)
             hbts.Free();
 
@@ -116,13 +117,13 @@ namespace Microvision.DDE
             return (User32.DMLERR)User32.DdeGetLastError(_identifier);
         }
 
-        public bool Initialize(User32.FNCALLBACK cbck)
+        public bool Initialize(User32.FNCALLBACK callback)
         {
             int id = 0;
             bool output = false;
 
             int cmd = User32.APPCLASS_STANDARD | User32.APPCMD_CLIENTONLY;
-            int erc = User32.DdeInitializeW(ref id, cbck, cmd, 0);
+            int erc = User32.DdeInitializeW(ref id, callback, cmd, 0);
 
             if (erc == 0)
             {
@@ -133,26 +134,26 @@ namespace Microvision.DDE
             return output;
         }
 
-        public string QueryString(IntPtr hsz)
+        public string QueryString(IntPtr handleString)
         {
             // -- la doc n'est pas claire du tout sur la signification des longueurs de chaines...
             string output = "";
 
-            if (hsz != IntPtr.Zero)
+            if (handleString != IntPtr.Zero)
             {
                 if (KCodePage == User32.CP_WINANSI)
                 {
-                    int lg = User32.DdeQueryStringAnsi(_identifier, hsz, IntPtr.Zero, 0, KCodePage);
-                    StringBuilder sb = new StringBuilder(lg);
-                    lg = User32.DdeQueryStringAnsi(_identifier, hsz, sb, lg, KCodePage);
+                    int length = User32.DdeQueryStringAnsi(_identifier, handleString, IntPtr.Zero, 0, KCodePage);
+                    StringBuilder sb = new StringBuilder(length);
+                    _ = User32.DdeQueryStringAnsi(_identifier, handleString, sb, length, KCodePage);
                     output = sb.ToString();
                 }
                 else
                 {
-                    int lg = User32.DdeQueryStringUnicode(_identifier, hsz, IntPtr.Zero, 0, KCodePage);
-                    lg++;
-                    StringBuilder sb = new StringBuilder(lg);
-                    lg = User32.DdeQueryStringUnicode(_identifier, hsz, sb, lg, KCodePage);
+                    int length = User32.DdeQueryStringUnicode(_identifier, handleString, IntPtr.Zero, 0, KCodePage);
+                    length++;
+                    StringBuilder sb = new StringBuilder(length);
+                    _ = User32.DdeQueryStringUnicode(_identifier, handleString, sb, length, KCodePage);
                     output = sb.ToString();
                 }
             }

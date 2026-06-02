@@ -19,6 +19,7 @@ namespace Microvision.DDE
         // 21.11.19 : (libs 2.2)
         // 18.03.21 : Ajout de Poke pour envoi de valeur au serveur
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public delegate void ItemDataChangeEventHandler(WinDDEConversation conv, string itemName, string value);
@@ -72,12 +73,12 @@ namespace Microvision.DDE
 
         public int Find(IntPtr hconv)
         {
-            return zFindHandle(hconv, _items);
+            return _items.FindIndex(o => hconv == o.HConv);
         }
 
         public int Find(string serverName, string topic)
         {
-            return zFindName(serverName, topic, _items);
+            return _items.FindIndex(o => serverName == o.ServerName && topic == o.Topic);
         }
 
         public int FindItem(int convNo, IntPtr hitem)
@@ -177,16 +178,6 @@ namespace Microvision.DDE
         // ----------------------------------------
         // Privées
         // ----------------------------------------
-
-        private static int zFindHandle(IntPtr hconv, IReadOnlyList<WinDDEConversation> lst)
-        {
-            return lst.FindIndex(o => hconv == o.HConv);
-        }
-
-        private static int zFindName(string srvnam, string topic, IReadOnlyList<WinDDEConversation> lst)
-        {
-            return lst.FindIndex(o => srvnam == o.ServerName && topic == o.Topic);
-        }
 
 
         // ----------------------------------------

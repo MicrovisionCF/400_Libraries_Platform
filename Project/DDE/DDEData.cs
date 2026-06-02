@@ -31,9 +31,10 @@ namespace Microvision.DDE
         // 18.03.21 : Ajout de SetValue, pour écrire sur le serveur
         // 13.04.22 : (libs 3.0)
         // 04.10.23 : Ajout FindShortName
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        public delegate void LinkChangeEventHandler(int linkNo, bool flnk);
+        public delegate void LinkChangeEventHandler(int linkNo, bool isLinkEtablished);
         public delegate void ValueChangeEventHandler(int linkNo, bool isValid, float value);
 
         public event LinkChangeEventHandler? LinkChange;
@@ -237,9 +238,9 @@ namespace Microvision.DDE
             }
         }
 
-        private void _links_LinkChange(int no, bool isLinkEtablishes)
+        private void _links_LinkChange(int no, bool isLinkEtablished)
         {
-            oOnLinkChange(no, isLinkEtablishes);
+            oOnLinkChange(no, isLinkEtablished);
         }
 
         private void _links_ValueChange(int no, bool isValid, float value)

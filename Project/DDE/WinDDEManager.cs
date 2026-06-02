@@ -20,6 +20,7 @@ namespace Microvision.DDE
         // 21.11.19 : (libs 2.2)
         // 18.03.21 : Ajout de Poke pour envoi de valeur au serveur
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public delegate void ItemDataChangeEventHandler(xDDEItem item, string data);
@@ -89,12 +90,12 @@ namespace Microvision.DDE
 
         public bool LinkItem(xDDEItem item)
         {
-            int cno = _convs.Find(item.serverName, item.topic);
-            int ino = _convs.FindItem(cno, item.itemName);
+            int convNo = _convs.Find(item.serverName, item.topic);
+            int itemNo = _convs.FindItem(convNo, item.itemName);
 
-            if (!_convs.Connected(cno)) _convs.Connect(cno, false);
+            if (!_convs.Connected(convNo)) _convs.Connect(convNo, false);
 
-            return _convs.LinkItem(cno, ino);
+            return _convs.LinkItem(convNo, itemNo);
         }
 
         public bool PokeItemData(xDDEItem item, string data)
@@ -165,10 +166,10 @@ namespace Microvision.DDE
         // Semi-privées
         // ----------------------------------------
 
-        protected bool oDDEAdviseData(IntPtr hconv, IntPtr hItem, IntPtr hData)
+        protected bool oDDEAdviseData(IntPtr handleConnnection, IntPtr hItem, IntPtr hData)
         {
             bool ok = false;
-            int cno = _convs.Find(hconv);
+            int cno = _convs.Find(handleConnnection);
             if (cno >= 0)
             {
                 int ino = _convs.FindItem(cno, hItem);

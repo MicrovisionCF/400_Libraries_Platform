@@ -16,6 +16,7 @@ namespace Microvision.DDE
         // 21.11.19 : (libs 2.2)
         // 18.03.21 : Ajout de SetValue, pour écriture de valeur vers le serveur
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public delegate bool DecodeHandler(string caption, out float value);

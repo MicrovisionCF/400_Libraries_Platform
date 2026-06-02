@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 using Microvision.NativeMethods;
 using Microvision.Types;
@@ -24,6 +25,7 @@ namespace Microvision.DDE
         // 18.03.21 : Ajout de Poke pour envoi de valeur au serveur
         // 12.04.21 : Ajout d'un caractère terminal nul à l'envoi de chaines
         // 13.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public delegate void ItemDataChangeEventHandler(WinDDEConversation sender, string itemName, string value);
@@ -38,15 +40,15 @@ namespace Microvision.DDE
 
         private struct xItem
         {
-            public IntPtr hitem;
+            public IntPtr handle;
             public bool isLinkRequired;
             public bool isLinkEtablished;
 
-            public xItem(IntPtr h)
+            public xItem(IntPtr handle)
             {
-                hitem = h;
-                isLinkRequired = false;
-                isLinkEtablished = false;
+                this.handle = handle;
+                this.isLinkRequired = false;
+                this.isLinkEtablished = false;
             }
 
             public xItem SetLinkEtablished(bool etablished)
@@ -64,13 +66,13 @@ namespace Microvision.DDE
 
 
         private readonly WinDDELibrary _lib;
-        private readonly IntPtr _hServer;
-        private readonly IntPtr _hTopic;
+        private readonly IntPtr _handleStringServer;
+        private readonly IntPtr _handleStringTopic;
 
         private readonly List<xItem> _items;
 
         private bool _connectable;
-        private IntPtr _hConv;
+        private IntPtr _handleConnection;
 
 
 
@@ -82,8 +84,8 @@ namespace Microvision.DDE
         {
             _lib = lib;
 
-            _hServer = _lib.CreateStringHandle(serverName);
-            _hTopic = _lib.CreateStringHandle(topic);
+            _handleStringServer = _lib.CreateStringHandle(serverName);
+            _handleStringTopic = _lib.CreateStringHandle(topic);
 
             _connectable = true;
             _items = [];
@@ -94,15 +96,15 @@ namespace Microvision.DDE
         // Propriétés
         // ----------------------------------------
 
-        public IntPtr HConv => _hConv;
+        public IntPtr HConv => _handleConnection;
 
         public int ItemsCount => _items.Count;
 
-        public int RequestedLinksCount => zLinkReqsCount(_items);
+        public int RequestedLinksCount => _items.Count(o => o.isLinkRequired);
 
-        public string ServerName => _lib.QueryString(_hServer);
+        public string ServerName => _lib.QueryString(_handleStringServer);
 
-        public string Topic => _lib.QueryString(_hTopic);
+        public string Topic => _lib.QueryString(_handleStringTopic);
 
 
         // ----------------------------------------
@@ -120,7 +122,7 @@ namespace Microvision.DDE
         public void AdviseItemData(int itemNo, IntPtr hdata)
         {
             _lib.GetData(hdata, out Bytes bf);
-            oOnItemDataChange(_lib.QueryString(_items[itemNo].hitem), zCString(bf));
+            oOnItemDataChange(_lib.QueryString(_items[itemNo].handle), zCString(bf));
         }
 
         public bool Connect(bool fnotify)
@@ -131,7 +133,7 @@ namespace Microvision.DDE
             // Donc je me contente de signaler qu'on peut retenter la connexion.
 
 
-            if (_hConv == IntPtr.Zero)
+            if (_handleConnection == IntPtr.Zero)
             {
                 if (fnotify)
                 {
@@ -139,18 +141,18 @@ namespace Microvision.DDE
                 }
                 else if (_connectable)
                 {
-                    _hConv = _lib.Connect(_hServer, _hTopic);
-                    if (_hConv != IntPtr.Zero)
+                    _handleConnection = _lib.Connect(_handleStringServer, _handleStringTopic);
+                    if (_handleConnection != IntPtr.Zero)
                     {
                         for (int i = 0; i < _items.Count; i++)
                         {
                             if (_items[i].isLinkRequired && !_items[i].isLinkEtablished)      // -- LinkItem a déjà été appelé, sans succés, donc on réessaie.
                             {
-                                IntPtr h = _lib.ClientTransaction(_hConv, _items[i].hitem, User32.XType.XTYP_ADVSTART);
+                                IntPtr h = _lib.ClientTransaction(_handleConnection, _items[i].handle, User32.XType.XTYP_ADVSTART);
                                 if (h != IntPtr.Zero)
                                 {
                                     _items[i] = _items[i].SetLinkEtablished(true);
-                                    oOnItemLinkStart(_lib.QueryString(_items[i].hitem));
+                                    oOnItemLinkStart(_lib.QueryString(_items[i].handle));
                                     // -- 13.09.13 : quand faut-il libérer h ?
                                 }
                             }
@@ -161,12 +163,12 @@ namespace Microvision.DDE
                 }
             }
 
-            return _hConv != IntPtr.Zero;
+            return _handleConnection != IntPtr.Zero;
         }
 
         public bool Connected()
         {
-            return _hConv != IntPtr.Zero;
+            return _handleConnection != IntPtr.Zero;
         }
 
         public void Disconnect(bool fnotify)
@@ -174,51 +176,51 @@ namespace Microvision.DDE
             // -- fnotify = Disconnect issu du server, donc déjà fait
 
 
-            if (_hConv != IntPtr.Zero)
+            if (_handleConnection != IntPtr.Zero)
             {
                 for (int i = _items.Count - 1; i >= 0; i--)
                 {
                     if (_items[i].isLinkEtablished)
                     {
-                        if (!fnotify) _lib.ClientTransaction(_hConv, _items[i].hitem, User32.XType.XTYP_ADVSTOP);
+                        if (!fnotify) _lib.ClientTransaction(_handleConnection, _items[i].handle, User32.XType.XTYP_ADVSTOP);
                         _items[i] = _items[i].SetLinkEtablished(false);
-                        oOnItemLinkStop(_lib.QueryString(_items[i].hitem));
+                        oOnItemLinkStop(_lib.QueryString(_items[i].handle));
                         // -- 13.09.13 : faut-il libérer h ?
                     }
                 }
 
                 if (!fnotify)
                 {
-                    _lib.Disconnect(_hConv);
+                    _lib.Disconnect(_handleConnection);
                     _connectable = true;
                 }
 
-                _hConv = IntPtr.Zero;
+                _handleConnection = IntPtr.Zero;
             }
         }
 
         public int FindItem(IntPtr hitem)
         {
-            return zFindHItem(hitem, _items);
+            return _items.FindIndex(o => o.handle == hitem);
         }
 
         public int FindItem(string itemName)
         {
-            return zFindName(itemName, _lib, _items);
+            return _items.FindIndex(o => itemName == _lib.QueryString(o.handle));
         }
 
         public bool LinkItem(int itemNo)
         {
             _items[itemNo] = _items[itemNo].SetLinkRequired(true);
-            if (_hConv != IntPtr.Zero)
+            if (_handleConnection != IntPtr.Zero)
             {
-                IntPtr h = _lib.ClientTransaction(_hConv, _items[itemNo].hitem, User32.XType.XTYP_ADVSTART);
+                IntPtr h = _lib.ClientTransaction(_handleConnection, _items[itemNo].handle, User32.XType.XTYP_ADVSTART);
                 _items[itemNo] = _items[itemNo].SetLinkEtablished(h != IntPtr.Zero);
                 // -- 13.09.13 : quand faut-il libérer h ?
 
                 User32.DMLERR erc = _lib.GetLastError();  // -- des fois ya des erreurs mais ça marche quand même...
                 if (erc != 0)
-                    Debug.Print(_lib.QueryString(_items[itemNo].hitem) + SpecialChars.Tab + h.ToString() + SpecialChars.Tab + erc.ToNameString());
+                    Debug.Print(_lib.QueryString(_items[itemNo].handle) + SpecialChars.Tab + h.ToString() + SpecialChars.Tab + erc.ToNameString());
             }
 
             return _items[itemNo].isLinkEtablished;
@@ -230,10 +232,10 @@ namespace Microvision.DDE
             data += SpecialChars.Null;
 
             Bytes bf = new Bytes(System.Text.Encoding.ASCII.GetBytes(data));
-            IntPtr dataHandle = _lib.CreateDataHandle(_items[itemNo].hitem, bf, 1);
+            IntPtr dataHandle = _lib.CreateDataHandle(_items[itemNo].handle, bf, 1);
             if (dataHandle != IntPtr.Zero)
             {
-                IntPtr h = _lib.ClientTransactionData(dataHandle, _hConv, _items[itemNo].hitem, User32.XType.XTYP_POKE);
+                IntPtr h = _lib.ClientTransactionData(dataHandle, _handleConnection, _items[itemNo].handle, User32.XType.XTYP_POKE);
                 ok = h != IntPtr.Zero;
             }
 
@@ -242,7 +244,7 @@ namespace Microvision.DDE
 
         public void RemoveItem(int itemNo)
         {
-            _lib.FreeStringHandle(_items[itemNo].hitem);
+            _lib.FreeStringHandle(_items[itemNo].handle);
             _items.RemoveAt(itemNo);
         }
 
@@ -250,9 +252,9 @@ namespace Microvision.DDE
         {
             string s = "";
 
-            if (_hConv != IntPtr.Zero)
+            if (_handleConnection != IntPtr.Zero)
             {
-                IntPtr h = _lib.ClientTransaction(_hConv, _items[itemNo].hitem, User32.XType.XTYP_REQUEST);
+                IntPtr h = _lib.ClientTransaction(_handleConnection, _items[itemNo].handle, User32.XType.XTYP_REQUEST);
                 if (h != IntPtr.Zero)
                 {
                     _lib.GetData(h, out Bytes bts);
@@ -266,14 +268,14 @@ namespace Microvision.DDE
 
         public void UnlinkItem(int itemNo)
         {
-            if (_hConv != IntPtr.Zero)
+            if (_handleConnection != IntPtr.Zero)
             {
-                _lib.ClientTransaction(_hConv, _items[itemNo].hitem, User32.XType.XTYP_ADVSTOP); // -- 13.09.13 : faut-il libérer h ?
+                _lib.ClientTransaction(_handleConnection, _items[itemNo].handle, User32.XType.XTYP_ADVSTOP); // -- 13.09.13 : faut-il libérer h ?
                 _items[itemNo] = _items[itemNo].SetLinkEtablished(false);
 
                 User32.DMLERR erc = _lib.GetLastError();
                 if (erc != 0)
-                    Debug.Print(_lib.QueryString(_items[itemNo].hitem) + SpecialChars.Tab + erc.ToNameString());
+                    Debug.Print(_lib.QueryString(_items[itemNo].handle) + SpecialChars.Tab + erc.ToNameString());
             }
 
             _items[itemNo] = _items[itemNo].SetLinkRequired(false);
@@ -286,12 +288,12 @@ namespace Microvision.DDE
 
         protected override void oDispose(bool isExplicit)
         {
-            _items.ForEach(o => _lib.FreeStringHandle(o.hitem));
+            _items.ForEach(o => _lib.FreeStringHandle(o.handle));
             _items.Clear();
             _items.TrimExcess();
 
-            _lib.FreeStringHandle(_hServer);
-            _lib.FreeStringHandle(_hTopic);
+            _lib.FreeStringHandle(_handleStringServer);
+            _lib.FreeStringHandle(_handleStringTopic);
 
             base.oDispose(isExplicit);
         }
@@ -319,30 +321,15 @@ namespace Microvision.DDE
         private static string zCString(Bytes bf)
         {
             int i = 0;
-            string s = "";
+            StringBuilder sb = new StringBuilder();
 
             while (bf[i] != 0)
             {
-                s += Convert.ToChar(bf[i]);
+                sb.Append(Convert.ToChar(bf[i]));
                 i++;
             }
 
-            return s;
-        }
-
-        private static int zFindHItem(IntPtr hitem, List<xItem> lst)
-        {
-            return lst.FindIndex(o => hitem == o.hitem);
-        }
-
-        private static int zFindName(string itemName, WinDDELibrary lb, List<xItem> lst)
-        {
-            return lst.FindIndex(o => itemName == lb.QueryString(o.hitem));
-        }
-
-        private static int zLinkReqsCount(List<xItem> lst)
-        {
-            return lst.Count(o => o.isLinkRequired);
+            return sb.ToString();
         }
 
 

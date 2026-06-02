@@ -13,6 +13,7 @@ namespace Microvision.DDE
         // 18.03.21 : Ajout de SetEncoder + SetValue pour écriture de valeur sur le serveur
         // 13.04.22 : (libs 3.0)
         // 04.10.23 : Ajout FindShortName
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public delegate void LinkChangeEventHandler(int no, bool isLinkEtablished);
