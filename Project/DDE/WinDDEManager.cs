@@ -198,9 +198,9 @@ namespace Microvision.DDE
             }
         }
 
-        protected void oDDEError(int hconv)
+        protected void oDDEError(IntPtr hconv)
         {
-            Debug.Print("==> " + "XTYP_ERROR");
+            Debug.Print("==> " + "XTYP_ERROR " + hconv);
         }
 
         protected void oDDERegisterServer(IntPtr hsrvnam)
@@ -270,7 +270,7 @@ namespace Microvision.DDE
                     break;
 
                 case User32.XType.XTYP_ERROR:// -- pas de réponse
-                    oDDEError((int)hConv);
+                    oDDEError(hConv);
                     break;
 
                 case User32.XType.XTYP_REGISTER:// -- pas de réponse

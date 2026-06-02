@@ -20,7 +20,7 @@ namespace Microvision.DDE
         // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private static int KCodePage = User32.CP_WINANSI; // -- pas encore décidé...
+        private static readonly int KCodePage = User32.CP_WINANSI; // -- pas encore décidé...
         private int _identifier;
 
 
