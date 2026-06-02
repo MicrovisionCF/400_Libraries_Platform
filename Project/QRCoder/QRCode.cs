@@ -11,6 +11,7 @@ namespace Microvision.QRCoder
         // 16.02.18 : Création
         // 21.11.19 : (libs 2.2) Correction prise en compte du paramètre strength
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly QRData _data;
@@ -22,9 +23,8 @@ namespace Microvision.QRCoder
 
         public QRCode(string message, QRStrength strength = QRStrength.Quality, int forcedVersion = -1)
         {
-            QRGenerator generator = new QRGenerator();
+            using QRGenerator generator = new QRGenerator();
             _data = generator.CreateQrCode(message, strength, forcedVersion);
-            generator.Dispose();
         }
 
 

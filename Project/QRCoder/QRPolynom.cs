@@ -9,6 +9,7 @@ namespace Microvision.QRCoder
         // 13.02.18 : Création
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public struct Item
@@ -55,7 +56,7 @@ namespace Microvision.QRCoder
             foreach (Item polyItem in PolyItems)
                 sb.Append("a^" + polyItem.coefficient + "*x^" + polyItem.exponent + " + ");
 
-            return sb.ToString().TrimEnd(new[] { ' ', '+' });
+            return sb.ToString().TrimEnd([' ', '+']);
         }
 
 

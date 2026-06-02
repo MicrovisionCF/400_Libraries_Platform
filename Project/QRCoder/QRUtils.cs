@@ -39,7 +39,7 @@ namespace Microvision.QRCoder
         public int codewordsInGroup2;
         public Dictionary<QREncodingMode, int> capacity;
 
-        public int GetTotalDataCodewords()
+        public readonly int GetTotalDataCodewords()
         {
             return blocksInGroup1 * codewordsInGroup1 + blocksInGroup2 * codewordsInGroup2;
         }
@@ -125,6 +125,7 @@ namespace Microvision.QRCoder
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
         // 09.07.25 : Correction possibilité d'utiliser la version taille max
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
@@ -151,7 +152,7 @@ namespace Microvision.QRCoder
                 if (this[version][strength].capacity[encMode] >= length)
                     found = true;
                 else
-                    version = version + 1;
+                    version++;
             }
 
             if (!found) version = (QRVersion)(-1);

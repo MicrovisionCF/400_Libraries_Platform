@@ -13,6 +13,7 @@ namespace Microvision.QRCoder
         // 16.02.18 : Création
         // 21.11.19 : (libs 2.2) NotInheritable
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
@@ -107,7 +108,7 @@ namespace Microvision.QRCoder
         public static void PlaceFormat(QRData qrCode, string formatStr)
         {
             int size = qrCode.Width;
-            string fStr = zReverseString(formatStr);
+            string fStr = new string([.. formatStr.Reverse()]);
 
             List<PointIs> positions = QRTablesShop.CreateFormatPositions(size);
 
@@ -149,8 +150,8 @@ namespace Microvision.QRCoder
             {
                 string versionString = zGetVersionString(qrCode.Version);
                 int size = qrCode.Width;
-                string vStr = zReverseString(versionString);
-
+                string vStr = new string([.. versionString.Reverse()]);
+                
                 for (int x = 0; x <= 6 - 1; x++)
                     for (int y = 0; y <= 3 - 1; y++)
                     {
@@ -232,7 +233,7 @@ namespace Microvision.QRCoder
                 generator = generator.PadRight(strength.Length, '0');
 
                 for (int i = 0; i < strength.Length; i++)
-                    sb.Append((Convert.ToInt32(strength[i]) ^ Convert.ToInt32(generator[i])).ToString());
+                    sb.Append(Convert.ToInt32(strength[i]) ^ Convert.ToInt32(generator[i]));
 
                 strength = sb.ToString().TrimStart('0');
             }
@@ -287,11 +288,6 @@ namespace Microvision.QRCoder
         {
             // Carré blanc de 9 autour des finder
             zzPlaceSquare(qrCode, new PointI(pos.X, pos.Y), 9, false);
-        }
-
-        private static string zReverseString(string inp)
-        {
-            return new string(inp.Reverse().ToArray());
         }
 
         private static void zzPlaceSquare(QRData qrCode, PointI pos, int size, bool mark)

@@ -12,13 +12,14 @@ namespace Microvision.QRCoder
         // 15.02.18 : Création
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private delegate bool MaskDelegate(int x, int y);
 
         // ***************************************************************************************************
 
-        private List<MaskDelegate> _masks;
+        private readonly List<MaskDelegate> _masks;
 
 
         // ----------------------------------------
@@ -27,15 +28,17 @@ namespace Microvision.QRCoder
 
         public QRMasker()
         {
-            _masks = new List<MaskDelegate>();
-            _masks.Add(zMask1);
-            _masks.Add(zMask2);
-            _masks.Add(zMask3);
-            _masks.Add(zMask4);
-            _masks.Add(zMask5);
-            _masks.Add(zMask6);
-            _masks.Add(zMask7);
-            _masks.Add(zMask8);
+            _masks =
+            [
+                zMask1,
+                zMask2,
+                zMask3,
+                zMask4,
+                zMask5,
+                zMask6,
+                zMask7,
+                zMask8,
+            ];
         }
 
 
@@ -153,7 +156,7 @@ namespace Microvision.QRCoder
                 StringBuilder sb = new StringBuilder();
 
                 for (int i = 0; i < s.Length; i++)
-                    sb.Append((Convert.ToInt32(s[i]) ^ Convert.ToInt32(generator[i])).ToString());
+                    sb.Append(Convert.ToInt32(s[i]) ^ Convert.ToInt32(generator[i]));
 
                 s = sb.ToString().TrimStart('0');
             }
@@ -163,7 +166,7 @@ namespace Microvision.QRCoder
 
             StringBuilder sbFormat = new StringBuilder();
             for (int i = 0; i < strengthString.Length; i++)
-                sbFormat.Append((Convert.ToInt32(strengthString[i]) ^ Convert.ToInt32(mask[i])).ToString());
+                sbFormat.Append(Convert.ToInt32(strengthString[i]) ^ Convert.ToInt32(mask[i]));
 
             return sbFormat.ToString();
         }

@@ -13,6 +13,7 @@ namespace Microvision.QRCoder
         // 13.02.18 : Création
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly List<char> _numChars;
@@ -84,12 +85,12 @@ namespace Microvision.QRCoder
         protected QRPolynom oCalculateGeneratorPolynom(int wordsCount)
         {
             QRPolynom generatorPolynom = new QRPolynom();
-            generatorPolynom.PolyItems.AddRange(new[] { new QRPolynom.Item(0, 1), new QRPolynom.Item(0, 0) });
+            generatorPolynom.PolyItems.AddRange([new QRPolynom.Item(0, 1), new QRPolynom.Item(0, 0)]);
 
             for (int i = 1; i < wordsCount; i++)
             {
                 QRPolynom multiplierPolynom = new QRPolynom();
-                multiplierPolynom.PolyItems.AddRange(new[] { new QRPolynom.Item(0, 1), new QRPolynom.Item(i, 0) });
+                multiplierPolynom.PolyItems.AddRange([new QRPolynom.Item(0, 1), new QRPolynom.Item(i, 0)]);
                 generatorPolynom = oMultiplyAlphaPolynoms(generatorPolynom, multiplierPolynom);
             }
 
@@ -110,12 +111,12 @@ namespace Microvision.QRCoder
             QRPolynom leadTermSource = messagePolynom;
 
             int exp = 0;
-            while (leadTermSource.PolyItems.Count > 0 && leadTermSource.PolyItems[leadTermSource.PolyItems.Count - 1].exponent > 0)
+            while (leadTermSource.PolyItems.Count > 0 && leadTermSource.PolyItems[^1].exponent > 0)
             {
                 if (leadTermSource.PolyItems[0].coefficient == 0)
                 {
                     leadTermSource.PolyItems.RemoveAt(0);
-                    leadTermSource.PolyItems.Add(new QRPolynom.Item(0, leadTermSource.PolyItems[leadTermSource.PolyItems.Count - 1].exponent - 1));
+                    leadTermSource.PolyItems.Add(new QRPolynom.Item(0, leadTermSource.PolyItems[^1].exponent - 1));
                 }
                 else
                 {
@@ -128,7 +129,7 @@ namespace Microvision.QRCoder
                 exp++;
             }
 
-            return leadTermSource.PolyItems.Select(x => zzDecToBin(x.coefficient, 8)).ToList();
+            return [.. leadTermSource.PolyItems.Select(x => zzDecToBin(x.coefficient, 8))];
         }
 
         protected QRPolynom oConvertToAlphaNotation(QRPolynom poly)
@@ -165,7 +166,7 @@ namespace Microvision.QRCoder
 
         protected List<xQRCodewordBlock> oCreateCodeWords(string bitString, xQRConfigInfos info)
         {
-            List<xQRCodewordBlock> codeWords = new List<xQRCodewordBlock>();
+            List<xQRCodewordBlock> codeWords = [];
 
             for (int i = 0; i < info.blocksInGroup1; i++)
             {
@@ -177,7 +178,7 @@ namespace Microvision.QRCoder
                 codeWords.Add(new xQRCodewordBlock(1, i + 1, bitStr, bitBlockList, wordList, bitBlockListDec, wordListDec));
             }
 
-            bitString = bitString.Substring(info.blocksInGroup1 * info.codewordsInGroup1 * 8);
+            bitString = bitString[(info.blocksInGroup1 * info.codewordsInGroup1 * 8)..];
 
             for (int i = 0; i < info.blocksInGroup2; i++)
             {
@@ -235,7 +236,7 @@ namespace Microvision.QRCoder
         {
             // Détermine l'encodage en fonction des caractères à écrire dans le QRCode
 
-            List<char> alphaNums = _alphaNumEncValues.Keys.ToList();
+            List<char> alphaNums = [.. _alphaNumEncValues.Keys];
 
             QREncodingMode result;
             if (forceUtf8)
@@ -273,8 +274,8 @@ namespace Microvision.QRCoder
                     resultPolynom.PolyItems.Add(polItemRes);
                 }
 
-            List<int> exponentsToGlue = resultPolynom.PolyItems.GroupBy(x => x.exponent).Where(x => x.Count() > 1).Select(x => x.First().exponent).ToList();
-            List<QRPolynom.Item> gluedPolynoms = new List<QRPolynom.Item>();
+            List<int> exponentsToGlue = [.. resultPolynom.PolyItems.GroupBy(x => x.exponent).Where(x => x.Count() > 1).Select(x => x.First().exponent)];
+            List<QRPolynom.Item> gluedPolynoms = [];
 
             foreach (int exponent in exponentsToGlue)
             {
@@ -310,33 +311,33 @@ namespace Microvision.QRCoder
 
         private static string zAdjustBitStringLength(string bitString, int dataLength)
         {
-            int lengthDiff = dataLength - bitString.Length;
+            StringBuilder sb = new StringBuilder(bitString);
 
-            if (lengthDiff > 0) bitString += new string('0', Math.Min(lengthDiff, 4));
+            int lengthDiff = dataLength - sb.Length;
 
-            if (bitString.Length % 8 != 0) bitString += new string('0', 8 - bitString.Length % 8);
+            if (lengthDiff > 0) sb.Append(new string('0', Math.Min(lengthDiff, 4)));
+            if (sb.Length % 8 != 0) sb.Append(new string('0', 8 - sb.Length % 8));
 
-            while (bitString.Length < dataLength)
-                bitString += "1110110000010001";
+            while (sb.Length < dataLength) sb.Append("1110110000010001");
 
-            if (bitString.Length > dataLength) bitString = bitString.Substring(0, dataLength);
+            if (sb.Length > dataLength) sb.Length = dataLength;
 
-            return bitString;
+            return sb.ToString();
         }
 
         private static List<int> zBinaryStringListToDecList(List<string> binaryStringList)
         {
-            return binaryStringList.Select(s => zBinToDec(s)).ToList();
+            return [.. binaryStringList.Select(s => zBinToDec(s))];
         }
 
         private static List<string> zBinaryStringToBitBlockList(string bitString)
         {
-            List<string> output = new List<string>();
+            List<string> output = [];
 
             while (bitString.Length >= 8)
             {
-                output.Add(bitString.Substring(0, 8));
-                bitString = bitString.Substring(8);
+                output.Add(bitString[..8]);
+                bitString = bitString[8..];
             }
 
             return output;
@@ -354,8 +355,8 @@ namespace Microvision.QRCoder
 
             while (i >= 0)
             {
-                messagePol.PolyItems.Add(new QRPolynom.Item(zBinToDec(bitString.Substring(0, 8)), i));
-                bitString = bitString.Remove(0, 8);
+                messagePol.PolyItems.Add(new QRPolynom.Item(zBinToDec(bitString[..8]), i));
+                bitString = bitString[8..];
                 i--;
             }
 
@@ -365,13 +366,13 @@ namespace Microvision.QRCoder
         private static void zCheckCapacityIsValid(xQRConfigInfos strengthDetails, QREncodingMode encoding, int dataLength)
         {
             if (strengthDetails.capacity[encoding] < dataLength)
-                throw new ArgumentException("The forced version " + strengthDetails.version.ToNameString() + " of QRCode can not encode " + dataLength.ToString() + " characters. The maximum is " + strengthDetails.capacity[encoding].ToString() + ".");
+                throw new ArgumentException($"The forced version {strengthDetails.version.ToNameString()} of QRCode can not encode {dataLength} characters. The maximum is {strengthDetails.capacity[encoding]}.");
         }
 
         private static void zCheckVersionIsValid(QRVersion version, int dataLength)
         {
             if ((int)version == -1)
-                throw new ArgumentException("Too many characters (" + dataLength.ToString() + ") to create the QRCode.");
+                throw new ArgumentException($"Too many characters ({dataLength}) to create the QRCode.");
         }
 
         private static int zGetAlphaExpFromIntVal(List<xQRAntilog> galoisField, int intVal)
@@ -450,66 +451,66 @@ namespace Microvision.QRCoder
 
         private static string zPlainTextToBinaryAlphanumeric(string plainText, Dictionary<char, int> alphaNumEnc)
         {
-            string codeText = "";
+            StringBuilder codeText = new StringBuilder();
 
             while (plainText.Length >= 2)
             {
-                string token = plainText.Substring(0, 2);
+                string token = plainText[..2];
                 int dec = alphaNumEnc[token[0]] * 45 + alphaNumEnc[token[1]];
-                codeText += zzDecToBin(dec, 11);
-                plainText = plainText.Substring(2);
+                codeText.Append(zzDecToBin(dec, 11));
+                plainText = plainText[2..];
             }
 
             if (plainText.Length > 0)
-                codeText += zzDecToBin(alphaNumEnc[plainText[0]], 6);
+                codeText.Append(zzDecToBin(alphaNumEnc[plainText[0]], 6));
 
-            return codeText;
+            return codeText.ToString();
         }
 
         private static string zPlainTextToBinaryByte(string plainText, bool utf8Bom, bool forceUtf8)
         {
-            string codeText = "";
+            StringBuilder codeText = new StringBuilder();
 
             byte[] codeBytes;
             if (zIsValidISO(plainText) && !forceUtf8)
                 codeBytes = Encoding.GetEncoding("ISO-8859-1").GetBytes(plainText);
             else
-                codeBytes = utf8Bom ? Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(plainText)).ToArray() : Encoding.UTF8.GetBytes(plainText);
+                codeBytes = utf8Bom ? [.. Encoding.UTF8.GetPreamble(), .. Encoding.UTF8.GetBytes(plainText)] : Encoding.UTF8.GetBytes(plainText);
 
             foreach (byte b in codeBytes)
-                codeText += zzDecToBin(b, 8);
+                codeText.Append(zzDecToBin(b, 8));
 
-            return codeText;
+            return codeText.ToString();
         }
 
         private static string zPlainTextToBinaryNumeric(string plainText)
         {
-            string codeText = "";
+            StringBuilder codeText = new StringBuilder();
 
             while (plainText.Length >= 3)
             {
-                int dec = Convert.ToInt32(plainText.Substring(0, 3));
-                codeText += zzDecToBin(dec, 10);
-                plainText = plainText.Substring(3);
+                int dec = Convert.ToInt32(plainText[..3]);
+                codeText.Append(zzDecToBin(dec, 10));
+                plainText = plainText[3..];
             }
 
             if (plainText.Length == 2)
             {
-                int dec = Convert.ToInt32(plainText.Substring(0, plainText.Length));
-                codeText += zzDecToBin(dec, 7);
+                int dec = Convert.ToInt32(plainText);
+                codeText.Append(zzDecToBin(dec, 7));
             }
             else if (plainText.Length == 1)
             {
-                int dec = Convert.ToInt32(plainText.Substring(0, plainText.Length));
-                codeText += zzDecToBin(dec, 4);
+                int dec = Convert.ToInt32(plainText);
+                codeText.Append(zzDecToBin(dec, 4));
             }
 
-            return codeText;
+            return codeText.ToString();
         }
 
         private static int zShrinkAlphaExp(int alphaExp)
         {
-            return alphaExp % 256 + (alphaExp / 256d).ToFloorInt();
+            return alphaExp % 256 + alphaExp / 256;
         }
 
         private static QRPolynom zXORPolynoms(QRPolynom messagePolynom, QRPolynom resPolynom)

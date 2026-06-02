@@ -14,7 +14,8 @@ namespace Microvision.QRCoder
         // ***************************************************************************************************
         // 13.02.18 : Création
         // 21.11.19 : (libs 2.2)
-        // 14.04.22 : (libs 3.0à
+        // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly xQRConfigInfos _info;
@@ -31,8 +32,8 @@ namespace Microvision.QRCoder
             _info = info;
             int size = zGetSizeFromVersion(_info.version);
 
-            _matrix = new List<BitArray>();
-            _matrixLocked = new List<BitArray>();
+            _matrix = [];
+            _matrixLocked = [];
 
             for (int i = 0; i < size; i++)
             {
@@ -84,10 +85,8 @@ namespace Microvision.QRCoder
 
             for (int i = 4; i < _matrix.Count - 4; i++)
             {
-                List<bool> tmpLine = new List<bool>(quietPart);
-                tmpLine.AddRange(_matrix[i].Cast<bool>());
-                tmpLine.AddRange(quietPart);
-                _matrix[i] = new BitArray(tmpLine.ToArray());
+                bool[] tmpLine = [.. quietPart, .. _matrix[i].Cast<bool>(), .. quietPart];
+                _matrix[i] = new BitArray(tmpLine);
             }
 
             // On a plus rien à modifier après la quiet zone, comme ça ça petera

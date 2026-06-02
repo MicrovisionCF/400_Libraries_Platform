@@ -14,14 +14,19 @@ namespace Microvision.QRCoder
         // 16.02.18 : Création
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private HColor _frontColor, _backColor;
+        private HColor _frontColor;
+        private HColor _backColor;
+
         private bool _roundedPixels;
+        private bool _withGradient;
+
         private Bitmap? _icon;
         private int _iconSizePercent;
         private int _iconBorderPercent;
-        private bool _withGradient;
+        
 
 
         // ----------------------------------------
@@ -32,11 +37,13 @@ namespace Microvision.QRCoder
         {
             _frontColor = Color.Black;
             _backColor = Color.White;
+
             _roundedPixels = false;
+            _withGradient = false;
+            
             _icon = null;
             _iconSizePercent = 15;
             _iconBorderPercent = 15;
-            _withGradient = false;
         }
 
 
@@ -160,12 +167,10 @@ namespace Microvision.QRCoder
 
             gfx.Clear(BackColor);
 
-            Brush lightBrush = new SolidBrush(_backColor);
-            Brush darkBrush;
-            if (_withGradient)
-                darkBrush = new LinearGradientBrush(new PointI(0, 0), new PointI(bmp.Width, bmp.Height), HColor.Darker(_frontColor, 0.2f), HColor.Lighter(_frontColor, 0.2f));
-            else
-                darkBrush = new SolidBrush(_frontColor);
+            using Brush lightBrush = new SolidBrush(_backColor);
+            using Brush darkBrush = _withGradient
+                ? new LinearGradientBrush(new PointI(0, 0), new PointI(bmp.Width, bmp.Height), HColor.Darker(_frontColor, 0.2f), HColor.Lighter(_frontColor, 0.2f))
+                : new SolidBrush(_frontColor);
 
             for (int x = 0; x < data.Width; x++)
             {
@@ -209,8 +214,6 @@ namespace Microvision.QRCoder
                 gfx.DrawImage(_icon, iconX, iconY, iconDestWidth, iconDestHeight);
             }
 
-            lightBrush.Dispose();
-            darkBrush.Dispose();
             gfx.Save();
 
             return bmp;
@@ -224,6 +227,7 @@ namespace Microvision.QRCoder
         protected override void oDispose(bool isExplicit)
         {
             _icon = null;
+
             base.oDispose(isExplicit);
         }
 
