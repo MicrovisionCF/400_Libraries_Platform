@@ -18,11 +18,12 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 16.03.23 : Création
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        delegate void ImageReceivedEventHandler(Bitmap? bmp, bool userCancel);
+        delegate void ImageReceivedEventHandler(Bitmap? image, bool userCancel);
 
-        event ImageReceivedEventHandler ImageReceived;
+        event ImageReceivedEventHandler? ImageReceived;
     }
 
     public class TwainManager : Citizen, ITwainImageReceiver
@@ -32,6 +33,7 @@ namespace Microvision.Scanners
         // 09.05.23 : Ajout de zIsLibraryInstalled pour éviter une exception lorsque les bibliothèques TWAIN
         //            ne sont pas installées sur le poste.
         // 20.03.24 : Suppression de l'instanciation spécialisée des DataSources.
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public event ITwainImageReceiver.ImageReceivedEventHandler? ImageReceived;
@@ -47,7 +49,7 @@ namespace Microvision.Scanners
         private readonly TwainThread _thread;
 
         private IntPtr _hWnd;
-        private TWAIN? _dsm;
+        private TWAIN? _dataSourceManager;
 
 
         // ----------------------------------------
@@ -75,26 +77,26 @@ namespace Microvision.Scanners
 
         public void CloseDSM()
         {
-            _dsm.ThrowIfNull();
+            _dataSourceManager.ThrowIfNull();
 
-            _dsm.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDSM, ref _hWnd);
+            _dataSourceManager.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDSM, ref _hWnd);
 
-            _dsm.Dispose();
-            _dsm = null;
+            _dataSourceManager.Dispose();
+            _dataSourceManager = null;
         }
 
         public void EnumerateDS()
         {
-            _dsm.ThrowIfNull();
+            _dataSourceManager.ThrowIfNull();
 
             _dataSources.Clear();
 
             TWAIN.TW_IDENTITY id = default;
-            for (TWAIN.STS sts = _dsm.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.GETFIRST, ref id); sts == TWAIN.STS.SUCCESS; sts = _dsm.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.GETNEXT, ref id))
+            for (TWAIN.STS sts = _dataSourceManager.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.GETFIRST, ref id); sts == TWAIN.STS.SUCCESS; sts = _dataSourceManager.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.GETNEXT, ref id))
             {
                 TwainDataSource ds = new TwainDataSource(id);
 
-                if (ds.Open(_dsm, _thread, this))
+                if (ds.Open(_dataSourceManager, _thread, this))
                 {
                     _dataSources.Add(new TwainDataSource(id).GiveLife());
 
@@ -112,20 +114,22 @@ namespace Microvision.Scanners
 
         public TwainDataSource? OpenDS(int no)
         {
-            _dsm.ThrowIfNull();
+            _dataSourceManager.ThrowIfNull();
 
-            return _dataSources.Open(no, _dsm, _thread, this);
+            return _dataSources.Open(no, _dataSourceManager, _thread, this);
         }
 
         public bool OpenDSM()
         {
+            _dataSourceManager.ThrowIfNotNull();
+
             bool ok = zIsLibraryInstalled();
 
             if (ok)
             {
                 // Attention les chaines sont sur 32 char max sinon crash
 
-                _dsm = new TWAIN("Microvision",
+                _dataSourceManager = new TWAIN("Microvision",
                     MakinShop.GetAppName(),
                     MakinShop.GetAppName(),
                     (ushort)TWAIN.TWON_PROTOCOL.MAJOR,
@@ -143,20 +147,20 @@ namespace Microvision.Scanners
                     _thread.RunInUIThread,
                     _hWnd);
 
-                ok = _dsm.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.OPENDSM, ref _hWnd) == TWAIN.STS.SUCCESS;
+                ok = _dataSourceManager.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.OPENDSM, ref _hWnd) == TWAIN.STS.SUCCESS;
                 if (ok)
                 {
                     TWAIN.TW_ENTRYPOINT entryPoint = default;
                     entryPoint.Size = (uint)Marshal.SizeOf(entryPoint);
-                    ok = (_dsm.DatEntrypoint(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref entryPoint) == TWAIN.STS.SUCCESS);
+                    ok = (_dataSourceManager.DatEntrypoint(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref entryPoint) == TWAIN.STS.SUCCESS);
 
-                    if (!ok) _dsm.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDSM, ref _hWnd);
+                    if (!ok) _dataSourceManager.DatParent(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDSM, ref _hWnd);
                 }
 
                 if (!ok)
                 {
-                    _dsm.Dispose();
-                    _dsm = null;
+                    _dataSourceManager.Dispose();
+                    _dataSourceManager = null;
                 }
             }
 
@@ -170,10 +174,10 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            if (_dsm is not null)
+            if (_dataSourceManager is not null)
             {
-                if (isExplicit) _dsm.Dispose();
-                _dsm = null;
+                if (isExplicit) _dataSourceManager.Dispose();
+                _dataSourceManager = null;
             }
 
             _hWnd = IntPtr.Zero;
@@ -192,7 +196,7 @@ namespace Microvision.Scanners
 
         protected TWAIN.STS oScanCallback(bool closing)
         {
-            _dsm.ThrowIfNull();
+            _dataSourceManager.ThrowIfNull();
 
             bool ok = true;
             bool userCancel = false;
@@ -200,17 +204,17 @@ namespace Microvision.Scanners
             TWAIN.TW_IMAGEINFO info = default;
             TWAIN.TW_IMAGELAYOUT layout = default;
             TWAIN.TW_SETUPMEMXFER setup = default;
-            ok = ok && (_dsm.DatImageinfo(TWAIN.DG.IMAGE, TWAIN.MSG.GET, ref info) == TWAIN.STS.SUCCESS);
-            ok = ok && (_dsm.DatImagelayout(TWAIN.DG.IMAGE, TWAIN.MSG.GET, ref layout) == TWAIN.STS.SUCCESS);
-            ok = ok && (_dsm.DatSetupmemxfer(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref setup) == TWAIN.STS.SUCCESS);
+            ok = ok && (_dataSourceManager.DatImageinfo(TWAIN.DG.IMAGE, TWAIN.MSG.GET, ref info) == TWAIN.STS.SUCCESS);
+            ok = ok && (_dataSourceManager.DatImagelayout(TWAIN.DG.IMAGE, TWAIN.MSG.GET, ref layout) == TWAIN.STS.SUCCESS);
+            ok = ok && (_dataSourceManager.DatSetupmemxfer(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref setup) == TWAIN.STS.SUCCESS);
 
             if (ok)
             {
-                IntPtr memHandle = _dsm.DsmMemAlloc(setup.Preferred);
+                IntPtr memHandle = _dataSourceManager.DsmMemAlloc(setup.Preferred);
                 ok = (memHandle != IntPtr.Zero);
                 if (ok)
                 {
-                    IntPtr memPointer = _dsm.DsmMemLock(memHandle);
+                    IntPtr memPointer = _dataSourceManager.DsmMemLock(memHandle);
 
                     TWAIN.STS status;
                     do
@@ -226,7 +230,7 @@ namespace Microvision.Scanners
                         xfer.Memory.Flags = (uint)(TWAIN.TWMF.APPOWNS | TWAIN.TWMF.POINTER);
                         xfer.Memory.Length = setup.Preferred;
                         xfer.Memory.TheMem = memPointer;
-                        status = _dsm.DatImagememxfer(TWAIN.DG.IMAGE, TWAIN.MSG.GET, ref xfer);
+                        status = _dataSourceManager.DatImagememxfer(TWAIN.DG.IMAGE, TWAIN.MSG.GET, ref xfer);
                         userCancel = (status == TWAIN.STS.CANCEL);
 
                         // Le test ci-dessous n'est pas décrit dans la spec.
@@ -237,7 +241,7 @@ namespace Microvision.Scanners
                         if ((status == TWAIN.STS.SUCCESS) && (xfer.BytesWritten == 0))
                         {
                             TWAIN.TW_PENDINGXFERS p = default;
-                            _dsm.DatPendingxfers(TWAIN.DG.CONTROL, TWAIN.MSG.ENDXFER, ref p);
+                            _dataSourceManager.DatPendingxfers(TWAIN.DG.CONTROL, TWAIN.MSG.ENDXFER, ref p);
                         }
 
                         if (((status == TWAIN.STS.SUCCESS) || (status == TWAIN.STS.XFERDONE)) && (xfer.BytesWritten > 0))
@@ -256,13 +260,13 @@ namespace Microvision.Scanners
 
                     ok = ok && (status == TWAIN.STS.XFERDONE);
 
-                    _dsm.DsmMemUnlock(memHandle);
-                    _dsm.DsmMemFree(ref memHandle);
+                    _dataSourceManager.DsmMemUnlock(memHandle);
+                    _dataSourceManager.DsmMemFree(ref memHandle);
                 }
             }
 
             TWAIN.TW_PENDINGXFERS pending = default;
-            _dsm.DatPendingxfers(TWAIN.DG.CONTROL, TWAIN.MSG.ENDXFER, ref pending);
+            _dataSourceManager.DatPendingxfers(TWAIN.DG.CONTROL, TWAIN.MSG.ENDXFER, ref pending);
 
             oOnImageReceived(ok ? bmp : null, userCancel);
 
@@ -276,10 +280,8 @@ namespace Microvision.Scanners
         // Privées
         // ----------------------------------------
 
-        private static void zFillBitmap(in TWAIN.TW_IMAGEINFO info, in TWAIN.TW_IMAGEMEMXFER xfer, IntPtr src, Bitmap bmp)
+        private static void zFillBitmap(in TWAIN.TW_IMAGEINFO info, in TWAIN.TW_IMAGEMEMXFER xfer, IntPtr src, Bitmap image)
         {
-            int bytesPerRow = (int)xfer.Columns * info.BitsPerPixel / 8;    // peut-être différent de xfer.BytesPerRow pour des raisons d'alignement.
-
             // La structure TWAIN.TW_IMAGEMEMXFER contient une partie de l'image
             // qui peut être une "strip" ou une "tile".
             // Notre scanner EPSON Perfection V850 Pro nous renvoie des "strips".
@@ -287,7 +289,7 @@ namespace Microvision.Scanners
             // cf. TWAIN 2.5 page 336 / 766.
             if ((xfer.XOffset == 0) && (xfer.Columns == info.ImageWidth))
             {
-                BitmapData data = bmp.LockBits(new RectI(0, (int)xfer.YOffset, bmp.Width, (int)xfer.Rows), ImageLockMode.WriteOnly, bmp.PixelFormat);
+                BitmapData data = image.LockBits(new RectI(0, (int)xfer.YOffset, image.Width, (int)xfer.Rows), ImageLockMode.WriteOnly, image.PixelFormat);
 
                 for (int row = 0; row < xfer.Rows; row++)
                 {
@@ -297,7 +299,7 @@ namespace Microvision.Scanners
                         KernelShop.Copy(src + row * (int)xfer.BytesPerRow, data.Scan0 + row * data.Stride, (int)xfer.Columns);
                 }
 
-                bmp.UnlockBits(data);
+                image.UnlockBits(data);
             }
         }
 
@@ -311,43 +313,43 @@ namespace Microvision.Scanners
             return ok;
         }
 
-        private static bool zMakeBitmap(in TWAIN.TW_IMAGEINFO info, [NotNullWhen(true)] out Bitmap? bmp)
+        private static bool zMakeBitmap(in TWAIN.TW_IMAGEINFO info, [NotNullWhen(true)] out Bitmap? image)
         {
-            bmp = null;
+            image = null;
 
             if (info.PixelType == (short)TWAIN.TWPT.RGB)
             {
                 try
                 {
-                    bmp = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format24bppRgb);
+                    image = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format24bppRgb);
                 }
                 catch (ArgumentException)    // survient lorsque l'image est trop lourde.
                 {
-                    bmp = null;
+                    image = null;
                 }
             }
             else if (info.PixelType == (short)TWAIN.TWPT.GRAY)
             {
                 try
                 {
-                    bmp = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format8bppIndexed);
+                    image = new Bitmap(info.ImageWidth, info.ImageLength, PixelFormat.Format8bppIndexed);
                 }
                 catch (ArgumentException)    // survient lorsque l'image est trop lourde.
                 {
-                    bmp = null;
+                    image = null;
                 }
 
-                if (bmp is not null)
+                if (image is not null)
                 {
-                    ColorPalette palette = bmp.Palette;
+                    ColorPalette palette = image.Palette;
                     Enumerable.Range(0, palette.Entries.Length).ToList().ForEach(o => palette.Entries[o] = Color.FromArgb(o, o, o));
-                    bmp.Palette = palette;
+                    image.Palette = palette;
                 }
             }
 
-            bmp?.SetResolution(info.XResolution.Get(), info.YResolution.Get());
+            image?.SetResolution(info.XResolution.Get(), info.YResolution.Get());
 
-            return bmp is not null;
+            return image is not null;
         }
 
 
@@ -364,7 +366,7 @@ namespace Microvision.Scanners
         // As IMessageFilter
         // ####################################
 
-        bool IMessageFilter.PreFilterMessage(ref Message m) => _dsm.ThrowIfNull().PreFilterMessage(m.HWnd, m.Msg, m.WParam, m.LParam);
+        bool IMessageFilter.PreFilterMessage(ref Message m) => _dataSourceManager.ThrowIfNull().PreFilterMessage(m.HWnd, m.Msg, m.WParam, m.LParam);
 
 
     }

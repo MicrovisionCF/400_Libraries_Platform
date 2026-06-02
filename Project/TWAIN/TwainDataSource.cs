@@ -20,6 +20,7 @@ namespace Microvision.Scanners
         // 13.05.24 : Synchronisation des surfaces à scanner indépendamment du mode de fonctionnement
         //            opaque/transparent (en interne, les scanners EPSON semblent avoir 2 espaces mémoires
         //            différents où ils stockent cette surface.)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public delegate void PhysicalSizeChangedEventHandler(float width, float height);
@@ -43,10 +44,10 @@ namespace Microvision.Scanners
         }
 
 
-        private readonly Semaphore _receiptComplete;
+        private readonly Semaphore _receiptCompleteLock;
 
         private TWAIN.TW_IDENTITY _id;
-        private TWAIN? _dsm;
+        private TWAIN? _dataSourceManager;
 
         private TwainThread? _thread;
         private ITwainImageReceiver? _imageReceiver;
@@ -64,7 +65,7 @@ namespace Microvision.Scanners
         public TwainDataSource(in TWAIN.TW_IDENTITY id) : base()
         {
             _id = id;
-            _receiptComplete = new Semaphore(0, 1);
+            _receiptCompleteLock = new Semaphore(0, 1);
         }
 
 
@@ -81,11 +82,11 @@ namespace Microvision.Scanners
         // Méthodes
         // ----------------------------------------
 
-        public bool Acquire([NotNullWhen(true)] out Bitmap? bmp, out bool canceled)
+        public bool Acquire([NotNullWhen(true)] out Bitmap? image, out bool canceled)
         {
             oThrowIfNotOpened();
 
-            bmp = null;
+            image = null;
             canceled = false;
 
             _imageReceiver_Attach(true);
@@ -95,19 +96,19 @@ namespace Microvision.Scanners
             ui.ModalUI = 0;
             ui.hParent = _thread.HWnd;
 
-            if (_dsm.DatUserinterface(TWAIN.DG.CONTROL, TWAIN.MSG.ENABLEDS, ref ui) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatUserinterface(TWAIN.DG.CONTROL, TWAIN.MSG.ENABLEDS, ref ui) == TWAIN.STS.SUCCESS)
             {
-                _receiptComplete.WaitOne();
+                _receiptCompleteLock.WaitOne();
                 canceled = _receiptCanceled;
-                bmp = _imageReceived;
+                image = _imageReceived;
                 _imageReceived = null;
 
-                _dsm.DatUserinterface(TWAIN.DG.CONTROL, TWAIN.MSG.DISABLEDS, ref ui);
+                _dataSourceManager.DatUserinterface(TWAIN.DG.CONTROL, TWAIN.MSG.DISABLEDS, ref ui);
             }
 
             _imageReceiver_Attach(false);
 
-            return bmp is not null;
+            return image is not null;
         }
 
         public void Close()
@@ -118,11 +119,11 @@ namespace Microvision.Scanners
             _capabilities.Dispose();
             _capabilities = null;
 
-            _dsm.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDS, ref _id);
+            _dataSourceManager.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDS, ref _id);
 
             _imageReceiver = null;
             _thread = null;
-            _dsm = null;
+            _dataSourceManager = null;
         }
 
         public float GetDefaultGamma()
@@ -206,9 +207,9 @@ namespace Microvision.Scanners
             return supported;
         }
 
-        public bool Open(TWAIN dsm, TwainThread thread, ITwainImageReceiver imageReceiver)
+        public bool Open(TWAIN dataSourceManager, TwainThread thread, ITwainImageReceiver imageReceiver)
         {
-            return oOpen(dsm, thread, imageReceiver);
+            return oOpen(dataSourceManager, thread, imageReceiver);
         }
 
         public void SetFrame(RectG frame)
@@ -262,9 +263,9 @@ namespace Microvision.Scanners
         {
             _imageReceiver = null;
             _thread = null;
-            _dsm = null;
+            _dataSourceManager = null;
 
-            if (isExplicit) _receiptComplete.Dispose();
+            if (isExplicit) _receiptCompleteLock.Dispose();
 
             if (_imageReceived is not null)
             {
@@ -289,26 +290,28 @@ namespace Microvision.Scanners
             return _capabilities.GetDefaultGamma();
         }
 
-        [MemberNotNull(nameof(_dsm), nameof(_capabilities), nameof(_imageReceiver), nameof(_thread))]
+        [MemberNotNull(nameof(_dataSourceManager), nameof(_capabilities), nameof(_imageReceiver), nameof(_thread))]
         protected void oThrowIfNotOpened()
         {
-            if (_dsm is null || _capabilities is null || _imageReceiver is null || _thread is null)
-                throw new InvalidOperationException("Appel d'une opération nécessitant l'ouverture préalable.");
+            _dataSourceManager.ThrowIfNull();
+            _capabilities.ThrowIfNull();
+            _imageReceiver.ThrowIfNull();
+            _thread.ThrowIfNull();
         }
 
         protected virtual bool oOpen(TWAIN dsm, TwainThread thread, ITwainImageReceiver imageReceiver)
         {
             bool ok = false;
 
-            _dsm = dsm;
+            _dataSourceManager = dsm;
             _thread = thread;
             _imageReceiver = imageReceiver;
 
-            if (_dsm.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.OPENDS, ref _id) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.OPENDS, ref _id) == TWAIN.STS.SUCCESS)
             {
-                if (TwainCapabilities.CheckSupportedCaps(_dsm))
+                if (TwainCapabilities.CheckSupportedCaps(_dataSourceManager))
                 {
-                    _capabilities = new TwainCapabilities(_dsm);
+                    _capabilities = new TwainCapabilities(_dataSourceManager);
                     _capabilities_Attach(true);
 
                     _lastFrameSet = _capabilities.GetFrame();
@@ -329,14 +332,14 @@ namespace Microvision.Scanners
                     }
                 }
 
-                if (!ok) _dsm.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDS, ref _id);
+                if (!ok) _dataSourceManager.DatIdentity(TWAIN.DG.CONTROL, TWAIN.MSG.CLOSEDS, ref _id);
             }
 
             if (!ok)
             {
                 _imageReceiver = null;
                 _thread = null;
-                _dsm = null;
+                _dataSourceManager = null;
             }
 
             return ok;
@@ -369,13 +372,15 @@ namespace Microvision.Scanners
 
         private void _capabilities_Attach(bool attach)
         {
+            _capabilities.ThrowIfNull();
+
             if (attach)
             {
-                _capabilities?.PhysicalSizeChanged += _capabilities_PhysicalSizeChanged;
+                _capabilities.PhysicalSizeChanged += _capabilities_PhysicalSizeChanged;
             }
             else
             {
-                _capabilities?.PhysicalSizeChanged -= _capabilities_PhysicalSizeChanged;
+                _capabilities.PhysicalSizeChanged -= _capabilities_PhysicalSizeChanged;
             }
         }
 
@@ -401,24 +406,24 @@ namespace Microvision.Scanners
             }
         }
 
-        private void _imageReceiver_ImageReceived(Bitmap? bmp, bool userCancel)
+        private void _imageReceiver_ImageReceived(Bitmap? image, bool userCanceled)
         {
             _imageReceived?.Dispose();
             _imageReceived = null;
 
-            if (bmp is not null)
+            if (image is not null)
             {
                 try
                 {
-                    _imageReceived = (Bitmap)bmp.Clone();
+                    _imageReceived = (Bitmap)image.Clone();
                 }
                 catch (ArgumentException)    // survient lorsque l'image est trop lourde.
                 {
                 }
             }
 
-            _receiptCanceled = userCancel;
-            _receiptComplete.Release();
+            _receiptCanceled = userCanceled;
+            _receiptCompleteLock.Release();
         }
 
 

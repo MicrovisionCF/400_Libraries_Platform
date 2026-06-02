@@ -12,6 +12,7 @@ namespace Microvision.Scanners
         // ***************************************************************************************************
         // 17.03.23 : Création. Lorsque le scanner est "enabled", il envoie des messages à l'application
         //            via la message loop. Ce thread crée une message loop destinée à recevoir ces messages.
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly Thread _thread;

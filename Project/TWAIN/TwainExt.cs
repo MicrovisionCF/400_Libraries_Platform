@@ -11,6 +11,7 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 15.03.23 : Création, méthodes d'extension pour la structure TWAIN.TW_FIX32.
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
@@ -73,6 +74,7 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 16.03.23 : Création
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
@@ -138,6 +140,7 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 15.03.23 : Création, méthodes d'extension pour la structure TWAIN.TW_CAPABILITY.
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
@@ -154,11 +157,11 @@ namespace Microvision.Scanners
         // Statiques
         // ----------------------------------------
 
-        public static List<T> GetArray<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
+        public static List<T> GetArray<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dataSourceManager) where T : struct
         {
-            IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
+            IntPtr ptr = dataSourceManager.DsmMemLock(capability.hContainer);
 
-            List<T> values = new List<T>();
+            List<T> values = [];
             TWAIN.TW_ARRAY array = Marshal.PtrToStructure<TWAIN.TW_ARRAY>(ptr);
             ptr += Marshal.SizeOf(array);
 
@@ -169,16 +172,16 @@ namespace Microvision.Scanners
                 ptr += Marshal.SizeOf(values[i]);
             }
 
-            dsm.DsmMemUnlock(capability.hContainer);
+            dataSourceManager.DsmMemUnlock(capability.hContainer);
 
             return values;
         }
 
-        public static List<T> GetEnumeration<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
+        public static List<T> GetEnumeration<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dataSourceManager) where T : struct
         {
-            IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
+            IntPtr ptr = dataSourceManager.DsmMemLock(capability.hContainer);
 
-            List<T> values = new List<T>();
+            List<T> values = [];
             TWAIN.TW_ENUMERATION enumeration = Marshal.PtrToStructure<TWAIN.TW_ENUMERATION>(ptr);
             ptr += Marshal.SizeOf(enumeration);
 
@@ -188,50 +191,49 @@ namespace Microvision.Scanners
                 ptr += Marshal.SizeOf(values[i]);
             }
 
-            dsm.DsmMemUnlock(capability.hContainer);
+            dataSourceManager.DsmMemUnlock(capability.hContainer);
 
             return values;
         }
 
-        public static T GetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
+        public static T GetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dataSourceManager) where T : struct
         {
-            IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
+            IntPtr ptr = dataSourceManager.DsmMemLock(capability.hContainer);
 
             TWAIN.TW_ONEVALUE oneValue = Marshal.PtrToStructure<TWAIN.TW_ONEVALUE>(ptr);
             ptr += Marshal.SizeOf(oneValue);
             T output = Marshal.PtrToStructure<T>(ptr);
 
-            dsm.DsmMemUnlock(capability.hContainer);
+            dataSourceManager.DsmMemUnlock(capability.hContainer);
 
             return output;
         }
 
-        public static (T min, T max, T step, T def, T cur) GetRange<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm) where T : struct
+        public static (T min, T max, T step, T def, T cur) GetRange<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dataSourceManager) where T : struct
         {
-            IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
+            IntPtr ptr = dataSourceManager.DsmMemLock(capability.hContainer);
 
-            TWAIN.TW_RANGE range = Marshal.PtrToStructure<TWAIN.TW_RANGE>(ptr);
-            T min = Marshal.PtrToStructure<T>(ptr + (int)Marshal.OffsetOf(typeof(TWAIN.TW_RANGE), "MinValue"));
-            T max = Marshal.PtrToStructure<T>(ptr + (int)Marshal.OffsetOf(typeof(TWAIN.TW_RANGE), "MaxValue"));
-            T step = Marshal.PtrToStructure<T>(ptr + (int)Marshal.OffsetOf(typeof(TWAIN.TW_RANGE), "StepSize"));
-            T def = Marshal.PtrToStructure<T>(ptr + (int)Marshal.OffsetOf(typeof(TWAIN.TW_RANGE), "DefaultValue"));
-            T cur = Marshal.PtrToStructure<T>(ptr + (int)Marshal.OffsetOf(typeof(TWAIN.TW_RANGE), "CurrentValue"));
+            T min = Marshal.PtrToStructure<T>(ptr + Marshal.OffsetOf<TWAIN.TW_RANGE>("MinValue"));
+            T max = Marshal.PtrToStructure<T>(ptr + Marshal.OffsetOf<TWAIN.TW_RANGE>("MaxValue"));
+            T step = Marshal.PtrToStructure<T>(ptr + Marshal.OffsetOf<TWAIN.TW_RANGE>("StepSize"));
+            T def = Marshal.PtrToStructure<T>(ptr + Marshal.OffsetOf<TWAIN.TW_RANGE>("DefaultValue"));
+            T cur = Marshal.PtrToStructure<T>(ptr + Marshal.OffsetOf<TWAIN.TW_RANGE>("CurrentValue"));
 
-            dsm.DsmMemUnlock(capability.hContainer);
+            dataSourceManager.DsmMemUnlock(capability.hContainer);
 
             return (min, max, step, def, cur);
         }
 
-        public static bool SetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dsm, T value) where T : struct
+        public static bool SetOneValue<T>(this TWAIN.TW_CAPABILITY capability, TWAIN dataSourceManager, T value) where T : struct
         {
-            IntPtr ptr = dsm.DsmMemLock(capability.hContainer);
+            IntPtr ptr = dataSourceManager.DsmMemLock(capability.hContainer);
 
             TWAIN.TW_ONEVALUE oneValue = Marshal.PtrToStructure<TWAIN.TW_ONEVALUE>(ptr);
             ptr += Marshal.SizeOf(oneValue);
             Marshal.StructureToPtr(value, ptr, false);
-            bool ok = dsm.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.SET, ref capability) == TWAIN.STS.SUCCESS;
+            bool ok = dataSourceManager.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.SET, ref capability) == TWAIN.STS.SUCCESS;
 
-            dsm.DsmMemUnlock(capability.hContainer);
+            dataSourceManager.DsmMemUnlock(capability.hContainer);
 
             return ok;
         }

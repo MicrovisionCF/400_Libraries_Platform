@@ -8,6 +8,7 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 13.03.23 : Création
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
@@ -33,9 +34,9 @@ namespace Microvision.Scanners
             return _items[no].ProductName;
         }
 
-        public TwainDataSource? Open(int no, TWAIN dsm, TwainThread thread, ITwainImageReceiver imageReceiver)
+        public TwainDataSource? Open(int no, TWAIN dataSourceManager, TwainThread thread, ITwainImageReceiver imageReceiver)
         {
-            bool ok = _items[no].Open(dsm, thread, imageReceiver);
+            bool ok = _items[no].Open(dataSourceManager, thread, imageReceiver);
 
             return ok ? _items[no].AddLife() : null;
         }

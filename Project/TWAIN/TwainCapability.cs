@@ -13,6 +13,7 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 13.03.23 : Création
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         internal delegate void ValueChangedEventHandler();
@@ -21,18 +22,18 @@ namespace Microvision.Scanners
 
         // ***************************************************************************************************
 
-        private readonly TWAIN _dsm;
-        private readonly TWAIN.CAP _cap;
+        private readonly TWAIN _dataSourceManager;
+        private readonly TWAIN.CAP _capabilities;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public TwainCapability(TWAIN dsm, TWAIN.CAP cap) : base()
+        public TwainCapability(TWAIN dataSourceManager, TWAIN.CAP capabilities) : base()
         {
-            _dsm = dsm;
-            _cap = cap;
+            _dataSourceManager = dataSourceManager;
+            _capabilities = capabilities;
         }
 
 
@@ -55,21 +56,21 @@ namespace Microvision.Scanners
 
         public List<T> GetArray()
         {
-            List<T> values = new List<T>();
+            List<T>? values = null;
 
             TWAIN.TW_CAPABILITY capability;
-            capability.Cap = _cap;
+            capability.Cap = _capabilities;
             capability.ConType = (TWAIN.TWON)TWAIN.TWON_DONTCARE16;
             capability.hContainer = IntPtr.Zero;
 
-            if (_dsm.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref capability) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref capability) == TWAIN.STS.SUCCESS)
             {
-                values = capability.GetArray<T>(_dsm);
+                values = capability.GetArray<T>(_dataSourceManager);
 
-                _dsm.DsmMemFree(ref capability.hContainer);
+                _dataSourceManager.DsmMemFree(ref capability.hContainer);
             }
 
-            return values;
+            return values ?? [];
         }
 
         public T GetCurrentOneValue()
@@ -84,21 +85,21 @@ namespace Microvision.Scanners
 
         public List<T> GetEnumeration()
         {
-            List<T> values = new List<T>();
+            List<T>? values = null;
 
             TWAIN.TW_CAPABILITY capability;
-            capability.Cap = _cap;
+            capability.Cap = _capabilities;
             capability.ConType = (TWAIN.TWON)TWAIN.TWON_DONTCARE16;
             capability.hContainer = IntPtr.Zero;
 
-            if (_dsm.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref capability) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref capability) == TWAIN.STS.SUCCESS)
             {
-                values = capability.GetEnumeration<T>(_dsm);
+                values = capability.GetEnumeration<T>(_dataSourceManager);
 
-                _dsm.DsmMemFree(ref capability.hContainer);
+                _dataSourceManager.DsmMemFree(ref capability.hContainer);
             }
 
-            return values;
+            return values ?? [];
         }
 
         public T GetOneValue()
@@ -106,33 +107,33 @@ namespace Microvision.Scanners
             return oGetAnyOneValue(TWAIN.MSG.GET);
         }
 
-        public (T min, T max, T step, T def, T cur) GetRange()
+        public (T minValue, T maxValue, T stepValue, T defaultValue, T currentValue) GetRange()
         {
-            T min = default;
-            T max = default;
-            T step = default;
-            T def = default;
-            T cur = default;
+            T minValue = default;
+            T maxValue = default;
+            T stepValue = default;
+            T defaultValue = default;
+            T currentValue = default;
 
             TWAIN.TW_CAPABILITY capability;
-            capability.Cap = _cap;
+            capability.Cap = _capabilities;
             capability.ConType = (TWAIN.TWON)TWAIN.TWON_DONTCARE16;
             capability.hContainer = IntPtr.Zero;
 
-            if (_dsm.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref capability) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GET, ref capability) == TWAIN.STS.SUCCESS)
             {
-                (min, max, step, def, cur) = capability.GetRange<T>(_dsm);
+                (minValue, maxValue, stepValue, defaultValue, currentValue) = capability.GetRange<T>(_dataSourceManager);
 
-                _dsm.DsmMemFree(ref capability.hContainer);
+                _dataSourceManager.DsmMemFree(ref capability.hContainer);
             }
 
-            return (min, max, step, def, cur);
+            return (minValue, maxValue, stepValue, defaultValue, currentValue);
         }
 
         public void SetOneValue(T value, bool force = false)
         {
             TWAIN.TW_CAPABILITY capability;
-            capability.Cap = _cap;
+            capability.Cap = _capabilities;
             capability.ConType = TWAIN.TWON.ONEVALUE;
             capability.hContainer = IntPtr.Zero;
 
@@ -140,17 +141,17 @@ namespace Microvision.Scanners
             // et de ne la modifier que si elle est différente.
             // (cf. TWAIN 2.5 page 422/766 § Best Practices for Applications.)
 
-            if (_dsm.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GETCURRENT, ref capability) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.GETCURRENT, ref capability) == TWAIN.STS.SUCCESS)
             {
-                T current = capability.GetOneValue<T>(_dsm);
+                T current = capability.GetOneValue<T>(_dataSourceManager);
 
                 if (force || !value.Equals(current))
                 {
-                    capability.SetOneValue(_dsm, value);
+                    capability.SetOneValue(_dataSourceManager, value);
                     oOnValueChanged();
                 }
 
-                _dsm.DsmMemFree(ref capability.hContainer);
+                _dataSourceManager.DsmMemFree(ref capability.hContainer);
             }
         }
 
@@ -164,35 +165,35 @@ namespace Microvision.Scanners
             base.oDispose(isExplicit);
         }
 
-        protected T oGetAnyOneValue(TWAIN.MSG msg)
+        protected T oGetAnyOneValue(TWAIN.MSG message)
         {
             T value = default;
 
             TWAIN.TW_CAPABILITY capability;
-            capability.Cap = _cap;
+            capability.Cap = _capabilities;
             capability.ConType = (TWAIN.TWON)TWAIN.TWON_DONTCARE16;
             capability.hContainer = IntPtr.Zero;
 
-            if (_dsm.DatCapability(TWAIN.DG.CONTROL, msg, ref capability) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatCapability(TWAIN.DG.CONTROL, message, ref capability) == TWAIN.STS.SUCCESS)
             {
-                value = capability.GetOneValue<T>(_dsm);
+                value = capability.GetOneValue<T>(_dataSourceManager);
 
-                _dsm.DsmMemFree(ref capability.hContainer);
+                _dataSourceManager.DsmMemFree(ref capability.hContainer);
             }
 
             return value;
         }
 
-        protected TWAIN.TWON oGetContainerType(TWAIN.MSG msg)
+        protected TWAIN.TWON oGetContainerType(TWAIN.MSG message)
         {
             TWAIN.TW_CAPABILITY capability;
-            capability.Cap = _cap;
+            capability.Cap = _capabilities;
             capability.ConType = (TWAIN.TWON)TWAIN.TWON_DONTCARE16;
             capability.hContainer = IntPtr.Zero;
 
-            if (_dsm.DatCapability(TWAIN.DG.CONTROL, msg, ref capability) == TWAIN.STS.SUCCESS)
+            if (_dataSourceManager.DatCapability(TWAIN.DG.CONTROL, message, ref capability) == TWAIN.STS.SUCCESS)
             {
-                _dsm.DsmMemFree(ref capability.hContainer);
+                _dataSourceManager.DsmMemFree(ref capability.hContainer);
             }
 
             return capability.ConType;
@@ -224,13 +225,14 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 15.03.23 : Création
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public TwainCapabilityEnum(TWAIN dsm, TWAIN.CAP cap) : base(dsm, cap)
+        public TwainCapabilityEnum(TWAIN dataSourceManager, TWAIN.CAP capabilities) : base(dataSourceManager, capabilities)
         {
         }
 
@@ -253,7 +255,7 @@ namespace Microvision.Scanners
         {
             List<T2> lst = base.GetEnumeration();
 
-            return lst.Select(o => (T1)Convert.ChangeType(o, Enum.GetUnderlyingType(typeof(T1)))).ToList();
+            return [.. lst.Select(o => (T1)Convert.ChangeType(o, Enum.GetUnderlyingType(typeof(T1))))];
         }
 
         public new T1 GetOneValue()
@@ -299,13 +301,14 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 15.03.23 : Création
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public TwainCapabilityFloat(TWAIN dsm, TWAIN.CAP cap) : base(dsm, cap)
+        public TwainCapabilityFloat(TWAIN dataSourceManager, TWAIN.CAP capabilities) : base(dataSourceManager, capabilities)
         {
         }
 
@@ -334,10 +337,10 @@ namespace Microvision.Scanners
             return base.GetOneValue().Get();
         }
 
-        public new (float min, float max, float step, float def, float cur) GetRange()
+        public new (float minValue, float maxValue, float stepValue, float defaultValue, float currentValue) GetRange()
         {
-            (TWAIN.TW_FIX32 min, TWAIN.TW_FIX32 max, TWAIN.TW_FIX32 step, TWAIN.TW_FIX32 def, TWAIN.TW_FIX32 cur) = base.GetRange();
-            return (min.Get(), max.Get(), step.Get(), def.Get(), cur.Get());
+            (TWAIN.TW_FIX32 minValue, TWAIN.TW_FIX32 maxValue, TWAIN.TW_FIX32 stepValue, TWAIN.TW_FIX32 defaultValue, TWAIN.TW_FIX32 currentValue) = base.GetRange();
+            return (minValue.Get(), maxValue.Get(), stepValue.Get(), defaultValue.Get(), currentValue.Get());
         }
 
         public void SetOneValue(float value, bool force = false)
@@ -379,13 +382,14 @@ namespace Microvision.Scanners
     {
         // ***************************************************************************************************
         // 15.03.23 : Création
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        public TwainCapabilityRectangleF(TWAIN dsm, TWAIN.CAP cap) : base(dsm, cap)
+        public TwainCapabilityRectangleF(TWAIN dataSourceManager, TWAIN.CAP capabilities) : base(dataSourceManager, capabilities)
         {
         }
 

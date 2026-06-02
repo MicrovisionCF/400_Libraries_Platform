@@ -13,6 +13,7 @@ namespace Microvision.Scanners
         // ***************************************************************************************************
         // 13.03.23 : Création
         // 23.04.24 : Ajout de la propriété HasGamma.
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         internal delegate void PhysicalSizeChangedEventHandler(float width, float height);
@@ -24,7 +25,7 @@ namespace Microvision.Scanners
         private const float KMMPerInch = 25.4f;
 
 
-        private TWAIN _dsm;
+        private readonly TWAIN _dataSourceManager;
 
         // Obligatoires :
         private readonly TwainCapability<short> _xferCount;                      // TWAIN 2.5 page 539/766:  TW_INT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE
@@ -48,31 +49,31 @@ namespace Microvision.Scanners
         // Classe
         // ----------------------------------------
 
-        public TwainCapabilities(TWAIN dsm) : base()
+        public TwainCapabilities(TWAIN dataSourceManager) : base()
         {
-            _dsm = dsm;
+            _dataSourceManager = dataSourceManager;
 
-            _xferCount = new TwainCapability<short>(_dsm, TWAIN.CAP.CAP_XFERCOUNT);
-            _xferMech = new TwainCapabilityEnum<TWAIN.TWSX, ushort>(_dsm, TWAIN.CAP.ICAP_XFERMECH);
-            _units = new TwainCapabilityEnum<TWAIN.TWUN, ushort>(_dsm, TWAIN.CAP.ICAP_UNITS);
-            _compression = new TwainCapabilityEnum<TWAIN.TWCP, ushort>(_dsm, TWAIN.CAP.ICAP_COMPRESSION);
-            _physicalHeight = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_PHYSICALHEIGHT);
-            _physicalWidth = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_PHYSICALWIDTH);
-            _xResolution = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_XRESOLUTION);
-            _yResolution = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_YRESOLUTION);
-            _pixelType = new TwainCapabilityEnum<TWAIN.TWPT, ushort>(_dsm, TWAIN.CAP.ICAP_PIXELTYPE);
-            _bitDepth = new TwainCapability<ushort>(_dsm, TWAIN.CAP.ICAP_BITDEPTH);
-            _frame = new TwainCapabilityRectangleF(_dsm, TWAIN.CAP.ICAP_FRAMES);
+            _xferCount = new TwainCapability<short>(_dataSourceManager, TWAIN.CAP.CAP_XFERCOUNT);
+            _xferMech = new TwainCapabilityEnum<TWAIN.TWSX, ushort>(_dataSourceManager, TWAIN.CAP.ICAP_XFERMECH);
+            _units = new TwainCapabilityEnum<TWAIN.TWUN, ushort>(_dataSourceManager, TWAIN.CAP.ICAP_UNITS);
+            _compression = new TwainCapabilityEnum<TWAIN.TWCP, ushort>(_dataSourceManager, TWAIN.CAP.ICAP_COMPRESSION);
+            _physicalHeight = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_PHYSICALHEIGHT);
+            _physicalWidth = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_PHYSICALWIDTH);
+            _xResolution = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_XRESOLUTION);
+            _yResolution = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_YRESOLUTION);
+            _pixelType = new TwainCapabilityEnum<TWAIN.TWPT, ushort>(_dataSourceManager, TWAIN.CAP.ICAP_PIXELTYPE);
+            _bitDepth = new TwainCapability<ushort>(_dataSourceManager, TWAIN.CAP.ICAP_BITDEPTH);
+            _frame = new TwainCapabilityRectangleF(_dataSourceManager, TWAIN.CAP.ICAP_FRAMES);
 
-            if (zQuerySupport(dsm, TWAIN.CAP.ICAP_LIGHTPATH, (int)(TWAIN.TWQC.SET | TWAIN.TWQC.GETCURRENT | TWAIN.TWQC.GET)))
+            if (zQuerySupport(dataSourceManager, TWAIN.CAP.ICAP_LIGHTPATH, (int)(TWAIN.TWQC.SET | TWAIN.TWQC.GETCURRENT | TWAIN.TWQC.GET)))
             {
-                _lightPath = new TwainCapabilityEnum<TWAIN.TWLP, ushort>(_dsm, TWAIN.CAP.ICAP_LIGHTPATH);
+                _lightPath = new TwainCapabilityEnum<TWAIN.TWLP, ushort>(_dataSourceManager, TWAIN.CAP.ICAP_LIGHTPATH);
                 _lightPath_Attach(true);
             }
 
-            if (zQuerySupport(_dsm, TWAIN.CAP.ICAP_GAMMA, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT | TWAIN.MSG.GETDEFAULT)))
+            if (zQuerySupport(_dataSourceManager, TWAIN.CAP.ICAP_GAMMA, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT | TWAIN.MSG.GETDEFAULT)))
             {
-                _gamma = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_GAMMA);
+                _gamma = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_GAMMA);
             }
 
             // cf. TWAIN 2.5 page 422/766 § Best Practices for Applications
@@ -86,9 +87,9 @@ namespace Microvision.Scanners
 
             // Certains scanners autorisent plusieurs frames par page (ce n'est pas le cas de l'EPSON Perfection V850 Pro.)
             // Les lignes ci-dessous indiquent à ces scanners que l'application ne gère qu'une seule frame par page.
-            if (zQuerySupport(_dsm, TWAIN.CAP.ICAP_MAXFRAMES, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
+            if (zQuerySupport(_dataSourceManager, TWAIN.CAP.ICAP_MAXFRAMES, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
             {
-                TwainCapability<ushort> maxFrames = new TwainCapability<ushort>(_dsm, TWAIN.CAP.ICAP_MAXFRAMES);  // TWAIN 2.5 page 602/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE
+                TwainCapability<ushort> maxFrames = new TwainCapability<ushort>(_dataSourceManager, TWAIN.CAP.ICAP_MAXFRAMES);  // TWAIN 2.5 page 602/766: TW_UINT16, MSG_GETCURRENT:TW_ONEVALUE, MSG_SET:TW_ONEVALUE, MSG_GET:TW_ONEVALUE|TW_RANGE
                 maxFrames.SetOneValue(1);
                 maxFrames.Dispose();
             }
@@ -96,16 +97,16 @@ namespace Microvision.Scanners
             // Les capabilities ICAP_XSCALING et ICAP_YSCALING influent sur la résolution réelle.
             // Pour éviter les problèmes, nous figeons ces capabilities à 1.
             // cf. § Resolution sur: https://www.epsondevelopers.com/twain-programming-guide-epson-scan/epson-twain-driver/
-            if (zQuerySupport(_dsm, TWAIN.CAP.ICAP_XSCALING, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
+            if (zQuerySupport(_dataSourceManager, TWAIN.CAP.ICAP_XSCALING, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
             {
-                TwainCapabilityFloat xScaling = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_XSCALING);
+                TwainCapabilityFloat xScaling = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_XSCALING);
                 xScaling.SetOneValue(1);
                 xScaling.Dispose();
             }
 
-            if (zQuerySupport(_dsm, TWAIN.CAP.ICAP_YSCALING, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
+            if (zQuerySupport(_dataSourceManager, TWAIN.CAP.ICAP_YSCALING, (int)(TWAIN.MSG.SET | TWAIN.MSG.GETCURRENT)))
             {
-                TwainCapabilityFloat yScaling = new TwainCapabilityFloat(_dsm, TWAIN.CAP.ICAP_YSCALING);
+                TwainCapabilityFloat yScaling = new TwainCapabilityFloat(_dataSourceManager, TWAIN.CAP.ICAP_YSCALING);
                 yScaling.SetOneValue(1);
                 yScaling.Dispose();
             }
@@ -306,7 +307,7 @@ namespace Microvision.Scanners
             if (dsm.DatCapability(TWAIN.DG.CONTROL, TWAIN.MSG.QUERYSUPPORT, ref capability) == TWAIN.STS.SUCCESS)
             {
                 int supportedOps = capability.GetOneValue<int>(dsm);
-                ok = ((supportedOps & neededOps) == neededOps);
+                ok = (supportedOps & neededOps) == neededOps;
 
                 dsm.DsmMemFree(ref capability.hContainer);
             }
