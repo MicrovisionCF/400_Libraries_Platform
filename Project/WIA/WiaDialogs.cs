@@ -14,6 +14,7 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly WIA.CommonDialog _dialogs;
@@ -44,7 +45,7 @@ namespace Microvision.Scanners
 
             WiaImageFile? output = null;
             if (imgf is not null) output = new WiaImageFile(imgf);
-
+            
             return output;
         }
 
@@ -78,17 +79,17 @@ namespace Microvision.Scanners
             List<WIA.Item> itms = _dialogs.ShowSelectItems(dev.Core).ToList();
 
             List<WiaItem>? output = null;
-            if (itms is not null) output = itms.Select(o => new WiaItem(o)).ToList();
+            if (itms is not null) output = [.. itms.Select(o => new WiaItem(o))];
 
             return output;
         }
 
-        public WiaImageFile? ShowTransfer(WiaItem itm, string fmtid)
+        public WiaImageFile? ShowTransfer(WiaItem item, string formatId)
         {
-            WIA.ImageFile imgf = (WIA.ImageFile)_dialogs.ShowTransfer(itm.Core, fmtid);
+            WIA.ImageFile image = (WIA.ImageFile)_dialogs.ShowTransfer(item.Core, formatId);
 
             WiaImageFile? output = null;
-            if (imgf is not null) output = new WiaImageFile(imgf);
+            if (image is not null) output = new WiaImageFile(image);
 
             return output;
         }

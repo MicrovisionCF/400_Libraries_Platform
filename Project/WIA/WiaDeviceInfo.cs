@@ -13,6 +13,7 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private const string KPropName = "Name";
@@ -42,9 +43,9 @@ namespace Microvision.Scanners
         // Classe
         // ----------------------------------------
 
-        internal WiaDeviceInfo(WIA.DeviceInfo devinf) : base()
+        internal WiaDeviceInfo(WIA.DeviceInfo infos) : base()
         {
-            _devInfo = devinf;
+            _devInfo = infos;
         }
 
 
@@ -72,12 +73,12 @@ namespace Microvision.Scanners
 
         public string DebugString(string pfx)
         {
-            return pfx + GetType().Name + " = " + zDebugDeviceInfo(this, pfx);
+            return $"{pfx}{GetType().Name} = {zDebugDeviceInfo(this, pfx)}";
         }
 
-        public int FindProperty(string pnam)
+        public int FindProperty(string ppropertyName)
         {
-            return zFindProperty(pnam, _devInfo.Properties.ToList());
+            return zFindProperty(ppropertyName, _devInfo.Properties.ToList());
         }
 
         public WiaProperty GetProperty(int no)
@@ -85,9 +86,9 @@ namespace Microvision.Scanners
             return new WiaProperty(_devInfo.Properties.ToList()[no]);
         }
 
-        public bool HasProperty(string name)
+        public bool HasProperty(string propertyName)
         {
-            return _devInfo.Properties.Exists(name);
+            return _devInfo.Properties.Exists(propertyName);
         }
 
 
@@ -107,23 +108,22 @@ namespace Microvision.Scanners
         // Privées
         // ----------------------------------------
 
-        private static string zDebugDeviceInfo(WiaDeviceInfo dinf, string pfx)
+        private static string zDebugDeviceInfo(WiaDeviceInfo deviceInfos, string pfx)
         {
-            string ch = dinf.Name + " (" + dinf.Type.ToNameString() + ")";
+            string ch = $"{deviceInfos.Name} ({deviceInfos.Type.ToNameString()})";
 
-            for (int i = 0; i < dinf.PropertiesCount; i++)
+            for (int i = 0; i < deviceInfos.PropertiesCount; i++)
             {
-                WiaProperty prp = dinf.GetProperty(i);
+                using WiaProperty prp = deviceInfos.GetProperty(i);
                 ch += SpecialChars.NewLine + prp.DebugString(pfx + SpecialChars.Tab);
-                prp.Dispose();
             }
 
             return ch;
         }
 
-        private static int zFindProperty(string nam, List<WIA.Property> prps)
+        private static int zFindProperty(string propertyName, List<WIA.Property> properties)
         {
-            return prps.FindIndex(p => nam.EqualsWithoutCase(p.Name));
+            return properties.FindIndex(p => propertyName.EqualsWithoutCase(p.Name));
         }
 
 

@@ -15,6 +15,7 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public enum ImageIntent // -- enum dupliquée pour ne pas imposer de référence à WIA aux utilisateurs de la librairie
@@ -26,11 +27,11 @@ namespace Microvision.Scanners
         }
 
 
-        public static string wiaFormatBmp = "{B96B3CAB-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatBMP;
-        public static string wiaFormatGIF = "{B96B3CB0-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatGIF;
-        public static string wiaFormatJPEG = "{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatJPEG;
-        public static string wiaFormatPNG = "{B96B3CAF-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatPNG;
-        public static string wiaFormatTIFF = "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatTIFF;
+        public const string wiaFormatBmp = "{B96B3CAB-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatBMP;
+        public const string wiaFormatGIF = "{B96B3CB0-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatGIF;
+        public const string wiaFormatJPEG = "{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatJPEG;
+        public const string wiaFormatPNG = "{B96B3CAF-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatPNG;
+        public const string wiaFormatTIFF = "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"; // WIA.FormatID.wiaFormatTIFF;
 
 
         private const string KPropBitsPerPixel = "Bits Per Pixel";
@@ -94,9 +95,9 @@ namespace Microvision.Scanners
         // Classe
         // ----------------------------------------
 
-        internal WiaItem(WIA.Item itm) : base()
+        internal WiaItem(WIA.Item item) : base()
         {
-            _item = itm;
+            _item = item;
         }
 
 
@@ -116,9 +117,8 @@ namespace Microvision.Scanners
         {
             get
             {
-                WiaProperty prop = new WiaProperty(_item.Properties[KPropImageIntent]);
+                using WiaProperty prop = new WiaProperty(_item.Properties[KPropImageIntent]);
                 ImageIntent cps = (ImageIntent)prop.GetFlagMap();
-                prop.Dispose();
 
                 return cps;
             }
@@ -151,11 +151,10 @@ namespace Microvision.Scanners
         {
             get
             {
-                WiaProperty prop = new WiaProperty(_item.Properties[KPropResolX]);
-                bool fhas = prop.SubType == WiaProperty.PropertySubType.RangeSubType;
-                prop.Dispose();
+                using WiaProperty prop = new WiaProperty(_item.Properties[KPropResolX]);
+                bool has = prop.SubType == WiaProperty.PropertySubType.RangeSubType;
 
-                return fhas;
+                return has;
             }
         }
 
@@ -163,11 +162,10 @@ namespace Microvision.Scanners
         {
             get
             {
-                WiaProperty prop = new WiaProperty(_item.Properties[KPropResolX]);
-                bool fhas = prop.SubType == WiaProperty.PropertySubType.ListSubType;
-                prop.Dispose();
+                using WiaProperty prop = new WiaProperty(_item.Properties[KPropResolX]);
+                bool has = prop.SubType == WiaProperty.PropertySubType.ListSubType;
 
-                return fhas;
+                return has;
             }
         }
 
@@ -193,9 +191,9 @@ namespace Microvision.Scanners
             return pfx + GetType().Name + " = " + zDebugItem(this, pfx);
         }
 
-        public int FindProperty(string pnam)
+        public int FindProperty(string propertyName)
         {
-            return zFindProperty(pnam, _item.Properties.ToList());
+            return zFindProperty(propertyName, _item.Properties.ToList());
         }
 
         public WiaCommand GetCommand(int no)
@@ -215,13 +213,11 @@ namespace Microvision.Scanners
 
         public (int minX, int maxX, int minY, int maxY) GetResolutionRange()
         {
-            WiaProperty prop = new WiaProperty(_item.Properties[KPropResolX]);
-            prop.GetRange(out int minX, out int maxX, out _);
-            prop.Dispose();
+            using WiaProperty propX = new WiaProperty(_item.Properties[KPropResolX]);
+            propX.GetRange(out int minX, out int maxX, out _);
 
-            prop = new WiaProperty(_item.Properties[KPropResolY]);
-            prop.GetRange(out int minY, out int maxY, out _);
-            prop.Dispose();
+            using WiaProperty propY = new WiaProperty(_item.Properties[KPropResolY]);
+            propY.GetRange(out int minY, out int maxY, out _);
 
             return (minX, maxX, minY, maxY);
         }
@@ -233,18 +229,16 @@ namespace Microvision.Scanners
 
         public List<int> GetXResolutionTable()
         {
-            WiaProperty prop = new WiaProperty(_item.Properties[KPropResolX]);
+            using WiaProperty prop = new WiaProperty(_item.Properties[KPropResolX]);
             List<int> resx = prop.GetTable<int>();
-            prop.Dispose();
 
             return resx;
         }
 
         public List<int> GetYResolutionTable()
         {
-            WiaProperty prop = new WiaProperty(_item.Properties[KPropResolY]);
+            using WiaProperty prop = new WiaProperty(_item.Properties[KPropResolY]);
             List<int> resy = prop.GetTable<int>();
-            prop.Dispose();
 
             return resy;
         }
@@ -299,60 +293,57 @@ namespace Microvision.Scanners
 
             for (int i = 0; i < itm.PropertiesCount; i++)
             {
-                WiaProperty prp = itm.GetProperty(i);
+                using WiaProperty prp = itm.GetProperty(i);
                 ch += SpecialChars.NewLine + prp.DebugString(pfx + SpecialChars.Tab);
-                prp.Dispose();
             }
 
             for (int i = 0; i < itm.CommandsCount; i++)
             {
-                WiaCommand cmd = itm.GetCommand(i);
+                using WiaCommand cmd = itm.GetCommand(i);
                 ch += SpecialChars.NewLine + cmd.DebugString(pfx + SpecialChars.Tab);
-                cmd.Dispose();
             }
 
             for (int i = 0; i < itm.SubItemsCount; i++)
             {
-                WiaItem sitm = itm.GetSubItem(i);
+                using WiaItem sitm = itm.GetSubItem(i);
                 ch += SpecialChars.NewLine + sitm.DebugString(pfx + SpecialChars.Tab);
-                sitm.Dispose();
             }
 
             return ch;
         }
 
-        private static int zFindProperty(string nam, List<WIA.Property> prps)
+        private static int zFindProperty(string propertyName, List<WIA.Property> properties)
         {
-            return prps.FindIndex(p => nam.EqualsWithoutCase(p.Name));
+            return properties.FindIndex(p => propertyName.EqualsWithoutCase(p.Name));
         }
 
-        private static RectG zGetExtend(WIA.Properties prps)
+        private static RectG zGetExtend(WIA.Properties properties)
         {
-            return new RectG(ConvertShop.ReadFloat(prps[KPropExtendX].get_Value()),
-                             ConvertShop.ReadFloat(prps[KPropExtendY].get_Value()),
-                             ConvertShop.ReadFloat(prps[KPropExtendW].get_Value()),
-                             ConvertShop.ReadFloat(prps[KPropExtendH].get_Value()));
+            return new RectG(ConvertShop.ReadFloat(properties[KPropExtendX].get_Value()),
+                             ConvertShop.ReadFloat(properties[KPropExtendY].get_Value()),
+                             ConvertShop.ReadFloat(properties[KPropExtendW].get_Value()),
+                             ConvertShop.ReadFloat(properties[KPropExtendH].get_Value()));
         }
 
-        private static PointG zGetResolution(WIA.Properties prps)
+        private static PointG zGetResolution(WIA.Properties properties)
         {
-            return new PointG(ConvertShop.ReadFloat(prps[KPropResolX].get_Value()), ConvertShop.ReadFloat(prps[KPropResolY].get_Value()));
+            return new PointG(ConvertShop.ReadFloat(properties[KPropResolX].get_Value()), ConvertShop.ReadFloat(properties[KPropResolY].get_Value()));
         }
 
-        private static void zSetExtend(WIA.Properties prps, RectG rct)
+        private static void zSetExtend(WIA.Properties properties, RectG extend)
         {
-            RectI truncate = new RectI((int)rct.X, (int)rct.Y, (int)rct.Width, (int)rct.Height);       // -- 31.07.14
+            RectI truncate = new RectI((int)extend.X, (int)extend.Y, (int)extend.Width, (int)extend.Height);       // -- 31.07.14
 
-            prps[KPropExtendX].set_Value(truncate.X);
-            prps[KPropExtendY].set_Value(truncate.Y);
-            prps[KPropExtendW].set_Value(truncate.Width);
-            prps[KPropExtendH].set_Value(truncate.Height);
+            properties[KPropExtendX].set_Value(truncate.X);
+            properties[KPropExtendY].set_Value(truncate.Y);
+            properties[KPropExtendW].set_Value(truncate.Width);
+            properties[KPropExtendH].set_Value(truncate.Height);
         }
 
-        private static void zSetResolution(WIA.Properties prps, PointG res)
+        private static void zSetResolution(WIA.Properties properties, PointG resolution)
         {
-            prps[KPropResolX].set_Value(res.X);
-            prps[KPropResolY].set_Value(res.Y);
+            properties[KPropResolX].set_Value(resolution.X);
+            properties[KPropResolY].set_Value(resolution.Y);
         }
 
 

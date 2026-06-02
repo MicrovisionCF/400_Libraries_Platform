@@ -18,18 +18,19 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
-        private readonly WIA.ImageFile _imgFile;
+        private readonly WIA.ImageFile _imageFile;
 
 
         // ----------------------------------------
         // Classe
         // ----------------------------------------
 
-        internal WiaImageFile(WIA.ImageFile imgf) : base()
+        internal WiaImageFile(WIA.ImageFile image) : base()
         {
-            _imgFile = imgf;
+            _imageFile = image;
         }
 
 
@@ -37,13 +38,13 @@ namespace Microvision.Scanners
         // Propriétés
         // ----------------------------------------
 
-        public string FormatID => _imgFile.FormatID;
+        public string FormatID => _imageFile.FormatID;
 
-        public int PropertiesCount => _imgFile.Properties.Count;
+        public int PropertiesCount => _imageFile.Properties.Count;
 
-        public PointG Resolution => new PointG((float)_imgFile.HorizontalResolution, (float)_imgFile.VerticalResolution); // dpi
+        public PointG Resolution => new PointG((float)_imageFile.HorizontalResolution, (float)_imageFile.VerticalResolution); // dpi
 
-        public SizeI Size => new SizeI(_imgFile.Width, _imgFile.Height);
+        public SizeI Size => new SizeI(_imageFile.Width, _imageFile.Height);
 
 
         // ----------------------------------------
@@ -52,42 +53,41 @@ namespace Microvision.Scanners
 
         public string DebugString(string pfx)
         {
-            return pfx + GetType().Name + " = " + zDebugImageFile(this, pfx);
+            return $"{pfx}{GetType().Name} = {zDebugImageFile(this, pfx)}";
         }
 
-        public int FindProperty(string pnam)
+        public int FindProperty(string propertyName)
         {
-            return zFindProperty(pnam, _imgFile.Properties.ToList());
+            return zFindProperty(propertyName, _imageFile.Properties.ToList());
         }
 
         public Bitmap GetBitmap()
         {
             // -- pas d'usage de BasicBitmap parce que je sais pas encore dans quelle librairie cet objet va aboutir.
 
-            string fnam = FileName.GetTempFileName(_imgFile.FileExtension);
+            FileName fileName = FileName.GetTempFileName(_imageFile.FileExtension);
 
-            _imgFile.SaveFile(fnam);
-            Bitmap tmp = new Bitmap(fnam);
+            _imageFile.SaveFile(fileName);
+            using Bitmap tmp = new Bitmap(fileName);
 
-            Bytes bf = new Bytes(zGetDataBytesCount(tmp));
-            zGetDataBytes(tmp, bf, 0);
+            Bytes bytes = new Bytes(zGetDataBytesCount(tmp));
+            zGetDataBytes(tmp, bytes, 0);
             Bitmap bmp = zCreateCoreBitmap(tmp.Size, tmp.PixelFormat, tmp.Palette);
-            zSetDataBytes(bf, 0, bmp);
+            zSetDataBytes(bytes, 0, bmp);
 
-            tmp.Dispose();
-            File.Delete(fnam);
+            File.Delete(fileName);
 
             return bmp;
         }
 
         public WiaProperty GetProperty(int no)
         {
-            return new WiaProperty(_imgFile.Properties.ToList()[no]);
+            return new WiaProperty(_imageFile.Properties.ToList()[no]);
         }
 
-        public void SaveFile(string fnam)
+        public void SaveFile(FileName fileName)
         {
-            _imgFile.SaveFile(fnam);
+            _imageFile.SaveFile(fileName);
         }
 
 
@@ -97,7 +97,7 @@ namespace Microvision.Scanners
 
         protected override void oDispose(bool isExplicit)
         {
-            Marshal.ReleaseComObject(_imgFile);
+            Marshal.ReleaseComObject(_imageFile);
 
             base.oDispose(isExplicit);
         }
@@ -107,50 +107,49 @@ namespace Microvision.Scanners
         // Privées
         // ----------------------------------------
 
-        private static Bitmap zCreateCoreBitmap(SizeI sz, PixelFormat fmt, ColorPalette pal)
+        private static Bitmap zCreateCoreBitmap(SizeI size, PixelFormat format, ColorPalette palette)
         {
             // -- fonction pompée sur BasicDibMng
 
-            Bitmap bmp = new Bitmap(sz.Width, sz.Height, fmt);
+            Bitmap bmp = new Bitmap(size.Width, size.Height, format);
 
-            if (fmt.HasFlag(PixelFormat.Indexed) && pal is not null)
-                bmp.Palette = pal;
+            if (format.HasFlag(PixelFormat.Indexed) && palette is not null)
+                bmp.Palette = palette;
 
             return bmp;
         }
 
-        private static string zDebugImageFile(WiaImageFile imgf, string pfx)
+        private static string zDebugImageFile(WiaImageFile image, string pfx)
         {
             string ch = "";
-            ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Résolution : " + imgf.Resolution.ToString();
-            ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Taille : " + imgf.Size.ToString();
-            ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Format : " + imgf.FormatID.ToString();
+            ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Résolution : " + image.Resolution.ToString();
+            ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Taille : " + image.Size.ToString();
+            ch += SpecialChars.NewLine + pfx + SpecialChars.Tab + "Format : " + image.FormatID.ToString();
 
-            for (int i = 0; i < imgf.PropertiesCount; i++)
+            for (int i = 0; i < image.PropertiesCount; i++)
             {
-                WiaProperty prp = imgf.GetProperty(i);
+                using WiaProperty prp = image.GetProperty(i);
                 ch = ch + SpecialChars.NewLine + prp.DebugString(pfx + SpecialChars.Tab);
-                prp.Dispose();
             }
 
             return ch;
         }
 
-        private static int zFindProperty(string nam, List<WIA.Property> prps)
+        private static int zFindProperty(string propertyName, List<WIA.Property> properties)
         {
-            return prps.FindIndex(p => nam.EqualsWithoutCase(p.Name));
+            return properties.FindIndex(p => propertyName.EqualsWithoutCase(p.Name));
         }
 
-        private static int zGetDataBytes(Bitmap bmp, Bytes bf, int bfpos)
+        private static int zGetDataBytes(Bitmap src, Bytes dst, int dstOffset)
         {
             // -- fonction inspirée de BasicDibMng
 
-            BitmapData dt = bmp.LockBits(new RectI(new PointI(), bmp.Size), ImageLockMode.ReadOnly, bmp.PixelFormat);
+            BitmapData dt = src.LockBits(new RectI(new PointI(), src.Size), ImageLockMode.ReadOnly, src.PixelFormat);
 
             int cnt = Math.Abs(dt.Stride) * dt.Height;
-            MarshShop.PointerToBuffer(dt.Scan0, cnt, bf, bfpos);
+            MarshShop.PointerToBuffer(dt.Scan0, cnt, dst, dstOffset);
 
-            bmp.UnlockBits(dt);
+            src.UnlockBits(dt);
 
             return cnt;
         }
@@ -166,16 +165,16 @@ namespace Microvision.Scanners
             return cnt;
         }
 
-        private static int zSetDataBytes(Bytes bf, int bfpos, Bitmap bmp)
+        private static int zSetDataBytes(Bytes src, int srcOffset, Bitmap dst)
         {
             // -- fonction inspirée de BasicDibMng
 
-            BitmapData dt = bmp.LockBits(new RectI(new PointI(), bmp.Size), ImageLockMode.ReadWrite, bmp.PixelFormat);
+            BitmapData dt = dst.LockBits(new RectI(new PointI(), dst.Size), ImageLockMode.ReadWrite, dst.PixelFormat);
 
             int cnt = Math.Abs(dt.Stride) * dt.Height;
-            MarshShop.BufferToPointer(bf, bfpos, cnt, dt.Scan0);
+            MarshShop.BufferToPointer(src, srcOffset, cnt, dt.Scan0);
 
-            bmp.UnlockBits(dt);
+            dst.UnlockBits(dt);
 
             return cnt;
         }

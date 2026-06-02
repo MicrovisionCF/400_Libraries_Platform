@@ -14,6 +14,7 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0) Les constantes Interop ne sont plus référencables
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public enum DeviceType // -- enum dupliquée pour ne pas imposer de référence à WIA aux utilisateurs de la librairie
@@ -25,24 +26,24 @@ namespace Microvision.Scanners
         }
 
 
-        public static string wiaCommandChangeDocument = "{04E725B0-ACAE-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandChangeDocument;
-        public static string wiaCommandDeleteAllItems = "{E208C170-ACAD-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandDeleteAllItems;
-        public static string wiaCommandSynchronize = "{9B26B7B2-ACAD-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandSynchronize;
-        public static string wiaCommandTakePicture = "{AF933CAC-ACAD-11D2-A093-00C04F72DC3C}"; //  WIA.CommandID.wiaCommandTakePicture;
-        public static string wiaCommandUnloadDocument = "{1F3B3D8E-ACAE-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandUnloadDocument;
-        public static string wiaEventDeviceConnected = "{A28BBADE-64B6-11D2-A231-00C04FA31809}"; //  WIA.EventID.wiaEventDeviceConnected;
-        public static string wiaEventDeviceDisconnected = "{143E4E83-6497-11D2-A231-00C04FA31809}"; //  WIA.EventID.wiaEventDeviceDisconnected;
-        public static string wiaEventItemCreated = "{4C8F4EF5-E14F-11D2-B326-00C04F68CE61}"; // WIA.EventID.wiaEventItemCreated;
-        public static string wiaEventItemDeleted = "{1D22A559-E14F-11D2-B326-00C04F68CE61}"; // WIA.EventID.wiaEventItemDeleted;
-        public static string wiaEventScanEmailImage = "{C686DCEE-54F2-419E-9A27-2FC7F2E98F9E}"; // WIA.EventID.wiaEventScanEmailImage;
-        public static string wiaEventScanFaxImage = "{C00EB793-8C6E-11D2-977A-0000F87A926F}"; // WIA.EventID.wiaEventScanFaxImage;
-        public static string wiaEventScanFilmImage = "{9B2B662C-6185-438C-B68B-E39EE25E71CB}"; // WIA.EventID.wiaEventScanFilmImage;
-        public static string wiaEventScanImage = "{A6C5A715-8C6E-11D2-977A-0000F87A926F}"; // WIA.EventID.wiaEventScanImage;
-        public static string wiaEventScanImage2 = "{FC4767C1-C8B3-48A2-9CFA-2E90CB3D3590}"; // WIA.EventID.wiaEventScanImage2;
-        public static string wiaEventScanImage3 = "{154E27BE-B617-4653-ACC5-0FD7BD4C65CE}"; // WIA.EventID.wiaEventScanImage3;
-        public static string wiaEventScanImage4 = "{A65B704A-7F3C-4447-A75D-8A26DFCA1FDF}"; // WIA.EventID.wiaEventScanImage4;
-        public static string wiaEventScanOCRImage = "{9D095B89-37D6-4877-AFED-62A297DC6DBE}"; // WIA.EventID.wiaEventScanOCRImage;
-        public static string wiaEventScanPrintImage = "{B441F425-8C6E-11D2-977A-0000F87A926F}"; // WIA.EventID.wiaEventScanPrintImage;
+        public const string wiaCommandChangeDocument = "{04E725B0-ACAE-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandChangeDocument;
+        public const string wiaCommandDeleteAllItems = "{E208C170-ACAD-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandDeleteAllItems;
+        public const string wiaCommandSynchronize = "{9B26B7B2-ACAD-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandSynchronize;
+        public const string wiaCommandTakePicture = "{AF933CAC-ACAD-11D2-A093-00C04F72DC3C}"; //  WIA.CommandID.wiaCommandTakePicture;
+        public const string wiaCommandUnloadDocument = "{1F3B3D8E-ACAE-11D2-A093-00C04F72DC3C}"; // WIA.CommandID.wiaCommandUnloadDocument;
+        public const string wiaEventDeviceConnected = "{A28BBADE-64B6-11D2-A231-00C04FA31809}"; //  WIA.EventID.wiaEventDeviceConnected;
+        public const string wiaEventDeviceDisconnected = "{143E4E83-6497-11D2-A231-00C04FA31809}"; //  WIA.EventID.wiaEventDeviceDisconnected;
+        public const string wiaEventItemCreated = "{4C8F4EF5-E14F-11D2-B326-00C04F68CE61}"; // WIA.EventID.wiaEventItemCreated;
+        public const string wiaEventItemDeleted = "{1D22A559-E14F-11D2-B326-00C04F68CE61}"; // WIA.EventID.wiaEventItemDeleted;
+        public const string wiaEventScanEmailImage = "{C686DCEE-54F2-419E-9A27-2FC7F2E98F9E}"; // WIA.EventID.wiaEventScanEmailImage;
+        public const string wiaEventScanFaxImage = "{C00EB793-8C6E-11D2-977A-0000F87A926F}"; // WIA.EventID.wiaEventScanFaxImage;
+        public const string wiaEventScanFilmImage = "{9B2B662C-6185-438C-B68B-E39EE25E71CB}"; // WIA.EventID.wiaEventScanFilmImage;
+        public const string wiaEventScanImage = "{A6C5A715-8C6E-11D2-977A-0000F87A926F}"; // WIA.EventID.wiaEventScanImage;
+        public const string wiaEventScanImage2 = "{FC4767C1-C8B3-48A2-9CFA-2E90CB3D3590}"; // WIA.EventID.wiaEventScanImage2;
+        public const string wiaEventScanImage3 = "{154E27BE-B617-4653-ACC5-0FD7BD4C65CE}"; // WIA.EventID.wiaEventScanImage3;
+        public const string wiaEventScanImage4 = "{A65B704A-7F3C-4447-A75D-8A26DFCA1FDF}"; // WIA.EventID.wiaEventScanImage4;
+        public const string wiaEventScanOCRImage = "{9D095B89-37D6-4877-AFED-62A297DC6DBE}"; // WIA.EventID.wiaEventScanOCRImage;
+        public const string wiaEventScanPrintImage = "{B441F425-8C6E-11D2-977A-0000F87A926F}"; // WIA.EventID.wiaEventScanPrintImage;
 
 
         private const string KPropBedSizeX = "Horizontal Bed Size";
@@ -160,7 +161,7 @@ namespace Microvision.Scanners
 
         public string DebugString(string pfx)
         {
-            return pfx + GetType().Name + " = " + zDebugDevice(this, pfx);
+            return $"{pfx}{GetType().Name} = {zDebugDevice(this, pfx)}";
         }
 
         public WiaItem ExecuteCommand(WiaCommand cmd)
@@ -168,9 +169,9 @@ namespace Microvision.Scanners
             return new WiaItem(_device.ExecuteCommand(cmd.CommandID));
         }
 
-        public int FindProperty(string pnam)
+        public int FindProperty(string propertyName)
         {
-            return zFindProperty(pnam, _device.Properties.ToList());
+            return zFindProperty(propertyName, _device.Properties.ToList());
         }
 
         public WiaCommand GetCommand(int no)
@@ -193,9 +194,9 @@ namespace Microvision.Scanners
             return new WiaProperty(_device.Properties.ToList()[no]);
         }
 
-        public bool HasProperty(string nam)
+        public bool HasProperty(string propertyName)
         {
-            return _device.Properties.Exists(nam);
+            return _device.Properties.Exists(propertyName);
         }
 
 
@@ -217,42 +218,38 @@ namespace Microvision.Scanners
 
         private static string zDebugDevice(WiaDevice dev, string pfx)
         {
-            string ch = dev.Name + " (" + dev.Type.ToNameString() + ") " + dev.BedSize.ToString() + ", " + dev.OpticalResolution.ToString();
+            string ch = $"{dev.Name} ({dev.Type.ToNameString()}) {dev.BedSize}, {dev.OpticalResolution}";
 
             for (int i = 0; i < dev.PropertiesCount; i++)
             {
-                WiaProperty prp = dev.GetProperty(i);
+                using WiaProperty prp = dev.GetProperty(i);
                 ch = ch + SpecialChars.NewLine + prp.DebugString(pfx + SpecialChars.Tab);
-                prp.Dispose();
             }
 
             for (int i = 0; i < dev.CommandsCount; i++)
             {
-                WiaCommand cmd = dev.GetCommand(i);
+                using WiaCommand cmd = dev.GetCommand(i);
                 ch = ch + SpecialChars.NewLine + cmd.DebugString(pfx + SpecialChars.Tab);
-                cmd.Dispose();
             }
 
             for (int i = 0; i < dev.EventsCount; i++)
             {
-                WiaEvent evt = dev.GetEvent(i);
+                using WiaEvent evt = dev.GetEvent(i);
                 ch = ch + SpecialChars.NewLine + evt.DebugString(pfx + SpecialChars.Tab);
-                evt.Dispose();
             }
 
             for (int i = 0; i < dev.ItemsCount; i++)
             {
-                WiaItem itm = dev.GetItem(i);
+                using WiaItem itm = dev.GetItem(i);
                 ch = ch + SpecialChars.NewLine + itm.DebugString(pfx + SpecialChars.Tab);
-                itm.Dispose();
             }
 
             return ch;
         }
 
-        private static int zFindProperty(string nam, List<WIA.Property> prps)
+        private static int zFindProperty(string propertyName, List<WIA.Property> properties)
         {
-            return prps.FindIndex(p => nam.EqualsWithoutCase(p.Name));
+            return properties.FindIndex(o => propertyName.EqualsWithoutCase(o.Name));
         }
 
 

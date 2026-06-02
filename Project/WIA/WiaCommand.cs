@@ -11,6 +11,7 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly WIA.DeviceCommand _command;
@@ -43,7 +44,7 @@ namespace Microvision.Scanners
 
         public string DebugString(string pfx)
         {
-            return pfx + GetType().Name + " = " + zDebugCommand(this);
+            return $"{pfx}{GetType().Name} = {zDebugCommand(this)}";
         }
 
 

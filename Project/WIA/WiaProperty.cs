@@ -14,6 +14,7 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         public enum PropertyType
@@ -76,9 +77,9 @@ namespace Microvision.Scanners
         // Classe
         // ----------------------------------------
 
-        internal WiaProperty(WIA.Property prp) : base()
+        internal WiaProperty(WIA.Property property) : base()
         {
-            _property = prp;
+            _property = property;
         }
 
 
@@ -124,7 +125,7 @@ namespace Microvision.Scanners
 
         public string DebugString(string pfx)
         {
-            return pfx + GetType().Name + " = " + zDebugProperty(this, pfx);
+            return $"{pfx}{GetType().Name} = {zDebugProperty(this, pfx)}";
         }
 
         public int GetFlagMap()

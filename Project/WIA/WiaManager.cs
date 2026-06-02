@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 using Microvision.Types;
 
@@ -14,6 +15,7 @@ namespace Microvision.Scanners
         // 12.05.17 : (libs 2.1)
         // 21.11.19 : (libs 2.2)
         // 14.04.22 : (libs 3.0)
+        // 02.06.26 : (libs 4.0)
         // ***************************************************************************************************
 
         private readonly WIA.DeviceManager _manager;
@@ -43,7 +45,7 @@ namespace Microvision.Scanners
 
         public string DebugString(string pfx)
         {
-            return pfx + GetType().Name + " = " + zDebugManager(this, pfx);
+            return $"{pfx}{GetType().Name} = {zDebugManager(this, pfx)}";
         }
 
         public WiaDeviceInfo GetDeviceInfo(int no)
@@ -71,16 +73,15 @@ namespace Microvision.Scanners
 
         private static string zDebugManager(WiaManager dmng, string pfx)
         {
-            string s = "";
+            StringBuilder s = new StringBuilder();
 
             for (int i = 0; i < dmng.DevicesCount; i++)
             {
-                WiaDeviceInfo dinf = dmng.GetDeviceInfo(i);
-                s = s + SpecialChars.NewLine + dinf.DebugString(pfx + SpecialChars.Tab);
-                dinf.Dispose();
+                using WiaDeviceInfo dinf = dmng.GetDeviceInfo(i);
+                s.AppendLine(dinf.DebugString(pfx + SpecialChars.Tab));
             }
 
-            return s;
+            return s.ToString();
         }
 
 
