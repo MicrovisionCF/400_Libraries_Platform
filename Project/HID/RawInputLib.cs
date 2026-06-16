@@ -56,10 +56,11 @@ namespace Microvision.HID
 
                 infos = new User32.RID_DEVICE_INFO((int)lng);
 
-                int bfpos = 0;
-                bfpos += MarshShop.BufferToStruct(bf, bfpos, out infos.cbSize);
-                bfpos += MarshShop.BufferToStruct(bf, bfpos, out infos.dwType);
-                bfpos += MarshShop.BufferToBytes(bf, bfpos, infos.infolen, infos.info);
+                int offset = 0;
+                offset += MarshShop.BufferToStruct(bf, offset, out infos.cbSize);
+                offset += MarshShop.BufferToStruct(bf, offset, out infos.dwType);
+                offset += MarshShop.BufferToBytes(bf, offset, infos.infolen, infos.info);
+                _ = offset;
             }
 
             return infos;
@@ -127,9 +128,10 @@ namespace Microvision.HID
 
                 output = new User32.RAWINPUT((int)lng);
 
-                int bfpos = 0;
-                bfpos += MarshShop.BufferToStruct(bf, bfpos, out output.header);
-                bfpos += MarshShop.BufferToBytes(bf, bfpos, output.datalen, output.data);
+                int offset = 0;
+                offset += MarshShop.BufferToStruct(bf, offset, out output.header);
+                offset += MarshShop.BufferToBytes(bf, offset, output.datalen, output.data);
+                _ = offset;
             }
 
             return output;
