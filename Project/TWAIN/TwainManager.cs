@@ -119,7 +119,7 @@ namespace Microvision.Scanners
 
         public bool OpenDSM()
         {
-            _dataSourceManager.ThrowIfNotNull();
+            _dataSourceManager.ThrowIfPresent();
 
             bool ok = zIsLibraryInstalled();
 
